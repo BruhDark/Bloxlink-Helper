@@ -53,7 +53,7 @@ class Tags(commands.Cog):
 
         return [alias for alias in aliases if alias.startswith(ctx.value.lower())]
     
-    @tags.command(description="Create a new tag")
+    @tags.command(description="Create a new tag", default_permission=False)
     @permissions.has_any_role("Staff")
     async def create(self, ctx: discord.ApplicationContext, name: Option(str, "The new tag name"), content: Option(str, "The tag content"), aliases: Option(str, "Aliases for this tag, separated by a comma, no space", required=False, default=None)):
 
@@ -94,7 +94,7 @@ class Tags(commands.Cog):
             
             await message.edit(embed=embed)
 
-    @tags.command(description="Remove an existent tag")
+    @tags.command(description="Remove an existent tag", default_permission=False)
     @permissions.has_any_role("Staff")
     async def remove(self, ctx: discord.ApplicationContext, name: Option(str, "The tag name you wish to remove", autocomplete=get_tags)):
 
@@ -133,7 +133,6 @@ class Tags(commands.Cog):
             await message.edit(embed=embed)
 
     @tags.command(description="Get information about a tag")
-    @permissions.has_any_role("Staff")
     async def info(self, ctx: discord.ApplicationContext, name: Option(str, "Search by name or alias", autocomplete=get_tags_and_alias)):
 
         collection = self.bot.database["tags"]
@@ -176,7 +175,7 @@ class Tags(commands.Cog):
             embed = discord.Embed(description=f"{x} No tag found by this name", color=COLORS["error"])
             await message.edit(embed=embed)
 
-    @tags.command(description="Get the raw content of a tag")
+    @tags.command(description="Get the raw content of a tag", default_permission=False)
     @permissions.has_any_role("Staff")
     async def raw(self, ctx: discord.ApplicationContext, name: Option(str, "The tag name to get the raw content from", autocomplete=get_tags)):
         
@@ -208,7 +207,7 @@ class Tags(commands.Cog):
             embed = discord.Embed(description=f"{x} No tag found by this name", color=COLORS["error"])
             await message.edit(embed=embed)
 
-    @tags.command(description="Edit an existent tag's content")
+    @tags.command(description="Edit an existent tag's content", default_permission=False)
     @permissions.has_any_role("Staff")
     async def edit(self, ctx: discord.ApplicationContext, name: Option(str, "The tag name you want to edit", autocomplete=get_tags), content: Option(str, "The new content for this tag")):
 
@@ -241,7 +240,7 @@ class Tags(commands.Cog):
             embed = discord.Embed(description=f"{x} No tag found by this name", color=COLORS["error"])
             await message.edit(embed=embed)
 
-    @tags.command(description="Add or remove tag aliases")
+    @tags.command(description="Add or remove tag aliases", default_permission=False)
     @permissions.has_any_role("Staff")
     async def alias(self, ctx: discord.ApplicationContext, name: Option(str, "The tag name you wish to edit its alias"), choice: Option(str, "Add or remove an alias?", choices=["add", "remove"]), alias: Option(str, "New alias or alias to be removed", autocomplete=get_aliases)):
 
