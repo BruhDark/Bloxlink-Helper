@@ -68,7 +68,8 @@ class OnConnect(commands.Cog):
 
         embed.add_field(name=f"Bot Version", value="?", inline=True)
         embed.add_field(name=":clock1: Uptime", value=uptime, inline=True)
-        embed.add_field(name=":ping_pong: Bot Latency", value=round(self.bot.latency * 1000) + "ms")
+        latency = str(round(self.bot.latency * 1000))
+        embed.add_field(name=":ping_pong: Bot Latency", value=f"`{latency}ms`")
         
         embed.add_field(name=":snake: PyCord Version", value=f"{pycordV}", inline=True)
         embed.add_field(name="🚄 Railway Status", value=srailway, inline=True)
@@ -148,7 +149,8 @@ class Button(discord.ui.Button):
 
         embed1.add_field(name=f"Bot Version", value="?", inline=True)
         embed1.add_field(name=":clock1: Uptime", value=uptime, inline=True)
-        embed1.add_field(name=":ping_pong: Bot Latency", value=round(self.bot.latency * 1000) + "ms")
+        latency = str(round(self.bot.latency * 1000))
+        embed1.add_field(name=":ping_pong: Bot Latency", value=f"`{latency}ms`")
         
         embed1.add_field(name=":snake: PyCord Version", value=f"{pycordV}", inline=True)
         embed1.add_field(name="🚄 Railway Status", value=srailway, inline=True)
