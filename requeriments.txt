@@ -4,5 +4,3 @@ datetime==4.3
 pymongo==4.0.1
 dnspython==2.1.0
 jishaku==2.3.2
-json
-time
