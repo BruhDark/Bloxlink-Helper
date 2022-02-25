@@ -12,7 +12,7 @@ class Bot(commands.Bot):
         intents=discord.Intents.all(),
         strip_after_prefix=True,
         debug_guilds=[881968885279117342],
-        allowed_mentions=discord.AllowedMentions(everyone=False, roles=False),
+        allowed_mentions=discord.AllowedMentions(everyone=False, roles=False, users=True, replied_user=True),
         help_command=None)
         self.database = database
     
