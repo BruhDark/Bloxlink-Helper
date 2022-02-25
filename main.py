@@ -11,7 +11,9 @@ class Bot(commands.Bot):
         super().__init__(command_prefix=commands.when_mentioned_or("!"), 
         intents=discord.Intents.all(),
         strip_after_prefix=True,
-        debug_guilds=[881968885279117342])
+        debug_guilds=[881968885279117342],
+        allowed_mentions=discord.AllowedMentions(everyone=False, roles=False),
+        help_command=None)
         self.database = database
     
         for event in os.listdir("Events"):

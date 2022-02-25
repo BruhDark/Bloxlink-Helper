@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands, pages
-from discord.commands import slash_command, Option
+from discord.commands import slash_command, Option, permissions
 import pymongo
 import time
 import datetime
@@ -54,6 +54,7 @@ class Tags(commands.Cog):
         return [alias for alias in aliases if alias.startswith(ctx.value.lower())]
     
     @tags.command(description="Create a new tag")
+    @permissions.has_any_role("Staff")
     async def create(self, ctx: discord.ApplicationContext, name: Option(str, "The new tag name"), content: Option(str, "The tag content"), aliases: Option(str, "Aliases for this tag, separated by a comma, no space", required=False, default=None)):
 
         collection =  self.bot.database["tags"]
@@ -62,6 +63,7 @@ class Tags(commands.Cog):
         aliases = aliases.lower() if aliases is not None else aliases
         aliases = aliases.replace(" ", "") if aliases is not None else aliases
         aliases = aliases.split(",") if aliases is not None else ["None"]
+        content = content.replace("\\n", "\n")
 
         loading = EMOTES["loading"]
         embed = discord.Embed(description=f"{loading} Working on it....", color=COLORS["info"])
@@ -93,6 +95,7 @@ class Tags(commands.Cog):
             await message.edit(embed=embed)
 
     @tags.command(description="Remove an existent tag")
+    @permissions.has_any_role("Staff")
     async def remove(self, ctx: discord.ApplicationContext, name: Option(str, "The tag name you wish to remove", autocomplete=get_tags)):
 
         collection = self.bot.database["tags"]
@@ -130,6 +133,7 @@ class Tags(commands.Cog):
             await message.edit(embed=embed)
 
     @tags.command(description="Get information about a tag")
+    @permissions.has_any_role("Staff")
     async def info(self, ctx: discord.ApplicationContext, name: Option(str, "Search by name or alias", autocomplete=get_tags_and_alias)):
 
         collection = self.bot.database["tags"]
@@ -173,6 +177,7 @@ class Tags(commands.Cog):
             await message.edit(embed=embed)
 
     @tags.command(description="Get the raw content of a tag")
+    @permissions.has_any_role("Staff")
     async def raw(self, ctx: discord.ApplicationContext, name: Option(str, "The tag name to get the raw content from", autocomplete=get_tags)):
         
         collection = self.bot.database["tags"]
@@ -204,6 +209,7 @@ class Tags(commands.Cog):
             await message.edit(embed=embed)
 
     @tags.command(description="Edit an existent tag's content")
+    @permissions.has_any_role("Staff")
     async def edit(self, ctx: discord.ApplicationContext, name: Option(str, "The tag name you want to edit", autocomplete=get_tags), content: Option(str, "The new content for this tag")):
 
         loading = EMOTES["loading"]
@@ -236,9 +242,12 @@ class Tags(commands.Cog):
             await message.edit(embed=embed)
 
     @tags.command(description="Add or remove tag aliases")
+    @permissions.has_any_role("Staff")
     async def alias(self, ctx: discord.ApplicationContext, name: Option(str, "The tag name you wish to edit its alias"), choice: Option(str, "Add or remove an alias?", choices=["add", "remove"]), alias: Option(str, "New alias or alias to be removed", autocomplete=get_aliases)):
 
-        await ctx.respond("Applying changes")
+        loading = EMOTES["loading"]
+        embed = discord.Embed(description=f"{loading} Working on it....", color=COLORS["info"])
+        await ctx.respond(embed=embed)
         message = await ctx.interaction.original_message()
 
         collection = self.bot.database["tags"]
@@ -356,12 +365,9 @@ class Tags(commands.Cog):
     @tags.command(description="Send a tag to the channel")
     async def send(self, ctx: discord.ApplicationContext, name: Option(str, "The tag you want to display", autocomplete=get_tags_and_alias), text: Option(str, "Optional text before the tag (usually mentions)", required=False, default=None)):
 
-        name = name.lower()
 
-        loading = EMOTES["loading"]
-        embed = discord.Embed(description=f"{loading} Searching and sending tag...", color=COLORS["info"])
-        await ctx.respond(embed=embed, ephemeral=True)
-        message = await ctx.interaction.original_message()
+        await ctx.defer()
+        name = name.lower()
 
         collection = self.bot.database["tags"]
 
@@ -376,11 +382,7 @@ class Tags(commands.Cog):
             text = text if text is not None else ""
             tag = find["content"]
 
-            await ctx.send(f"{text} {tag}")
-            
-            success = EMOTES["success"]
-            embed = discord.Embed(description=f"{success} Successfully found and sent your tag.", color=COLORS["success"])
-            await message.edit(embed=embed)
+            await ctx.respond(f"{text} {tag}")
 
             uses = find["uses"]
             update = {"$set": {"uses": uses + 1}}
@@ -389,7 +391,7 @@ class Tags(commands.Cog):
         else:
             x = EMOTES["error"]
             embed = discord.Embed(description=f"{x} No tag matching your search.", color=COLORS["error"])
-            await message.edit(embed=embed)
+            await ctx.respond(embed=embed, delete_after=5.0)
 
 def setup(bot):
     bot.add_cog(Tags(bot))
