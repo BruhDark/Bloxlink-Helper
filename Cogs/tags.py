@@ -105,7 +105,7 @@ class Tags(commands.Cog):
           else:
               x = EMOTES["error"]
               embed = discord.Embed(description=f"{x} You do not have permission to run this command.", color=COLORS["error"])
-              ctx.respond(embed=embed, ephemeral=True)
+              await ctx.respond(embed=embed, ephemeral=True)
 
     @tags.command(description="Delete an existent tag")
     async def delete(self, ctx: discord.ApplicationContext, name: Option(str, "The tag name you wish to remove", autocomplete=get_tags)):
@@ -149,7 +149,7 @@ class Tags(commands.Cog):
         else:
               x = EMOTES["error"]
               embed = discord.Embed(description=f"{x} You do not have permission to run this command.", color=COLORS["error"])
-              ctx.respond(embed=embed, ephemeral=True)
+              await ctx.respond(embed=embed, ephemeral=True)
 
     @tags.command(description="Get information about a tag")
     async def info(self, ctx: discord.ApplicationContext, name: Option(str, "Search by name or alias", autocomplete=get_tags_and_alias)):
@@ -233,7 +233,7 @@ class Tags(commands.Cog):
         else:
             x = EMOTES["error"]
             embed = discord.Embed(description=f"{x} You do not have permission to run this command.", color=COLORS["error"])
-            ctx.respond(embed=embed, ephemeral=True)
+            await ctx.respond(embed=embed, ephemeral=True)
 
     @tags.command(description="Edit an existent tag's content")
     async def edit(self, ctx: discord.ApplicationContext, name: Option(str, "The tag name you want to edit", autocomplete=get_tags), content: Option(str, "The new content for this tag")):
@@ -270,7 +270,7 @@ class Tags(commands.Cog):
         else:
             x = EMOTES["error"]
             embed = discord.Embed(description=f"{x} You do not have permission to run this command.", color=COLORS["error"])
-            ctx.respond(embed=embed, ephemeral=True)
+            await ctx.respond(embed=embed, ephemeral=True)
 
     @tags.command(description="Add or remove tag aliases")
     async def alias(self, ctx: discord.ApplicationContext, name: Option(str, "The tag name you wish to edit its alias", autocomplete=get_tags), choice: Option(str, "Add or remove an alias?", choices=["add", "remove"]), alias: Option(str, "New alias or alias to be removed", autocomplete=get_aliases)):
@@ -353,7 +353,7 @@ class Tags(commands.Cog):
         else:
             x = EMOTES["error"]
             embed = discord.Embed(description=f"{x} You do not have permission to run this command.", color=COLORS["error"])
-            ctx.respond(embed=embed, ephemeral=True)
+            await ctx.respond(embed=embed, ephemeral=True)
 
     @tags.command(description="Get a tags list and a paginator")
     async def all(self, ctx: discord.ApplicationContext):
@@ -495,7 +495,7 @@ class Tags(commands.Cog):
         else:
             x = EMOTES["error"]
             embed = discord.Embed(description=f"{x} You do not have permission to run this command.", color=COLORS["error"])
-            ctx.send(embed=embed)
+            await ctx.send(embed=embed)
 
     @commands.command(aliases=["msgedit"])
     async def editmsg(self, ctx: discord.ApplicationContext, id: int, *, text: str):
@@ -516,7 +516,7 @@ class Tags(commands.Cog):
         else:
             x = EMOTES["error"]
             embed = discord.Embed(description=f"{x} You do not have permission to run this command.", color=COLORS["error"])
-            ctx.send(embed=embed)
+            await ctx.send(embed=embed, delete_after=3.0)
 
 def setup(bot):
     bot.add_cog(Tags(bot))
