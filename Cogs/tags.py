@@ -5,6 +5,7 @@ import pymongo
 import time
 import datetime
 from config import COLORS, EMOTES, RELEASESCOLORS, LINKS
+import asyncio
 
 class Tags(commands.Cog):
     def __init__(self, bot):
@@ -401,17 +402,34 @@ class Tags(commands.Cog):
             check = {"aliases": name}
             find = collection.find_one(check)
 
+        text = text if text is not None else None
+
         if find:
-            
-            await ctx.message.delete()
-            text = text if text is not None else ""
-            tag = find["content"]
+            if text is not None:
+                await ctx.message.delete()
+                
+                tag = find["content"]
 
-            await ctx.send(f"{text} {tag}")
+                msg = await ctx.send(f"{tag}")
+                asyncio.sleep(0.1)
+                await msg.edit(f"{text} {tag}")
 
-            uses = find["uses"]
-            update = {"$set": {"uses": uses + 1}}
-            collection.update_one(check, update)
+
+                uses = find["uses"]
+                update = {"$set": {"uses": uses + 1}}
+                collection.update_one(check, update)
+
+            else:
+                await ctx.message.delete()
+                
+                tag = find["content"]
+
+                await ctx.send(f"{tag}")
+
+                uses = find["uses"]
+                update = {"$set": {"uses": uses + 1}}
+                collection.update_one(check, update)
+
 
         else:
             await ctx.message.delete()
