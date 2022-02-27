@@ -500,7 +500,7 @@ class Tags(commands.Cog):
             embed = discord.Embed(description=f"{x} You do not have permission to run this command.", color=COLORS["error"])
             ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(aliases=["msgedit"])
     async def editmsg(self, ctx: discord.ApplicationContext, id: int, *, text: str):
 
         if await Tags.is_staff(self, ctx):
