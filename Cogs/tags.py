@@ -278,6 +278,7 @@ class Tags(commands.Cog):
         if await Tags.is_staff(self, ctx):
             loading = EMOTES["loading"]
             embed = discord.Embed(description=f"{loading} Working on it....", color=COLORS["info"])
+            
             await ctx.respond(embed=embed)
             message = await ctx.interaction.original_message()
 
@@ -312,10 +313,8 @@ class Tags(commands.Cog):
                      collection.update_one(check, aliases)
 
 
-                     embed = discord.Embed(color=COLORS["success"], timestamp=datetime.datetime.utcnow())
+                     embed = discord.Embed(description=f":parperclip: Added alias: {alias}",color=COLORS["success"], timestamp=datetime.datetime.utcnow())
                      embed.set_author(icon_url=LINKS["success"], name=f"Done! Successfully edited {name}'s aliases")
-                     embed.add_field(name=":older_man: Old Aliases List", value=", ".join(oldAliases))
-                     embed.add_field(name=":baby: New Aliases List", value=", ".join(newAliases))
 
                      await message.edit(embed=embed)
 
@@ -336,10 +335,8 @@ class Tags(commands.Cog):
                         update = {"$set": {"aliases": aliases, "lastUpdateAt": updatedTime, "lastUpdateBy": ctx.author.id}}
                         collection.update_one(check, update)
 
-                        embed = discord.Embed(color=COLORS["success"], timestamp=datetime.datetime.utcnow())
+                        embed = discord.Embed(description=f":parperclip: Removed alias: {alias}", color=COLORS["success"], timestamp=datetime.datetime.utcnow())
                         embed.set_author(icon_url=LINKS["success"], name=f"Done! Successfully edited {name}'s aliases")
-                        embed.add_field(name=":older_man: Old Aliases", value=", ".join(aliases))
-                        embed.add_field(name=":baby: New Aliases", value=", ".join(newAlias))
 
                     except Exception:
                         x = EMOTES["error"]
@@ -508,6 +505,7 @@ class Tags(commands.Cog):
             message = discord.utils.get(self.bot.cached_messages, id=id)
 
             try:
+              await ctx.message.delete()
               await message.edit(text)
 
             except Exception as e:
