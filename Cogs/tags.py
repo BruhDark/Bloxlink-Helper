@@ -89,9 +89,9 @@ class Tags(commands.Cog):
             
             await message.edit(embed=embed)
 
-    @tags.command(description="Remove an existent tag", default_permission=False)
+    @tags.command(description="Delete an existent tag", default_permission=False)
     @permissions.has_any_role("Staff")
-    async def remove(self, ctx: discord.ApplicationContext, name: Option(str, "The tag name you wish to remove", autocomplete=get_tags)):
+    async def delete(self, ctx: discord.ApplicationContext, name: Option(str, "The tag name you wish to remove", autocomplete=get_tags)):
 
         collection = self.bot.database["tags"]
         name = name.lower()
@@ -346,12 +346,13 @@ class Tags(commands.Cog):
             lastUpdateAt = tag["lastUpdateAt"]
 
             embed = discord.Embed(description=f":page_with_curl: Tag content:\n{content}", timestamp=datetime.datetime.utcnow(), color=COLORS["info"])
-            embed.set_author(icon_url=author.display_avatar.url, name=f"Created by: {author.name}")
+            embed.set_author(icon_url=author.display_avatar.url, name=f"Created by: {author.name}#{author.discriminator}")
             embed.add_field(name=":clipboard: Name", value=name)
             embed.add_field(name=":paperclips: Aliases", value=aliases)
             embed.add_field(name=":arrows_counterclockwise: Uses", value=uses)
             embed.add_field(name=":calendar: Creation Date", value=f"<t:{createdAt}:R>")
             embed.add_field(name=":timer: Last Update", value=f"<t:{lastUpdateAt}:R>")
+            embed.set_footer(icon_url=ctx.author.display_avatar.url, text=f"{ctx.author.name}#{ctx.author.discriminator}")
 
             pagPages.append(embed)
 
