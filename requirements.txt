@@ -1,4 +1,4 @@
-git+https://github.com/Pycord-Development/pycord
+py-cord==2.0.0b1
 requests==2.26.0
 datetime==4.3
 pymongo==4.0.1
