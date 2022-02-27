@@ -313,9 +313,8 @@ class Tags(commands.Cog):
                      collection.update_one(check, aliases)
 
 
-                     embed = discord.Embed(description=f":parperclip: Added alias: {alias}",color=COLORS["success"], timestamp=datetime.datetime.utcnow())
-                     embed.set_author(icon_url=LINKS["success"], name=f"Done! Successfully edited {name}'s aliases")
-
+                     success = EMOTES["success"]
+                     embed = discord.Embed(description=f"{success} **Added** alias: {alias}", color=COLORS["success"], timestamp=datetime.datetime.utcnow())
                      await message.edit(embed=embed)
 
                     else:
@@ -335,8 +334,9 @@ class Tags(commands.Cog):
                         update = {"$set": {"aliases": aliases, "lastUpdateAt": updatedTime, "lastUpdateBy": ctx.author.id}}
                         collection.update_one(check, update)
 
-                        embed = discord.Embed(description=f":parperclip: Removed alias: {alias}", color=COLORS["success"], timestamp=datetime.datetime.utcnow())
-                        embed.set_author(icon_url=LINKS["success"], name=f"Done! Successfully edited {name}'s aliases")
+                        success = EMOTES["success"]
+                        embed = discord.Embed(description=f"{success} **Removed** alias: {alias}", color=COLORS["success"], timestamp=datetime.datetime.utcnow())
+                        await message.edit(embed=embed)
 
                     except Exception:
                         x = EMOTES["error"]
