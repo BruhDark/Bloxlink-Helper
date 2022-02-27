@@ -64,7 +64,7 @@ class Tags(commands.Cog):
     @tags.command(description="Create a new tag")
     async def create(self, ctx: discord.ApplicationContext, name: Option(str, "The new tag name"), content: Option(str, "The tag content"), aliases: Option(str, "Aliases for this tag, separated by a comma, no space", required=False, default=None)):
 
-          if Tags.is_staff():
+          if Tags.is_staff(self, ctx):
                 collection =  self.bot.database["tags"]
                 createdAt = round(time.time() * 1)
                 name = name.lower()
@@ -111,7 +111,7 @@ class Tags(commands.Cog):
     async def delete(self, ctx: discord.ApplicationContext, name: Option(str, "The tag name you wish to remove", autocomplete=get_tags)):
 
         
-        if Tags.is_staff():
+        if Tags.is_staff(self, ctx):
             collection = self.bot.database["tags"]
             name = name.lower()
             check = {"name": name}
@@ -201,7 +201,7 @@ class Tags(commands.Cog):
     @tags.command(description="Get the raw content of a tag")
     async def raw(self, ctx: discord.ApplicationContext, name: Option(str, "The tag name to get the raw content from", autocomplete=get_tags_and_alias)):
         
-        if Tags.is_staff():
+        if Tags.is_staff(self, ctx):
             collection = self.bot.database["tags"]
             name = name.lower()
 
@@ -238,7 +238,7 @@ class Tags(commands.Cog):
     @tags.command(description="Edit an existent tag's content")
     async def edit(self, ctx: discord.ApplicationContext, name: Option(str, "The tag name you want to edit", autocomplete=get_tags), content: Option(str, "The new content for this tag")):
 
-        if Tags.is_staff():
+        if Tags.is_staff(self, ctx):
             loading = EMOTES["loading"]
             embed = discord.Embed(description=f"{loading} Working on it....", color=COLORS["info"])
             await ctx.respond(embed=embed)
@@ -275,7 +275,7 @@ class Tags(commands.Cog):
     @tags.command(description="Add or remove tag aliases")
     async def alias(self, ctx: discord.ApplicationContext, name: Option(str, "The tag name you wish to edit its alias", autocomplete=get_tags), choice: Option(str, "Add or remove an alias?", choices=["add", "remove"]), alias: Option(str, "New alias or alias to be removed", autocomplete=get_aliases)):
 
-        if Tags.is_staff():
+        if Tags.is_staff(self, ctx):
             loading = EMOTES["loading"]
             embed = discord.Embed(description=f"{loading} Working on it....", color=COLORS["info"])
             await ctx.respond(embed=embed)
@@ -483,7 +483,7 @@ class Tags(commands.Cog):
 
     @commands.command()
     async def say(self, ctx: discord.ApplicationContext, *, text: str):
-        if Tags.is_staff():
+        if Tags.is_staff(self, ctx):
             
             try:
              await ctx.message.delete()
@@ -503,9 +503,9 @@ class Tags(commands.Cog):
     @commands.command()
     async def editmsg(self, ctx: discord.ApplicationContext, id: int, *, text: str):
 
-        if Tags.is_staff():
+        if Tags.is_staff(self, ctx):
 
-            message = await discord.abc.Messageable.fetch_message(id)
+            message = discord.utils.get(self.bot.cached_messages, id=id)
 
             try:
               await message.edit(text)
