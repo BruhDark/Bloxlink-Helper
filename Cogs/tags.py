@@ -154,18 +154,20 @@ class Tags(commands.Cog):
             aliases = find["aliases"]
             aliases = ", ".join(aliases) if aliases != "None" else "None"
             content = find["content"]
+            success = EMOTES["success"]
 
 
-            embed = discord.Embed(description=f":page_with_curl: Tag content:\n{content}", color=COLORS["success"], timestamp=datetime.datetime.utcnow())
-            embed.set_author(icon_url=LINKS["success"], name=f"Found a match for: {name}")
-            embed.add_field(name=":brain: Author", value=f"{author.mention} ({author.id})")
-            embed.add_field(name=":hourglass_flowing_sand: Last Update By", value=f"{lastUpdateBy.mention} ({lastUpdateBy.id})")
-            embed.add_field(name=":arrows_counterclockwise: Uses", value=uses)
+            embed = discord.Embed(description=f":page_with_curl: Tag content:\n{content}", timestamp=datetime.datetime.utcnow(), color=COLORS["info"])
+            embed.set_author(icon_url=author.display_avatar.url, name=f"Created by: {author.name}#{author.discriminator}")
+            embed.add_field(name=":clipboard: Name", value=name)
             embed.add_field(name=":paperclips: Aliases", value=aliases)
+            embed.add_field(name=":arrows_counterclockwise: Uses", value=uses)
             embed.add_field(name=":calendar: Creation Date", value=f"<t:{createdAt}:R>")
             embed.add_field(name=":timer: Last Update", value=f"<t:{lastUpdateAt}:R>")
+            embed.set_footer(icon_url=lastUpdateBy.display_avatar.url, text=f"Last Update by: {lastUpdateBy.name}#{lastUpdateBy.discriminator}")
 
-            await message.edit(embed=embed)
+
+            await message.edit(embed=embed, content=f"{success} Found a match:")
 
         else:
             x = EMOTES["error"]
@@ -344,6 +346,7 @@ class Tags(commands.Cog):
             author = self.bot.get_user(tag["author"])
             createdAt = tag["createdAt"]
             lastUpdateAt = tag["lastUpdateAt"]
+            lastUpdateBy = self.bot.get_user(tag["lastUpdateBy"])
 
             embed = discord.Embed(description=f":page_with_curl: Tag content:\n{content}", timestamp=datetime.datetime.utcnow(), color=COLORS["info"])
             embed.set_author(icon_url=author.display_avatar.url, name=f"Created by: {author.name}#{author.discriminator}")
@@ -352,7 +355,7 @@ class Tags(commands.Cog):
             embed.add_field(name=":arrows_counterclockwise: Uses", value=uses)
             embed.add_field(name=":calendar: Creation Date", value=f"<t:{createdAt}:R>")
             embed.add_field(name=":timer: Last Update", value=f"<t:{lastUpdateAt}:R>")
-            embed.set_footer(icon_url=ctx.author.display_avatar.url, text=f"{ctx.author.name}#{ctx.author.discriminator}")
+            embed.set_footer(icon_url=lastUpdateBy.display_avatar.url, text=f"Last Update by: {lastUpdateBy.name}#{lastUpdateBy.discriminator}")
 
             pagPages.append(embed)
 
