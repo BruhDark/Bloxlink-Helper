@@ -14,6 +14,19 @@ class Tags(commands.Cog):
 
     tags = discord.SlashCommandGroup("tag", "Tag related commands.")
 
+    async def is_staff(self, ctx: discord.ApplicationContext):
+
+        role = discord.utils.get(ctx.guild.roles, name="Staff")
+        permission = ctx.author.guild_permissions.manage_messages
+
+        check = True if role in ctx.author.roles else False
+
+        if check or permission:
+            return True
+
+        else:
+            return False
+
     async def get_tags(self, ctx: discord.ApplicationContext):
 
         collection = self.bot.database["tags"]
@@ -48,84 +61,95 @@ class Tags(commands.Cog):
 
         return [alias for alias in aliases if alias.startswith(ctx.value.lower())]
     
-    @tags.command(description="Create a new tag", default_permission=False)
-    @permissions.has_any_role("Staff")
+    @tags.command(description="Create a new tag")
     async def create(self, ctx: discord.ApplicationContext, name: Option(str, "The new tag name"), content: Option(str, "The tag content"), aliases: Option(str, "Aliases for this tag, separated by a comma, no space", required=False, default=None)):
 
-        collection =  self.bot.database["tags"]
-        createdAt = round(time.time() * 1)
-        name = name.lower()
-        aliases = aliases.lower() if aliases is not None else aliases
-        aliases = aliases.replace(" ", "") if aliases is not None else aliases
-        aliases = aliases.split(",") if aliases is not None else ["None"]
-        content = content.replace("\\n", "\n")
+          if Tags.is_staff():
+                collection =  self.bot.database["tags"]
+                createdAt = round(time.time() * 1)
+                name = name.lower()
+                aliases = aliases.lower() if aliases is not None else aliases
+                aliases = aliases.replace(" ", "") if aliases is not None else aliases
+                aliases = aliases.split(",") if aliases is not None else ["None"]
+                content = content.replace("\\n", "\n")
 
-        loading = EMOTES["loading"]
-        embed = discord.Embed(description=f"{loading} Working on it....", color=COLORS["info"])
+                loading = EMOTES["loading"]
+                embed = discord.Embed(description=f"{loading} Working on it....", color=COLORS["info"])
 
-        await ctx.respond(embed=embed)
-        message = await ctx.interaction.original_message()
+                await ctx.respond(embed=embed)
+                message = await ctx.interaction.original_message()
+                
+                newTag = {"name": name, "aliases": aliases,"uses": 0,"content": content, "author":ctx.author.id, "lastUpdateBy": ctx.author.id,"createdAt": createdAt, "lastUpdateAt": createdAt}
+                check = {"name": name}
+                check2 = {"aliases": aliases}
+                find2 = collection.find_one(check2) if aliases[0] != "None" else False
+
+                if collection.find_one(check) or find2:
+                    error = EMOTES["error"]
+                    embed = discord.Embed(description=f"{error} A tag with that name/alias already exists!", color=COLORS["error"])
+                    await message.edit(embed=embed)
+
+                else:
+                    item = collection.insert_one(newTag)
+
+                    embed = discord.Embed(description=f":page_with_curl: Tag content:\n{content}", color=COLORS["success"], timestamp=datetime.datetime.utcnow())
+                    embed.set_footer(icon_url=ctx.author.avatar.url, text=f"{ctx.author.name}#{ctx.author.discriminator}")
+                    embed.add_field(name=":clipboard: Tag Name", value=name, inline=True)
+                    embed.add_field(name=":paperclips: Alias(es)", value=", ".join(aliases), inline=True)
+                    embed.add_field(name=":microscope: Item ID", value=item.inserted_id, inline=False)
+
+                    embed.set_author(icon_url=LINKS["success"], name=f"Successfully created a new tag")
+                    
+                    await message.edit(embed=embed)
         
-        newTag = {"name": name, "aliases": aliases,"uses": 0,"content": content, "author":ctx.author.id, "lastUpdateBy": ctx.author.id,"createdAt": createdAt, "lastUpdateAt": createdAt}
-        check = {"name": name}
-        check2 = {"aliases": aliases}
-        find2 = collection.find_one(check2) if aliases[0] != "None" else False
+          else:
+              x = EMOTES["error"]
+              embed = discord.Embed(description=f"{x} You do not have permission to run this command.", color=COLORS["error"])
+              ctx.respond(embed=embed, ephemeral=True)
 
-        if collection.find_one(check) or find2:
-            error = EMOTES["error"]
-            embed = discord.Embed(description=f"{error} A tag with that name/alias already exists!", color=COLORS["error"])
-            await message.edit(embed=embed)
-
-        else:
-            item = collection.insert_one(newTag)
-
-            embed = discord.Embed(description=f":page_with_curl: Tag content:\n{content}", color=COLORS["success"], timestamp=datetime.datetime.utcnow())
-            embed.set_footer(icon_url=ctx.author.avatar.url, text=f"{ctx.author.name}#{ctx.author.discriminator}")
-            embed.add_field(name=":clipboard: Tag Name", value=name, inline=True)
-            embed.add_field(name=":paperclips: Alias(es)", value=", ".join(aliases), inline=True)
-            embed.add_field(name=":microscope: Item ID", value=item.inserted_id, inline=False)
-
-            embed.set_author(icon_url=LINKS["success"], name=f"Successfully created a new tag")
-            
-            await message.edit(embed=embed)
-
-    @tags.command(description="Delete an existent tag", default_permission=False)
-    @permissions.has_any_role("Staff")
+    @tags.command(description="Delete an existent tag")
     async def delete(self, ctx: discord.ApplicationContext, name: Option(str, "The tag name you wish to remove", autocomplete=get_tags)):
 
-        collection = self.bot.database["tags"]
-        name = name.lower()
-        check = {"name": name}
         
-        loading = EMOTES["loading"]
-        embed = discord.Embed(description=f"{loading} Working on it....", color=COLORS["info"])
-        await ctx.respond(embed=embed)
-        message = await ctx.interaction.original_message()
-
-        find = collection.find_one(check)
-
-        if find:
+        if Tags.is_staff():
+            collection = self.bot.database["tags"]
+            name = name.lower()
+            check = {"name": name}
             
-            query = {"name": name}
-            oldContent = find["content"]
-            createdBy = find["author"]
-            id = find["_id"]
+            loading = EMOTES["loading"]
+            embed = discord.Embed(description=f"{loading} Working on it....", color=COLORS["info"])
+            await ctx.respond(embed=embed)
+            message = await ctx.interaction.original_message()
 
-            collection.delete_one(query)
+            find = collection.find_one(check)
 
-            embed = discord.Embed(description=f":page_with_curl: Old Tag Content:\n{oldContent}", color=COLORS["warning"], timestamp=datetime.datetime.utcnow())
-            embed.add_field(name=":wastebasket: Deleted Tag Name", value=name, inline=True)
-            embed.add_field(name=":bust_in_silhouette: Created By", value=f"<@{createdBy}>", inline=True)
-            embed.add_field(name=":microscope: Deleted Item ID", value=id, inline=False)
-            embed.set_footer(icon_url=ctx.author.avatar.url, text=f"{ctx.author.name}#{ctx.author.discriminator}")
-            embed.set_author(icon_url=LINKS["success"], name=f"Successfully deleted this tag")
+            if find:
+                
+                query = {"name": name}
+                oldContent = find["content"]
+                createdBy = find["author"]
+                id = find["_id"]
 
-            await message.edit(embed=embed)
+                collection.delete_one(query)
 
+                embed = discord.Embed(description=f":page_with_curl: Old Tag Content:\n{oldContent}", color=COLORS["warning"], timestamp=datetime.datetime.utcnow())
+                embed.add_field(name=":wastebasket: Deleted Tag Name", value=name, inline=True)
+                embed.add_field(name=":bust_in_silhouette: Created By", value=f"<@{createdBy}>", inline=True)
+                embed.add_field(name=":microscope: Deleted Item ID", value=id, inline=False)
+                embed.set_footer(icon_url=ctx.author.avatar.url, text=f"{ctx.author.name}#{ctx.author.discriminator}")
+                embed.set_author(icon_url=LINKS["success"], name=f"Successfully deleted this tag")
+
+                await message.edit(embed=embed)
+
+            else:
+                x = EMOTES["error"]
+                embed = discord.Embed(description=f"{x} A tag with that name does not exist!", color=COLORS["error"])
+                await message.edit(embed=embed)
+        
         else:
-            x = EMOTES["error"]
-            embed = discord.Embed(description=f"{x} A tag with that name does not exist!", color=COLORS["error"])
-            await message.edit(embed=embed)
+              x = EMOTES["error"]
+              embed = discord.Embed(description=f"{x} You do not have permission to run this command.", color=COLORS["error"])
+              ctx.respond(embed=embed, ephemeral=True)
 
     @tags.command(description="Get information about a tag")
     async def info(self, ctx: discord.ApplicationContext, name: Option(str, "Search by name or alias", autocomplete=get_tags_and_alias)):
@@ -158,7 +182,7 @@ class Tags(commands.Cog):
 
 
             embed = discord.Embed(title=f":paperclips: Aliases: {aliases}",description=f":page_with_curl: Tag content:\n{content}", timestamp=datetime.datetime.utcnow(), color=COLORS["info"])
-            embed.set_author(icon_url=LINKS["success"], name=f"Tag information for: {name}")
+            embed.set_author(icon_url=LINKS["other"], name=f"Tag information for: {name}")
             embed.add_field(name=":clipboard: Created By", value=f"{author.mention} ({author.id})")
             embed.add_field(name=":safety_vest: Last Update By", value=f"{lastUpdateBy.mention} ({lastUpdateBy.id})")
             embed.add_field(name=":arrows_counterclockwise: Uses", value=uses)
@@ -167,156 +191,172 @@ class Tags(commands.Cog):
             embed.set_footer(icon_url=ctx.author.display_avatar.url, text=f"{ctx.author.name}#{ctx.author.discriminator}")
 
 
-            await message.edit(embed=embed, content=f"{success} Found a match:")
+            await message.edit(embed=embed)
 
         else:
             x = EMOTES["error"]
             embed = discord.Embed(description=f"{x} No tag found by this name", color=COLORS["error"])
             await message.edit(embed=embed)
 
-    @tags.command(description="Get the raw content of a tag", default_permission=False)
-    @permissions.has_any_role("Staff")
+    @tags.command(description="Get the raw content of a tag")
     async def raw(self, ctx: discord.ApplicationContext, name: Option(str, "The tag name to get the raw content from", autocomplete=get_tags_and_alias)):
         
-        collection = self.bot.database["tags"]
-        name = name.lower()
+        if Tags.is_staff():
+            collection = self.bot.database["tags"]
+            name = name.lower()
 
-        loading = EMOTES["loading"]
-        embed = discord.Embed(description=f"{loading} Working on it....", color=COLORS["info"])
-        await ctx.respond(embed=embed)
-        message = await ctx.interaction.original_message()
-        check = {"name": name}
-        check2 = {"aliases": name}
+            loading = EMOTES["loading"]
+            embed = discord.Embed(description=f"{loading} Working on it....", color=COLORS["info"])
+            await ctx.respond(embed=embed)
+            message = await ctx.interaction.original_message()
+            check = {"name": name}
+            check2 = {"aliases": name}
 
-        find  = collection.find_one(check)
-        find2 = collection.find_one(check2)
+            find  = collection.find_one(check)
+            find2 = collection.find_one(check2)
 
-        if find or find2:
+            if find or find2:
 
-            content = find["content"]
+                content = find["content"]
 
-            embed = discord.Embed(description=f":page_with_curl: Raw content:\n```\n{content}```", color=COLORS["success"], timestamp=datetime.datetime.utcnow())
-            embed.set_author(icon_url=LINKS["success"], name=f"Found a match. Raw content for: {name}")
-            
-            await message.edit(embed=embed)
-            await ctx.send(f":mobile_phone: For mobile users:\n```\n{content}```")
+                embed = discord.Embed(description=f":page_with_curl: Raw content:\n```\n{content}```", color=COLORS["success"], timestamp=datetime.datetime.utcnow())
+                embed.set_author(icon_url=LINKS["success"], name=f"Found a match. Raw content for: {name}")
+                
+                await message.edit(embed=embed)
+                await ctx.send(f":mobile_phone: For mobile users:\n```\n{content}```")
+
+            else:
+                x = EMOTES["error"]
+                embed = discord.Embed(description=f"{x} No tag found by this name", color=COLORS["error"])
+                await message.edit(embed=embed)
 
         else:
             x = EMOTES["error"]
-            embed = discord.Embed(description=f"{x} No tag found by this name", color=COLORS["error"])
-            await message.edit(embed=embed)
+            embed = discord.Embed(description=f"{x} You do not have permission to run this command.", color=COLORS["error"])
+            ctx.respond(embed=embed, ephemeral=True)
 
-    @tags.command(description="Edit an existent tag's content", default_permission=False)
-    @permissions.has_any_role("Staff")
+    @tags.command(description="Edit an existent tag's content")
     async def edit(self, ctx: discord.ApplicationContext, name: Option(str, "The tag name you want to edit", autocomplete=get_tags), content: Option(str, "The new content for this tag")):
 
-        loading = EMOTES["loading"]
-        embed = discord.Embed(description=f"{loading} Working on it....", color=COLORS["info"])
-        await ctx.respond(embed=embed)
-        message = await ctx.interaction.original_message()
+        if Tags.is_staff():
+            loading = EMOTES["loading"]
+            embed = discord.Embed(description=f"{loading} Working on it....", color=COLORS["info"])
+            await ctx.respond(embed=embed)
+            message = await ctx.interaction.original_message()
 
-        collection = self.bot.database["tags"]
-        name = name.lower()
-        check = {"name": name}
+            collection = self.bot.database["tags"]
+            name = name.lower()
+            check = {"name": name}
 
-        find = collection.find_one(check)
+            find = collection.find_one(check)
 
-        if find:
+            if find:
 
-            oldContent = find["content"]
+                oldContent = find["content"]
 
-            updatedTime = round(time.time() * 1)
-            update = {"$set": {"content": content,"lastUpdateAt": updatedTime, "lastUpdateBy": ctx.author.id}}
-            collection.update_one(check, update)
+                updatedTime = round(time.time() * 1)
+                update = {"$set": {"content": content,"lastUpdateAt": updatedTime, "lastUpdateBy": ctx.author.id}}
+                collection.update_one(check, update)
 
-            
-            embed = discord.Embed(description=f":page_with_curl: New content:\n{content}\n\n:wastebasket: Old content:\n{oldContent}", color=COLORS["success"], timestamp=datetime.datetime.utcnow())
-            embed.set_author(icon_url=LINKS["success"], name=f"Done! Successfully edited: {name}")
-            await message.edit(embed=embed)
-        
-        else:
-            x = EMOTES["error"]
-            embed = discord.Embed(description=f"{x} No tag found by this name", color=COLORS["error"])
-            await message.edit(embed=embed)
-
-    @tags.command(description="Add or remove tag aliases", default_permission=False)
-    @permissions.has_any_role("Staff")
-    async def alias(self, ctx: discord.ApplicationContext, name: Option(str, "The tag name you wish to edit its alias", autocomplete=get_tags), choice: Option(str, "Add or remove an alias?", choices=["add", "remove"]), alias: Option(str, "New alias or alias to be removed", autocomplete=get_aliases)):
-
-        loading = EMOTES["loading"]
-        embed = discord.Embed(description=f"{loading} Working on it....", color=COLORS["info"])
-        await ctx.respond(embed=embed)
-        message = await ctx.interaction.original_message()
-
-        collection = self.bot.database["tags"]
-        name = name.lower()
-        alias = alias.lower()
-        check = {"name": name}
-
-        find = collection.find_one(check)
-        updatedTime = round(time.time() * 1)
-
-        if find:
-            if choice == "add":
-                oldAliases = find["aliases"]
-                for al in oldAliases:
-                    if al == alias:
-                        aliasExists = True
-                    else:
-                        aliasExists = False
-
-                newAliases = oldAliases
-
-                if not aliasExists:
-                 newAliases.append(alias)
-                 if oldAliases[0] == "None":
-                     newAliases.remove("None")
-
-                 aliases = {"$set": {"aliases": newAliases, "lastUpdateAt": updatedTime, "lastUpdateBy": ctx.author.id}}
-
-                 collection.update_one(check, aliases)
-
-
-                 embed = discord.Embed(color=COLORS["success"], timestamp=datetime.datetime.utcnow())
-                 embed.set_author(icon_url=LINKS["success"], name=f"Done! Successfully edited {name}'s aliases")
-                 embed.add_field(name=":older_man: Old Aliases", value=", ".join(find["aliases"]))
-                 embed.add_field(name=":baby: New Aliases", value=", ".join(newAliases))
-
-                 await message.edit(embed=embed)
-
-                else:
-                    x = EMOTES["error"]
-                    embed = discord.Embed(description=f"{x} This alias already exists", color=COLORS["error"])
-                    await message.edit(embed=embed)
-            
-            elif choice == "remove":
-                aliases = find["aliases"]
-
-                try:
-                    newAlias = aliases
-                    newAlias.remove(alias)
-                    if len(newAlias) == 0:
-                        aliases.append("None")
-                    
-                    update = {"$set": {"aliases": aliases, "lastUpdateAt": updatedTime, "lastUpdateBy": ctx.author.id}}
-                    collection.update_one(check, update)
-
-                    embed = discord.Embed(color=COLORS["success"], timestamp=datetime.datetime.utcnow())
-                    embed.set_author(icon_url=LINKS["success"], name=f"Done! Successfully edited {name}'s aliases")
-                    embed.add_field(name=":older_man: Old Aliases", value=", ".join(aliases))
-                    embed.add_field(name=":baby: New Aliases", value=", ".join(newAlias))
-
-                except Exception:
-                    x = EMOTES["error"]
-                    embed = discord.Embed(description=f"{x} No alias found for this tag", color=COLORS["error"])
-                    await message.edit(embed=embed)
+                
+                embed = discord.Embed(description=f":page_with_curl: New content:\n{content}\n\n:wastebasket: Old content:\n{oldContent}", color=COLORS["success"], timestamp=datetime.datetime.utcnow())
+                embed.set_author(icon_url=LINKS["success"], name=f"Done! Successfully edited: {name}")
+                await message.edit(embed=embed)
             
             else:
-                await message.edit("Invalid typeAlias selected.")
+                x = EMOTES["error"]
+                embed = discord.Embed(description=f"{x} No tag found by this name", color=COLORS["error"])
+                await message.edit(embed=embed)
         else:
             x = EMOTES["error"]
-            embed = discord.Embed(description=f"{x} No tag found by this name", color=COLORS["error"])
-            await message.edit(embed=embed)
+            embed = discord.Embed(description=f"{x} You do not have permission to run this command.", color=COLORS["error"])
+            ctx.respond(embed=embed, ephemeral=True)
+
+    @tags.command(description="Add or remove tag aliases")
+    async def alias(self, ctx: discord.ApplicationContext, name: Option(str, "The tag name you wish to edit its alias", autocomplete=get_tags), choice: Option(str, "Add or remove an alias?", choices=["add", "remove"]), alias: Option(str, "New alias or alias to be removed", autocomplete=get_aliases)):
+
+        if Tags.is_staff():
+            loading = EMOTES["loading"]
+            embed = discord.Embed(description=f"{loading} Working on it....", color=COLORS["info"])
+            await ctx.respond(embed=embed)
+            message = await ctx.interaction.original_message()
+
+            collection = self.bot.database["tags"]
+            name = name.lower()
+            alias = alias.lower()
+            check = {"name": name}
+
+            find = collection.find_one(check)
+            updatedTime = round(time.time() * 1)
+
+            if find:
+                if choice == "add":
+                    oldAliases = find["aliases"]
+                    for al in oldAliases:
+                        if al == alias:
+                            aliasExists = True
+                        else:
+                            aliasExists = False
+
+                    newAliases = oldAliases
+
+                    if not aliasExists:
+                    
+                     newAliases.append(alias)
+                     
+                     if oldAliases[0] == "None":
+                         newAliases.remove("None")
+
+                     aliases = {"$set": {"aliases": newAliases, "lastUpdateAt": updatedTime, "lastUpdateBy": ctx.author.id}}
+
+                     collection.update_one(check, aliases)
+
+
+                     embed = discord.Embed(color=COLORS["success"], timestamp=datetime.datetime.utcnow())
+                     embed.set_author(icon_url=LINKS["success"], name=f"Done! Successfully edited {name}'s aliases")
+                     embed.add_field(name=":older_man: Old Aliases", value=", ".join(find["aliases"]))
+                     embed.add_field(name=":baby: New Aliases", value=", ".join(newAliases))
+
+                     await message.edit(embed=embed)
+
+                    else:
+                        x = EMOTES["error"]
+                        embed = discord.Embed(description=f"{x} This alias already exists", color=COLORS["error"])
+                        await message.edit(embed=embed)
+                
+                elif choice == "remove":
+                    aliases = find["aliases"]
+
+                    try:
+                        newAlias = aliases
+                        newAlias.remove(alias)
+                        if len(newAlias) == 0:
+                            aliases.append("None")
+                        
+                        update = {"$set": {"aliases": aliases, "lastUpdateAt": updatedTime, "lastUpdateBy": ctx.author.id}}
+                        collection.update_one(check, update)
+
+                        embed = discord.Embed(color=COLORS["success"], timestamp=datetime.datetime.utcnow())
+                        embed.set_author(icon_url=LINKS["success"], name=f"Done! Successfully edited {name}'s aliases")
+                        embed.add_field(name=":older_man: Old Aliases", value=", ".join(aliases))
+                        embed.add_field(name=":baby: New Aliases", value=", ".join(newAlias))
+
+                    except Exception:
+                        x = EMOTES["error"]
+                        embed = discord.Embed(description=f"{x} No alias found for this tag", color=COLORS["error"])
+                        await message.edit(embed=embed)
+                
+                else:
+                    await message.edit("Invalid typeAlias selected.")
+            else:
+                x = EMOTES["error"]
+                embed = discord.Embed(description=f"{x} No tag found by this name", color=COLORS["error"])
+                await message.edit(embed=embed)
+
+        else:
+            x = EMOTES["error"]
+            embed = discord.Embed(description=f"{x} You do not have permission to run this command.", color=COLORS["error"])
+            ctx.respond(embed=embed, ephemeral=True)
 
     @tags.command(description="Get a tags list and a paginator")
     async def all(self, ctx: discord.ApplicationContext):
@@ -441,6 +481,44 @@ class Tags(commands.Cog):
             embed = discord.Embed(description=f"{x} No tag matching your search.", color=COLORS["error"])
             await ctx.send(embed=embed, delete_after=5.0)
 
+    @commands.command()
+    async def say(self, ctx: discord.ApplicationContext, *, text: str):
+        if Tags.is_staff():
+            
+            try:
+             await ctx.message.delete()
+             await ctx.send(text)
+
+            except Exception as e:
+                x = EMOTES["error"]
+                Embed = discord.Embed(description=f"{x} Something went wrong\n\n```py\n{e}```", color=COLORS["error"])
+                await ctx.send(embed=Embed)
+
+
+        else:
+            x = EMOTES["error"]
+            embed = discord.Embed(description=f"{x} You do not have permission to run this command.", color=COLORS["error"])
+            ctx.send(embed=embed)
+
+    @commands.command()
+    async def editmsg(self, ctx: discord.ApplicationContext, id: int, *, text: str):
+
+        if Tags.is_staff():
+
+            message = await discord.abc.Messageable.fetch_message(id)
+
+            try:
+              await message.edit(text)
+
+            except Exception as e:
+                x = EMOTES["error"]
+                Embed = discord.Embed(description=f"{x} Something went wrong\n\n```py\n{e}```", color=COLORS["error"])
+                await ctx.send(embed=Embed)
+
+        else:
+            x = EMOTES["error"]
+            embed = discord.Embed(description=f"{x} You do not have permission to run this command.", color=COLORS["error"])
+            ctx.send(embed=embed)
 
 def setup(bot):
     bot.add_cog(Tags(bot))
