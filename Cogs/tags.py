@@ -238,7 +238,7 @@ class Tags(commands.Cog):
 
     @tags.command(description="Add or remove tag aliases", default_permission=False)
     @permissions.has_any_role("Staff")
-    async def alias(self, ctx: discord.ApplicationContext, name: Option(str, "The tag name you wish to edit its alias"), choice: Option(str, "Add or remove an alias?", choices=["add", "remove"]), alias: Option(str, "New alias or alias to be removed", autocomplete=get_aliases)):
+    async def alias(self, ctx: discord.ApplicationContext, name: Option(str, "The tag name you wish to edit its alias", autocomplete=get_tags), choice: Option(str, "Add or remove an alias?", choices=["add", "remove"]), alias: Option(str, "New alias or alias to be removed", autocomplete=get_aliases)):
 
         loading = EMOTES["loading"]
         embed = discord.Embed(description=f"{loading} Working on it....", color=COLORS["info"])
@@ -276,7 +276,7 @@ class Tags(commands.Cog):
 
                  embed = discord.Embed(color=COLORS["success"], timestamp=datetime.datetime.utcnow())
                  embed.set_author(icon_url=LINKS["success"], name=f"Done! Successfully edited {name}'s aliases")
-                 embed.add_field(name=":older_man: Old Aliases", value=", ".join(oldAliases))
+                 embed.add_field(name=":older_man: Old Aliases", value=", ".join(find["aliases"]))
                  embed.add_field(name=":baby: New Aliases", value=", ".join(newAliases))
 
                  await message.edit(embed=embed)
@@ -402,7 +402,8 @@ class Tags(commands.Cog):
             find = collection.find_one(check)
 
         if find:
-
+            
+            await ctx.message.delete()
             text = text if text is not None else ""
             tag = find["content"]
 
@@ -413,6 +414,7 @@ class Tags(commands.Cog):
             collection.update_one(check, update)
 
         else:
+            await ctx.message.delete()
             x = EMOTES["error"]
             embed = discord.Embed(description=f"{x} No tag matching your search.", color=COLORS["error"])
             await ctx.send(embed=embed, delete_after=5.0)
