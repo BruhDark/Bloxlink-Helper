@@ -205,7 +205,7 @@ class Tags(commands.Cog):
             if find:
 
                 content = find["content"]
-                await message.edit(content=f":page_with_curl: Raw content for: {name}\n```\n{content}```")
+                await message.edit(content=f":page_with_curl: Raw content for: {name}\n```\n{content}```", embed=None)
 
 
             else:
