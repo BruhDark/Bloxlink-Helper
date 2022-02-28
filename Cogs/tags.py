@@ -434,7 +434,7 @@ class Tags(commands.Cog):
                 tag = find["content"]
 
                 msg = await ctx.send(f"{tag}")
-                asyncio.sleep(0.1)
+                await asyncio.sleep(0.1)
                 await msg.edit(f"{text} {tag}")
 
 
@@ -451,7 +451,7 @@ class Tags(commands.Cog):
             embed = discord.Embed(description=f"{x} No tag matching your search.", color=COLORS["error"])
             message = await ctx.send(embed=embed)
 
-            asyncio.sleep(3.0)
+            await asyncio.sleep(3.0)
             await message.delete()
             await ctx.message.delete()
 
