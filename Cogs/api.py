@@ -3,7 +3,7 @@ from discord.ext import commands
 import requests
 from config import EMOTES, LINKS
 
-class ApiCommand(commands.Cogs):
+class ApiCommand(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
