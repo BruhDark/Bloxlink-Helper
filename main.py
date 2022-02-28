@@ -8,10 +8,9 @@ database = client["bloxlinkHelper"]
 
 class Bot(commands.Bot):
     def __init__(self):
-        super().__init__(command_prefix=commands.when_mentioned_or("!"), 
+        super().__init__(command_prefix=commands.when_mentioned_or("."), 
         intents=discord.Intents.all(),
         strip_after_prefix=True,
-        debug_guilds=[881968885279117342],
         allowed_mentions=discord.AllowedMentions(
         users=True,         # Whether to ping individual user @mentions
         everyone=False,      # Whether to ping @everyone or @here mentions
