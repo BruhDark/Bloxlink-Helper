@@ -38,4 +38,4 @@ class Bot(commands.Bot):
          print("Could not load jishaku: {e}")
 
 bot = Bot()
-bot.run("OTQzMTUwMDcyODI3MzU1MTc3.Ygu29A.Lt7s9SDTz6wtIgUDosYbVDq3pTQ")
+bot.run("OTQzMTUwMDcyODI3MzU1MTc3.Ygu29A.mVwKQoVxIHCI5ztBt-rBb6wlsug")
