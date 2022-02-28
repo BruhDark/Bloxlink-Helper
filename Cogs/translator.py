@@ -48,11 +48,16 @@ class Translator(commands.Cog):
             message = response["error"]["message"]
             x = EMOTES["error"]
             embed = discord.Embed(description=f"{x} {message}", color=COLORS["error"])
-            await message.edit(embed=embed)
+
             await ctx.respond(embed=embed)
 
+        elif "quota" in response["message"]:
+            x = EMOTES["error"]
+            embed = discord.Embed(description=f"{x} Exhausted motnhly quota", color=COLORS["error"])
+
         else:
-            await ctx.respond(f"Something went wrong: `{response}`")
+            x = EMOTES["error"]
+            embed = discord.Embed(description=f"{x} Something went wrong:\n```py\n{response}```", color=COLORS["error"])
 
 
 def setup(bot):

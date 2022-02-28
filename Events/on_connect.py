@@ -84,7 +84,7 @@ class OnConnect(commands.Cog):
 
          await self.bot.register_commands()
 
-         await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="The support channels"))
+         await self.bot.change_presence(status=discord.Status.do_not_disturb, activity=discord.Game(name="Connecting..."))
 
          loaded = False
 

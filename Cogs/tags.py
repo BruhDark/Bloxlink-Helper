@@ -4,7 +4,7 @@ from discord.commands import slash_command, Option, permissions
 import pymongo
 import time
 import datetime
-from config import COLORS, EMOTES, RELEASESCOLORS, LINKS
+from config import COLORS, EMOTES, LINKS
 import asyncio
 
 class Tags(commands.Cog):
@@ -21,11 +21,7 @@ class Tags(commands.Cog):
 
         check = True if role in ctx.author.roles else False
 
-        if check or permission:
-            return True
-
-        else:
-            return False
+        return True if check or permission else False
 
     async def get_tags(self, ctx: discord.ApplicationContext):
 
@@ -79,7 +75,7 @@ class Tags(commands.Cog):
                 await ctx.respond(embed=embed)
                 message = await ctx.interaction.original_message()
                 
-                newTag = {"name": name, "aliases": aliases,"uses": 0,"content": content, "author":ctx.author.id, "lastUpdateBy": ctx.author.id,"createdAt": createdAt, "lastUpdateAt": createdAt}
+                newTag = {"name": name, "aliases": aliases,"content": content, "author":ctx.author.id, "lastUpdateBy": ctx.author.id,"createdAt": createdAt, "lastUpdateAt": createdAt}
                 check = {"name": name}
                 check2 = {"aliases": aliases}
                 find2 = collection.find_one(check2) if aliases[0] != "None" else False
@@ -91,14 +87,11 @@ class Tags(commands.Cog):
 
                 else:
                     item = collection.insert_one(newTag)
+                    aliases = ", ".join(aliases)
 
-                    embed = discord.Embed(description=f":page_with_curl: Tag content:\n{content}", color=COLORS["success"], timestamp=datetime.datetime.utcnow())
-                    embed.set_footer(icon_url=ctx.author.avatar.url, text=f"{ctx.author.name}#{ctx.author.discriminator}")
-                    embed.add_field(name=":clipboard: Tag Name", value=name, inline=True)
-                    embed.add_field(name=":paperclips: Alias(es)", value=", ".join(aliases), inline=True)
-                    embed.add_field(name=":microscope: Item ID", value=item.inserted_id, inline=False)
-
-                    embed.set_author(icon_url=LINKS["success"], name=f"Successfully created a new tag")
+                    embed = discord.Embed(title=f":paperclips: Aliases: {aliases}",description=f":page_with_curl: Tag content:\n{content}", color=COLORS["success"], timestamp=datetime.datetime.utcnow())
+                    embed.set_footer(icon_url=LINKS["other"], text=f"Item ID: {item.inserted_id}")
+                    embed.set_author(icon_url=LINKS["success"], name=f"Successfully created tag: {name}")
                     
                     await message.edit(embed=embed)
         
@@ -131,13 +124,9 @@ class Tags(commands.Cog):
                 id = find["_id"]
 
                 collection.delete_one(query)
+                success = EMOTES["success"]
 
-                embed = discord.Embed(description=f":page_with_curl: Old Tag Content:\n{oldContent}", color=COLORS["warning"], timestamp=datetime.datetime.utcnow())
-                embed.add_field(name=":wastebasket: Deleted Tag Name", value=name, inline=True)
-                embed.add_field(name=":bust_in_silhouette: Created By", value=f"<@{createdBy}>", inline=True)
-                embed.add_field(name=":microscope: Deleted Item ID", value=id, inline=False)
-                embed.set_footer(icon_url=ctx.author.avatar.url, text=f"{ctx.author.name}#{ctx.author.discriminator}")
-                embed.set_author(icon_url=LINKS["success"], name=f"Successfully deleted this tag")
+                embed = discord.Embed(description=f"{success} Successfully **deleted**: {name}", color=COLORS["success"])
 
                 await message.edit(embed=embed)
 
@@ -172,20 +161,16 @@ class Tags(commands.Cog):
             name = find["name"]
             author = self.bot.get_user(find["author"])
             lastUpdateBy = self.bot.get_user(find["lastUpdateBy"])
-            uses = find["uses"]
             createdAt = find["createdAt"]
             lastUpdateAt = find["lastUpdateAt"]
             aliases = find["aliases"]
             aliases = ", ".join(aliases) if aliases != "None" else "None"
             content = find["content"]
-            success = EMOTES["success"]
-
 
             embed = discord.Embed(title=f":paperclips: Aliases: {aliases}",description=f":page_with_curl: Tag content:\n{content}", timestamp=datetime.datetime.utcnow(), color=COLORS["info"])
             embed.set_author(icon_url=LINKS["other"], name=f"Tag information for: {name}")
             embed.add_field(name=":clipboard: Created By", value=f"{author.mention} ({author.id})")
             embed.add_field(name=":safety_vest: Last Update By", value=f"{lastUpdateBy.mention} ({lastUpdateBy.id})")
-            embed.add_field(name=":arrows_counterclockwise: Uses", value=uses)
             embed.add_field(name=":calendar: Creation Date", value=f"<t:{createdAt}:R>")
             embed.add_field(name=":timer: Last Update", value=f"<t:{lastUpdateAt}:R>")
             embed.set_footer(icon_url=ctx.author.display_avatar.url, text=f"{ctx.author.name}#{ctx.author.discriminator}")
@@ -213,17 +198,14 @@ class Tags(commands.Cog):
             check2 = {"aliases": name}
 
             find  = collection.find_one(check)
-            find2 = collection.find_one(check2)
+            if not find:
+                find = collection.find_one(check2)
 
-            if find or find2:
+            if find:
 
                 content = find["content"]
+                await message.edit(content=f":page_with_curl: Raw content for: {name}\n```\n{content}```")
 
-                embed = discord.Embed(description=f":page_with_curl: Raw content:\n```\n{content}```", color=COLORS["success"], timestamp=datetime.datetime.utcnow())
-                embed.set_author(icon_url=LINKS["success"], name=f"Found a match. Raw content for: {name}")
-                
-                await message.edit(embed=embed)
-                await ctx.send(f":mobile_phone: For mobile users:\n```\n{content}```")
 
             else:
                 x = EMOTES["error"]
@@ -259,7 +241,7 @@ class Tags(commands.Cog):
                 collection.update_one(check, update)
 
                 
-                embed = discord.Embed(description=f":page_with_curl: New content:\n{content}\n\n:wastebasket: Old content:\n{oldContent}", color=COLORS["success"], timestamp=datetime.datetime.utcnow())
+                embed = discord.Embed(description=f":page_with_curl: New tag content:\n{content}", color=COLORS["success"], timestamp=datetime.datetime.utcnow())
                 embed.set_author(icon_url=LINKS["success"], name=f"Done! Successfully edited: {name}")
                 await message.edit(embed=embed)
             
@@ -372,24 +354,27 @@ class Tags(commands.Cog):
         tagsEmbed = discord.Embed(description=", ".join(tags), color=COLORS["info"], timestamp=datetime.datetime.utcnow())
         emote = LINKS["other"]
         tagsEmbed.set_author(icon_url=emote, name="Listing all tags:")
-        tagsEmbed.set_footer(text="Use the paginator to go over the tags. Oldest -> Newest")
+        tagsEmbed.set_footer(text="Use the paginator to go over the tags")
         pagPages.append(tagsEmbed)
 
-        for tag in collection.find():
-            name = tag["name"]
-            aliases = ", ".join(tag["aliases"])
-            uses = tag["uses"]
-            content = tag["content"]
-            author = self.bot.get_user(tag["author"])
-            createdAt = tag["createdAt"]
+
+        for tag in tags:
+
+            check = {"name": tag}
+            find = collection.find_one(check)
+
+            name = find["name"]
+            aliases = ", ".join(find["aliases"])
+            content = find["content"]
+            author = self.bot.get_user(find["author"])
+            createdAt = find["createdAt"]
             lastUpdateAt = tag["lastUpdateAt"]
-            lastUpdateBy = self.bot.get_user(tag["lastUpdateBy"])
+            lastUpdateBy = self.bot.get_user(find["lastUpdateBy"])
 
             embed = discord.Embed(title=f":paperclips: Aliases: {aliases}",description=f":page_with_curl: Tag content:\n{content}", timestamp=datetime.datetime.utcnow(), color=COLORS["info"])
             embed.set_author(icon_url=LINKS["success"], name=f"Tag information for: {name}")
             embed.add_field(name=":clipboard: Created By", value=f"{author.mention} ({author.id})")
             embed.add_field(name=":safety_vest: Last Update By", value=f"{lastUpdateBy.mention} ({lastUpdateBy.id})")
-            embed.add_field(name=":arrows_counterclockwise: Uses", value=uses)
             embed.add_field(name=":calendar: Creation Date", value=f"<t:{createdAt}:R>")
             embed.add_field(name=":timer: Last Update", value=f"<t:{lastUpdateAt}:R>")
             embed.set_footer(icon_url=ctx.author.display_avatar.url, text=f"{ctx.author.name}#{ctx.author.discriminator}")
@@ -420,10 +405,6 @@ class Tags(commands.Cog):
             tag = find["content"]
 
             await ctx.respond(f"{text} {tag}")
-
-            uses = find["uses"]
-            update = {"$set": {"uses": uses + 1}}
-            collection.update_one(check, update)
 
         else:
             x = EMOTES["error"]
@@ -456,10 +437,6 @@ class Tags(commands.Cog):
                 await msg.edit(f"{text} {tag}")
 
 
-                uses = find["uses"]
-                update = {"$set": {"uses": uses + 1}}
-                collection.update_one(check, update)
-
             else:
                 await ctx.message.delete()
                 
@@ -467,16 +444,15 @@ class Tags(commands.Cog):
 
                 await ctx.send(f"{tag}")
 
-                uses = find["uses"]
-                update = {"$set": {"uses": uses + 1}}
-                collection.update_one(check, update)
-
 
         else:
-            await ctx.message.delete()
             x = EMOTES["error"]
             embed = discord.Embed(description=f"{x} No tag matching your search.", color=COLORS["error"])
-            await ctx.send(embed=embed, delete_after=5.0)
+            message = await ctx.send(embed=embed)
+
+            asyncio.sleep(3.0)
+            await message.delete()
+            await ctx.message.delete()
 
     @commands.command()
     async def say(self, ctx: discord.ApplicationContext, *, text: str):
