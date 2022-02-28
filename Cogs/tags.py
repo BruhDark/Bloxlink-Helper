@@ -154,9 +154,10 @@ class Tags(commands.Cog):
         message = await ctx.interaction.original_message()
 
         find = collection.find_one(check)
-        find2 = collection.find_one(check2)
+        if not find:
+            find = collection.find_one(check2)
 
-        if find or find2:
+        if find:
 
             name = find["name"]
             author = self.bot.get_user(find["author"])
@@ -358,9 +359,9 @@ class Tags(commands.Cog):
         pagPages.append(tagsEmbed)
 
 
-        for tag in tags:
+        for findTag in tags:
 
-            check = {"name": tag}
+            check = {"name": findTag}
             find = collection.find_one(check)
 
             name = find["name"]
