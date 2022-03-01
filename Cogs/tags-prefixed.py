@@ -99,3 +99,6 @@ class TagsPrefixed(commands.Cog):
             x = EMOTES["error"]
             embed = discord.Embed(description=f"{x} You do not have permission to run this command.", color=COLORS["error"])
             await ctx.send(embed=embed, delete_after=3.0)
+
+def setup(bot):
+   bot.add_cog(TagsPrefixed(bot))
