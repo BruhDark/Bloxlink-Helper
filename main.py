@@ -12,10 +12,10 @@ class Bot(commands.Bot):
         intents=discord.Intents.all(),
         strip_after_prefix=True,
         allowed_mentions=discord.AllowedMentions(
-        users=True,         # Whether to ping individual user @mentions
-        everyone=False,      # Whether to ping @everyone or @here mentions
-        roles=False,         # Whether to ping role @mentions
-        replied_user=True,  # Whether to ping on replies to messages
+        users=True,
+        everyone=False,
+        roles=False,
+        replied_user=True,
         ),
         help_command=None)
         self.database = database
