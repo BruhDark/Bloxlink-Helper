@@ -369,7 +369,7 @@ class Tags(commands.Cog):
             content = find["content"]
             author = self.bot.get_user(find["author"])
             createdAt = find["createdAt"]
-            lastUpdateAt = tag["lastUpdateAt"]
+            lastUpdateAt = find["lastUpdateAt"]
             lastUpdateBy = self.bot.get_user(find["lastUpdateBy"])
 
             embed = discord.Embed(title=f":paperclips: Aliases: {aliases}",description=f":page_with_curl: Tag content:\n{content}", timestamp=datetime.datetime.utcnow(), color=COLORS["info"])
