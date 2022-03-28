@@ -22,7 +22,7 @@ class Quote(commands.Cog):
              channel_id = int(found.group("channel_id"))
 
              msg = discord.utils.get(self.bot.cached_messages, id=msg_id)
-             msg = await discord.abc.Messageable.fetch_message(channel_id, msg_id) if msg is None else msg
+             msg = await discord.abc.Messageable.fetch_message(discord.utils.get(message.guild.channels, id=channel_id), msg_id) if msg is None else msg
 
              if msg:
                  await message.add_reaction("📦")
