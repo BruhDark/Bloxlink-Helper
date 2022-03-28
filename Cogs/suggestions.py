@@ -15,3 +15,6 @@ class Suggestions(commands.Cog):
         if find:
             post = find.group("post")
             await message.channel.send(f"https://feedback.blox.link/posts/{post}")
+
+def setup(bot):
+    bot.add_cog(Suggestions(bot))
