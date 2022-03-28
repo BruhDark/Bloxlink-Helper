@@ -231,6 +231,7 @@ class Tags(commands.Cog):
             name = name.lower()
             check = {"name": name}
 
+            content = content.replace("\\n", "\n")
             find = collection.find_one(check)
 
             if find:
