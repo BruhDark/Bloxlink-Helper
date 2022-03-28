@@ -40,7 +40,7 @@ class Translator(commands.Cog):
 
             success = LINKS["success"]
             question = EMOTES["question"]
-            embed = discord.Embed(description=f"{question} Status: **{status}**\n:speech_left: Detected Source Language: `{detectedSourceLanguage}`\n:airplane: Target Language: `{target}`\n\n:calling: Translated text: \n{translatedText}")
+            embed = discord.Embed(color=COLORS["info"],description=f"{question} Status: **{status}**\n:speech_left: Detected Source Language: `{detectedSourceLanguage}`\n:airplane: Target Language: `{target}`\n\n:calling: Translated text: \n{translatedText}")
             embed.set_author(icon_url=success, name=f"Successfully translated your text to: {target}")
             await ctx.respond(embed=embed)
 

@@ -16,7 +16,7 @@ class Tags(commands.Cog):
 
     async def is_staff(self, ctx: discord.ApplicationContext):
 
-        role = discord.utils.get(ctx.guild.roles, name="Staff")
+        role = discord.utils.get(ctx.guild.roles, name="Helpers")
         permission = ctx.author.guild_permissions.manage_messages
 
         check = True if role in ctx.author.roles else False
