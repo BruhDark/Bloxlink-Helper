@@ -101,4 +101,4 @@ class TagsPrefixed(commands.Cog):
             await ctx.send(embed=embed, delete_after=3.0)
 
 def setup(bot):
-    bot.add_cog(TagsPrefixed(bot))
+   bot.add_cog(TagsPrefixed(bot))
