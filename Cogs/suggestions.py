@@ -1,6 +1,8 @@
+import re
+
 import discord
 from discord.ext import commands
-import re
+
 
 class Suggestions(commands.Cog):
     def __init__(self, bot):
@@ -15,6 +17,7 @@ class Suggestions(commands.Cog):
         if find:
             post = find.group("post")
             await message.channel.send(f"https://feedback.blox.link/posts/{post}")
+
 
 def setup(bot):
     bot.add_cog(Suggestions(bot))

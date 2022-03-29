@@ -1,12 +1,14 @@
-import discord
-from discord.ext import commands
-from discord.commands import slash_command
-from config import EMOTES, COLORS, RELEASESCOLORS, DESCRIPTION
-import time
-import json
-import urllib
-import math
 import datetime
+import json
+import math
+import time
+import urllib
+
+import discord
+from config import COLORS, DESCRIPTION, EMOTES, RELEASESCOLORS
+from discord.commands import slash_command
+from discord.ext import commands
+
 
 class OnConnect(commands.Cog):
     def __init__(self, bot):
@@ -35,14 +37,15 @@ class OnConnect(commands.Cog):
 
         uptime = f"{days or ''} {hours or ''} {minutes or ''} {seconds or ''}".strip()
 
-        request = urllib.request.urlopen("https://railway.instatus.com/summary.json")
+        request = urllib.request.urlopen(
+            "https://railway.instatus.com/summary.json")
         response = json.load(request)
 
         s = response["page"]
         srailway = s["status"]
 
         if srailway == "UP":
-            srailway =  EMOTES["operational"]
+            srailway = EMOTES["operational"]
         elif srailway == "HASISSUES":
             srailway = EMOTES["partialoutage"]
         elif srailway == "UNDERMAINTENANCE":
@@ -59,9 +62,11 @@ class OnConnect(commands.Cog):
         icon = self.bot.user.avatar.url
         color = RELEASESCOLORS[f"{self.bot.user.id}"]
 
-        embed = discord.Embed(description=DESCRIPTION, timestamp=datetime.datetime.utcnow(), color=RELEASESCOLORS[f"{self.bot.user.id}"])
+        embed = discord.Embed(description=DESCRIPTION, timestamp=datetime.datetime.utcnow(
+        ), color=RELEASESCOLORS[f"{self.bot.user.id}"])
 
-        embed.set_author(name=f"{self.bot.user.name}#{self.bot.user.discriminator}", icon_url=self.bot.user.avatar.url)
+        embed.set_author(
+            name=f"{self.bot.user.name}#{self.bot.user.discriminator}", icon_url=self.bot.user.avatar.url)
 
         global oknos
         oknos = EMOTES[f"{self.bot.user.id}"]
@@ -70,28 +75,29 @@ class OnConnect(commands.Cog):
         embed.add_field(name=":clock1: Uptime", value=uptime, inline=True)
         latency = str(round(self.bot.latency * 1000))
         embed.add_field(name=":ping_pong: Bot Latency", value=f"`{latency}ms`")
-        
-        embed.add_field(name=":snake: PyCord Version", value=f"{pycordV}", inline=True)
+
+        embed.add_field(name=":snake: PyCord Version",
+                        value=f"{pycordV}", inline=True)
         embed.add_field(name="🚄 Railway Status", value=srailway, inline=True)
 
         await ctx.respond(embed=embed)
 
-    
     @commands.Cog.listener()
     async def on_connect(self):
 
-         print("Connected.")
+        print("Connected.")
 
-         await self.bot.register_commands()
+        await self.bot.register_commands()
 
-         await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="the support channels"))
+        await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="the support channels"))
 
-         loaded = False
+        loaded = False
 
-         if not loaded:
-             global started
-             started = time.time()
-             loaded = True
+        if not loaded:
+            global started
+            started = time.time()
+            loaded = True
+
 
 def setup(bot):
     bot.add_cog(OnConnect(bot))

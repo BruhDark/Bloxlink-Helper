@@ -1,8 +1,10 @@
-import discord
-from discord.ext import commands
-from config import EMOTES, COLORS
 import datetime
 import traceback
+
+import discord
+from config import COLORS, EMOTES
+from discord.ext import commands
+
 
 class OnCmdError(commands.Cog):
     def __init__(self, bot):
@@ -11,9 +13,10 @@ class OnCmdError(commands.Cog):
     @commands.Cog.listener()
     async def on_command_error(self, ctx: commands.Context, error):
         if isinstance(error, commands.CommandOnCooldown):
-            
+
             x = EMOTES["error"]
-            Embed = discord.Embed(description=f"{x} This command is on cooldown!", color=COLORS["error"])
+            Embed = discord.Embed(
+                description=f"{x} This command is on cooldown!", color=COLORS["error"])
             await ctx.send(embed=Embed)
 
         elif isinstance(error, commands.MissingRequiredArgument):
@@ -24,7 +27,8 @@ class OnCmdError(commands.Cog):
 
         else:
             x = EMOTES["error"]
-            Embed = discord.Embed(description=f"{x} Something went wrong\n\n```py\n{error}```", color=COLORS["error"])
+            Embed = discord.Embed(
+                description=f"{x} Something went wrong\n\n```py\n{error}```", color=COLORS["error"])
             await ctx.send(embed=Embed)
 
 

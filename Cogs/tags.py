@@ -1,11 +1,13 @@
-import discord
-from discord.ext import commands, pages
-from discord.commands import slash_command, Option, permissions
-import pymongo
-import time
-import datetime
-from config import COLORS, EMOTES, LINKS
 import asyncio
+import datetime
+import time
+
+import discord
+import pymongo
+from config import COLORS, EMOTES, LINKS
+from discord.commands import Option, permissions, slash_command
+from discord.ext import commands, pages
+
 
 class Tags(commands.Cog):
     def __init__(self, bot):
@@ -41,7 +43,6 @@ class Tags(commands.Cog):
             tags.append(tag["name"])
             if tag["aliases"] != ["None"]:
                 tags.extend(tag["aliases"])
-            
 
         return [tag for tag in tags if tag.startswith(ctx.value.lower())]
 
@@ -53,71 +54,79 @@ class Tags(commands.Cog):
         for tag in collection.find():
             if tag["aliases"] != ["None"]:
                 aliases.extend(tag["aliases"])
-            
 
         return [alias for alias in aliases if alias.startswith(ctx.value.lower())]
-    
+
     @tags.command(description="Create a new tag")
     async def create(self, ctx: discord.ApplicationContext, name: Option(str, "The new tag name"), content: Option(str, "The tag content"), aliases: Option(str, "Aliases for this tag, separated by a comma, no space", required=False, default=None)):
 
-          if await Tags.is_staff(self, ctx):
-                collection =  self.bot.database["tags"]
-                createdAt = round(time.time() * 1)
-                name = name.lower()
-                aliases = aliases.lower() if aliases is not None else aliases
-                aliases = aliases.replace(" ", "") if aliases is not None else aliases
-                aliases = aliases.split(",") if aliases is not None else ["None"]
-                content = content.replace("\\n", "\n")
+        if await Tags.is_staff(self, ctx):
+            collection = self.bot.database["tags"]
+            createdAt = round(time.time() * 1)
+            name = name.lower()
+            aliases = aliases.lower() if aliases is not None else aliases
+            aliases = aliases.replace(
+                " ", "") if aliases is not None else aliases
+            aliases = aliases.split(",") if aliases is not None else ["None"]
+            content = content.replace("\\n", "\n")
 
-                loading = EMOTES["loading"]
-                embed = discord.Embed(description=f"{loading} Working on it....", color=COLORS["info"])
+            loading = EMOTES["loading"]
+            embed = discord.Embed(
+                description=f"{loading} Working on it....", color=COLORS["info"])
 
-                await ctx.respond(embed=embed)
-                message = await ctx.interaction.original_message()
-                
-                newTag = {"name": name, "aliases": aliases,"content": content, "author":ctx.author.id, "lastUpdateBy": ctx.author.id,"createdAt": createdAt, "lastUpdateAt": createdAt}
-                check = {"name": name}
-                check2 = {"aliases": aliases}
-                find2 = collection.find_one(check2) if aliases[0] != "None" else False
+            await ctx.respond(embed=embed)
+            message = await ctx.interaction.original_message()
 
-                if collection.find_one(check) or find2:
-                    error = EMOTES["error"]
-                    embed = discord.Embed(description=f"{error} A tag with that name/alias already exists!", color=COLORS["error"])
-                    await message.edit(embed=embed)
+            newTag = {"name": name, "aliases": aliases, "content": content, "author": ctx.author.id,
+                      "lastUpdateBy": ctx.author.id, "createdAt": createdAt, "lastUpdateAt": createdAt}
+            check = {"name": name}
+            check2 = {"aliases": aliases}
+            find2 = collection.find_one(
+                check2) if aliases[0] != "None" else False
 
-                else:
-                    item = collection.insert_one(newTag)
-                    aliases = ", ".join(aliases)
+            if collection.find_one(check) or find2:
+                error = EMOTES["error"]
+                embed = discord.Embed(
+                    description=f"{error} A tag with that name/alias already exists!", color=COLORS["error"])
+                await message.edit(embed=embed)
 
-                    embed = discord.Embed(title=f":paperclips: Aliases: {aliases}",description=f":page_with_curl: Tag content:\n{content}", color=COLORS["success"], timestamp=datetime.datetime.utcnow())
-                    embed.set_footer(icon_url=LINKS["other"], text=f"Item ID: {item.inserted_id}")
-                    embed.set_author(icon_url=LINKS["success"], name=f"Successfully created tag: {name}")
-                    
-                    await message.edit(embed=embed)
-        
-          else:
-              x = EMOTES["error"]
-              embed = discord.Embed(description=f"{x} You do not have permission to run this command.", color=COLORS["error"])
-              await ctx.respond(embed=embed, ephemeral=True)
+            else:
+                item = collection.insert_one(newTag)
+                aliases = ", ".join(aliases)
+
+                embed = discord.Embed(
+                    title=f":paperclips: Aliases: {aliases}", description=f":page_with_curl: Tag content:\n{content}", color=COLORS["success"], timestamp=datetime.datetime.utcnow())
+                embed.set_footer(
+                    icon_url=LINKS["other"], text=f"Item ID: {item.inserted_id}")
+                embed.set_author(
+                    icon_url=LINKS["success"], name=f"Successfully created tag: {name}")
+
+                await message.edit(embed=embed)
+
+        else:
+            x = EMOTES["error"]
+            embed = discord.Embed(
+                description=f"{x} You do not have permission to run this command.", color=COLORS["error"])
+            await ctx.respond(embed=embed, ephemeral=True)
 
     @tags.command(description="Delete an existent tag")
     async def delete(self, ctx: discord.ApplicationContext, name: Option(str, "The tag name you wish to remove", autocomplete=get_tags)):
 
-        
         if await Tags.is_staff(self, ctx):
             collection = self.bot.database["tags"]
             name = name.lower()
             check = {"name": name}
-            
+
             loading = EMOTES["loading"]
-            embed = discord.Embed(description=f"{loading} Working on it....", color=COLORS["info"])
+            embed = discord.Embed(
+                description=f"{loading} Working on it....", color=COLORS["info"])
             await ctx.respond(embed=embed)
             message = await ctx.interaction.original_message()
 
             find = collection.find_one(check)
 
             if find:
-                
+
                 query = {"name": name}
                 oldContent = find["content"]
                 createdBy = find["author"]
@@ -126,19 +135,22 @@ class Tags(commands.Cog):
                 collection.delete_one(query)
                 success = EMOTES["success"]
 
-                embed = discord.Embed(description=f"{success} Successfully **deleted**: {name}", color=COLORS["success"])
+                embed = discord.Embed(
+                    description=f"{success} Successfully **deleted**: {name}", color=COLORS["success"])
 
                 await message.edit(embed=embed)
 
             else:
                 x = EMOTES["error"]
-                embed = discord.Embed(description=f"{x} A tag with that name does not exist!", color=COLORS["error"])
+                embed = discord.Embed(
+                    description=f"{x} A tag with that name does not exist!", color=COLORS["error"])
                 await message.edit(embed=embed)
-        
+
         else:
-              x = EMOTES["error"]
-              embed = discord.Embed(description=f"{x} You do not have permission to run this command.", color=COLORS["error"])
-              await ctx.respond(embed=embed, ephemeral=True)
+            x = EMOTES["error"]
+            embed = discord.Embed(
+                description=f"{x} You do not have permission to run this command.", color=COLORS["error"])
+            await ctx.respond(embed=embed, ephemeral=True)
 
     @tags.command(description="Get information about a tag")
     async def info(self, ctx: discord.ApplicationContext, name: Option(str, "Search by name or alias", autocomplete=get_tags_and_alias)):
@@ -149,7 +161,8 @@ class Tags(commands.Cog):
         check2 = {"aliases": name}
 
         loading = EMOTES["loading"]
-        embed = discord.Embed(description=f"{loading} Working on it....", color=COLORS["info"])
+        embed = discord.Embed(
+            description=f"{loading} Working on it....", color=COLORS["info"])
         await ctx.respond(embed=embed)
         message = await ctx.interaction.original_message()
 
@@ -168,37 +181,45 @@ class Tags(commands.Cog):
             aliases = ", ".join(aliases) if aliases != "None" else "None"
             content = find["content"]
 
-            embed = discord.Embed(title=f":paperclips: Aliases: {aliases}",description=f":page_with_curl: Tag content:\n{content}", timestamp=datetime.datetime.utcnow(), color=COLORS["info"])
-            embed.set_author(icon_url=LINKS["other"], name=f"Tag information for: {name}")
-            embed.add_field(name=":clipboard: Created By", value=f"{author.mention} ({author.id})")
-            embed.add_field(name=":safety_vest: Last Update By", value=f"{lastUpdateBy.mention} ({lastUpdateBy.id})")
-            embed.add_field(name=":calendar: Creation Date", value=f"<t:{createdAt}:R>")
-            embed.add_field(name=":timer: Last Update", value=f"<t:{lastUpdateAt}:R>")
-            embed.set_footer(icon_url=ctx.author.display_avatar.url, text=f"{ctx.author.name}#{ctx.author.discriminator}")
-
+            embed = discord.Embed(
+                title=f":paperclips: Aliases: {aliases}", description=f":page_with_curl: Tag content:\n{content}", timestamp=datetime.datetime.utcnow(), color=COLORS["info"])
+            embed.set_author(
+                icon_url=LINKS["other"], name=f"Tag information for: {name}")
+            embed.add_field(name=":clipboard: Created By",
+                            value=f"{author.mention} ({author.id})")
+            embed.add_field(name=":safety_vest: Last Update By",
+                            value=f"{lastUpdateBy.mention} ({lastUpdateBy.id})")
+            embed.add_field(name=":calendar: Creation Date",
+                            value=f"<t:{createdAt}:R>")
+            embed.add_field(name=":timer: Last Update",
+                            value=f"<t:{lastUpdateAt}:R>")
+            embed.set_footer(icon_url=ctx.author.display_avatar.url,
+                             text=f"{ctx.author.name}#{ctx.author.discriminator}")
 
             await message.edit(embed=embed)
 
         else:
             x = EMOTES["error"]
-            embed = discord.Embed(description=f"{x} No tag found by this name", color=COLORS["error"])
+            embed = discord.Embed(
+                description=f"{x} No tag found by this name", color=COLORS["error"])
             await message.edit(embed=embed)
 
     @tags.command(description="Get the raw content of a tag")
     async def raw(self, ctx: discord.ApplicationContext, name: Option(str, "The tag name to get the raw content from", autocomplete=get_tags_and_alias)):
-        
+
         if await Tags.is_staff(self, ctx):
             collection = self.bot.database["tags"]
             name = name.lower()
 
             loading = EMOTES["loading"]
-            embed = discord.Embed(description=f"{loading} Working on it....", color=COLORS["info"])
+            embed = discord.Embed(
+                description=f"{loading} Working on it....", color=COLORS["info"])
             await ctx.respond(embed=embed)
             message = await ctx.interaction.original_message()
             check = {"name": name}
             check2 = {"aliases": name}
 
-            find  = collection.find_one(check)
+            find = collection.find_one(check)
             if not find:
                 find = collection.find_one(check2)
 
@@ -207,15 +228,16 @@ class Tags(commands.Cog):
                 content = find["content"]
                 await message.edit(content=f":page_with_curl: Raw content for: {name}\n```\n{content}```", embed=None)
 
-
             else:
                 x = EMOTES["error"]
-                embed = discord.Embed(description=f"{x} No tag found by this name", color=COLORS["error"])
+                embed = discord.Embed(
+                    description=f"{x} No tag found by this name", color=COLORS["error"])
                 await message.edit(embed=embed)
 
         else:
             x = EMOTES["error"]
-            embed = discord.Embed(description=f"{x} You do not have permission to run this command.", color=COLORS["error"])
+            embed = discord.Embed(
+                description=f"{x} You do not have permission to run this command.", color=COLORS["error"])
             await ctx.respond(embed=embed, ephemeral=True)
 
     @tags.command(description="Edit an existent tag's content")
@@ -223,7 +245,8 @@ class Tags(commands.Cog):
 
         if await Tags.is_staff(self, ctx):
             loading = EMOTES["loading"]
-            embed = discord.Embed(description=f"{loading} Working on it....", color=COLORS["info"])
+            embed = discord.Embed(
+                description=f"{loading} Working on it....", color=COLORS["info"])
             await ctx.respond(embed=embed)
             message = await ctx.interaction.original_message()
 
@@ -239,21 +262,25 @@ class Tags(commands.Cog):
                 oldContent = find["content"]
 
                 updatedTime = round(time.time() * 1)
-                update = {"$set": {"content": content,"lastUpdateAt": updatedTime, "lastUpdateBy": ctx.author.id}}
+                update = {"$set": {
+                    "content": content, "lastUpdateAt": updatedTime, "lastUpdateBy": ctx.author.id}}
                 collection.update_one(check, update)
 
-                
-                embed = discord.Embed(description=f":page_with_curl: New tag content:\n{content}", color=COLORS["success"], timestamp=datetime.datetime.utcnow())
-                embed.set_author(icon_url=LINKS["success"], name=f"Done! Successfully edited: {name}")
+                embed = discord.Embed(
+                    description=f":page_with_curl: New tag content:\n{content}", color=COLORS["success"], timestamp=datetime.datetime.utcnow())
+                embed.set_author(
+                    icon_url=LINKS["success"], name=f"Done! Successfully edited: {name}")
                 await message.edit(embed=embed)
-            
+
             else:
                 x = EMOTES["error"]
-                embed = discord.Embed(description=f"{x} No tag found by this name", color=COLORS["error"])
+                embed = discord.Embed(
+                    description=f"{x} No tag found by this name", color=COLORS["error"])
                 await message.edit(embed=embed)
         else:
             x = EMOTES["error"]
-            embed = discord.Embed(description=f"{x} You do not have permission to run this command.", color=COLORS["error"])
+            embed = discord.Embed(
+                description=f"{x} You do not have permission to run this command.", color=COLORS["error"])
             await ctx.respond(embed=embed, ephemeral=True)
 
     @tags.command(description="Add or remove tag aliases")
@@ -261,8 +288,9 @@ class Tags(commands.Cog):
 
         if await Tags.is_staff(self, ctx):
             loading = EMOTES["loading"]
-            embed = discord.Embed(description=f"{loading} Working on it....", color=COLORS["info"])
-            
+            embed = discord.Embed(
+                description=f"{loading} Working on it....", color=COLORS["info"])
+
             await ctx.respond(embed=embed)
             message = await ctx.interaction.original_message()
 
@@ -286,26 +314,28 @@ class Tags(commands.Cog):
                     newAliases = oldAliases
 
                     if not aliasExists:
-                    
-                     newAliases.append(alias)
-                     
-                     if newAliases[0] == "None":
-                         newAliases.remove("None")
 
-                     aliases = {"$set": {"aliases": newAliases, "lastUpdateAt": updatedTime, "lastUpdateBy": ctx.author.id}}
+                        newAliases.append(alias)
 
-                     collection.update_one(check, aliases)
+                        if newAliases[0] == "None":
+                            newAliases.remove("None")
 
+                        aliases = {"$set": {
+                            "aliases": newAliases, "lastUpdateAt": updatedTime, "lastUpdateBy": ctx.author.id}}
 
-                     success = EMOTES["success"]
-                     embed = discord.Embed(description=f"{success} **Added** alias: {alias}", color=COLORS["success"], timestamp=datetime.datetime.utcnow())
-                     await message.edit(embed=embed)
+                        collection.update_one(check, aliases)
+
+                        success = EMOTES["success"]
+                        embed = discord.Embed(
+                            description=f"{success} **Added** alias: {alias}", color=COLORS["success"], timestamp=datetime.datetime.utcnow())
+                        await message.edit(embed=embed)
 
                     else:
                         x = EMOTES["error"]
-                        embed = discord.Embed(description=f"{x} This alias already exists", color=COLORS["error"])
+                        embed = discord.Embed(
+                            description=f"{x} This alias already exists", color=COLORS["error"])
                         await message.edit(embed=embed)
-                
+
                 elif choice == "remove":
                     aliases = find["aliases"]
 
@@ -314,29 +344,34 @@ class Tags(commands.Cog):
                         newAlias.remove(alias)
                         if len(newAlias) == 0:
                             aliases.append("None")
-                        
-                        update = {"$set": {"aliases": aliases, "lastUpdateAt": updatedTime, "lastUpdateBy": ctx.author.id}}
+
+                        update = {"$set": {
+                            "aliases": aliases, "lastUpdateAt": updatedTime, "lastUpdateBy": ctx.author.id}}
                         collection.update_one(check, update)
 
                         success = EMOTES["success"]
-                        embed = discord.Embed(description=f"{success} **Removed** alias: {alias}", color=COLORS["success"], timestamp=datetime.datetime.utcnow())
+                        embed = discord.Embed(
+                            description=f"{success} **Removed** alias: {alias}", color=COLORS["success"], timestamp=datetime.datetime.utcnow())
                         await message.edit(embed=embed)
 
                     except Exception:
                         x = EMOTES["error"]
-                        embed = discord.Embed(description=f"{x} No alias found for this tag", color=COLORS["error"])
+                        embed = discord.Embed(
+                            description=f"{x} No alias found for this tag", color=COLORS["error"])
                         await message.edit(embed=embed)
-                
+
                 else:
                     await message.edit("Invalid typeAlias selected.")
             else:
                 x = EMOTES["error"]
-                embed = discord.Embed(description=f"{x} No tag found by this name", color=COLORS["error"])
+                embed = discord.Embed(
+                    description=f"{x} No tag found by this name", color=COLORS["error"])
                 await message.edit(embed=embed)
 
         else:
             x = EMOTES["error"]
-            embed = discord.Embed(description=f"{x} You do not have permission to run this command.", color=COLORS["error"])
+            embed = discord.Embed(
+                description=f"{x} You do not have permission to run this command.", color=COLORS["error"])
             await ctx.respond(embed=embed, ephemeral=True)
 
     @tags.command(description="Get a tags list and a paginator")
@@ -353,12 +388,12 @@ class Tags(commands.Cog):
 
         tags.sort()
 
-        tagsEmbed = discord.Embed(description=", ".join(tags), color=COLORS["info"], timestamp=datetime.datetime.utcnow())
+        tagsEmbed = discord.Embed(description=", ".join(
+            tags), color=COLORS["info"], timestamp=datetime.datetime.utcnow())
         emote = LINKS["other"]
         tagsEmbed.set_author(icon_url=emote, name="Listing all tags:")
         tagsEmbed.set_footer(text="Use the paginator to go over the tags")
         pagPages.append(tagsEmbed)
-
 
         for findTag in tags:
 
@@ -373,22 +408,29 @@ class Tags(commands.Cog):
             lastUpdateAt = find["lastUpdateAt"]
             lastUpdateBy = self.bot.get_user(find["lastUpdateBy"])
 
-            embed = discord.Embed(title=f":paperclips: Aliases: {aliases}",description=f":page_with_curl: Tag content:\n{content}", timestamp=datetime.datetime.utcnow(), color=COLORS["info"])
-            embed.set_author(icon_url=LINKS["success"], name=f"Tag information for: {name}")
-            embed.add_field(name=":clipboard: Created By", value=f"{author.mention} ({author.id})")
-            embed.add_field(name=":safety_vest: Last Update By", value=f"{lastUpdateBy.mention} ({lastUpdateBy.id})")
-            embed.add_field(name=":calendar: Creation Date", value=f"<t:{createdAt}:R>")
-            embed.add_field(name=":timer: Last Update", value=f"<t:{lastUpdateAt}:R>")
-            embed.set_footer(icon_url=ctx.author.display_avatar.url, text=f"{ctx.author.name}#{ctx.author.discriminator}")
+            embed = discord.Embed(
+                title=f":paperclips: Aliases: {aliases}", description=f":page_with_curl: Tag content:\n{content}", timestamp=datetime.datetime.utcnow(), color=COLORS["info"])
+            embed.set_author(
+                icon_url=LINKS["success"], name=f"Tag information for: {name}")
+            embed.add_field(name=":clipboard: Created By",
+                            value=f"{author.mention} ({author.id})")
+            embed.add_field(name=":safety_vest: Last Update By",
+                            value=f"{lastUpdateBy.mention} ({lastUpdateBy.id})")
+            embed.add_field(name=":calendar: Creation Date",
+                            value=f"<t:{createdAt}:R>")
+            embed.add_field(name=":timer: Last Update",
+                            value=f"<t:{lastUpdateAt}:R>")
+            embed.set_footer(icon_url=ctx.author.display_avatar.url,
+                             text=f"{ctx.author.name}#{ctx.author.discriminator}")
 
             pagPages.append(embed)
 
-        paginator = pages.Paginator(pages=pagPages, disable_on_timeout=True, timeout=60, show_disabled=False)
+        paginator = pages.Paginator(
+            pages=pagPages, disable_on_timeout=True, timeout=60, show_disabled=False)
         await paginator.respond(ctx.interaction, ephemeral=False)
 
     @tags.command(description="Send a tag to the channel")
     async def send(self, ctx: discord.ApplicationContext, name: Option(str, "The tag you want to display", autocomplete=get_tags_and_alias), text: Option(str, "Optional text before the tag (usually mentions)", required=False, default=None)):
-
 
         await ctx.defer()
         name = name.lower()
@@ -410,8 +452,10 @@ class Tags(commands.Cog):
 
         else:
             x = EMOTES["error"]
-            embed = discord.Embed(description=f"{x} No tag matching your search.", color=COLORS["error"])
+            embed = discord.Embed(
+                description=f"{x} No tag matching your search.", color=COLORS["error"])
             await ctx.respond(embed=embed, delete_after=5.0)
+
 
 def setup(bot):
     bot.add_cog(Tags(bot))
