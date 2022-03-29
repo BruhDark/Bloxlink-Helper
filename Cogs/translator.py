@@ -39,7 +39,7 @@ class Translator(commands.Cog):
             detectedSourceLanguage = response["data"]["translations"][0]["detectedSourceLanguage"]
 
             infoEmote = EMOTES["info"]
-            embed = discord.Embed(color=COLORS["info"],description=f"{infoEmote} Processing text from `{detectedSourceLanguage}`(detected) to `{target}`\n\n**Result:** \n`{translatedText}`")
+            embed = discord.Embed(timestamp=discord.utils.utcnow,color=COLORS["info"],description=f"{infoEmote} Processing text from `{detectedSourceLanguage}`(detected) to `{target}`\n\n**Result:** \n`{translatedText}`")
             embed.set_footer(text=f"Requested by: {ctx.author}", icon_url=ctx.author.display_avatar.url)
             await ctx.respond(embed=embed)
 
