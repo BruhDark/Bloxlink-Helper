@@ -16,7 +16,7 @@ class OnApplicationCmdError(commands.Cog):
 
             x = EMOTES["error"]
             Embed = discord.Embed(
-                description=f"{x} This command is on cooldown", color=COLORS["error"])
+                description=f"{x} This command is on cooldown! Try again in {round(error.retry_after)}", color=COLORS["error"])
             await ctx.respond(embed=Embed, ephemeral=True)
 
         else:
