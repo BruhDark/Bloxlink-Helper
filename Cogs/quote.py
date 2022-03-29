@@ -11,6 +11,8 @@ class Quote(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
 
+        if message.author != self.bot.user:
+
             pattern = re.compile("https://(?:ptb.|canary.)?discord.com/channels/(?P<server_id>[0-9]{17,20})/(?P<channel_id>[0-9]{17,20})/(?P<message_id>[0-9]{17,20})")
 
             found = re.search(pattern, message.content)
@@ -31,7 +33,7 @@ class Quote(commands.Cog):
                      return user == message.author and str(reaction.emoji) == "📦"
 
                  try:
-                     await self.bot.wait_for("reaction_add", timeout=30.0, check=check)
+                     await self.bot.wait_for("reaction_add", timeout=15.0, check=check)
 
                  except asyncio.TimeoutError:
                      await message.remove_reaction("📦", self.bot.user)

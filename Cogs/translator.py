@@ -38,10 +38,9 @@ class Translator(commands.Cog):
             translatedText.replace("&#39", "'")
             detectedSourceLanguage = response["data"]["translations"][0]["detectedSourceLanguage"]
 
-            success = LINKS["success"]
-            question = EMOTES["question"]
-            embed = discord.Embed(color=COLORS["info"],description=f"{question} Status: **{status}**\n:speech_left: Detected Source Language: `{detectedSourceLanguage}`\n:airplane: Target Language: `{target}`\n\n:calling: Translated text: \n{translatedText}")
-            embed.set_author(icon_url=success, name=f"Successfully translated your text to: {target}")
+            infoEmote = EMOTES["info"]
+            embed = discord.Embed(color=COLORS["info"],description=f"{infoEmote} Processing text from `{detectedSourceLanguage}`(detected) to `{target}`\n\n**Result:** \n`{translatedText}`")
+            embed.set_footer(text=f"Requested by: {ctx.author}", icon_url=ctx.author.display_avatar.url)
             await ctx.respond(embed=embed)
 
         elif status == 400:
