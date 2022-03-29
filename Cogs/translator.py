@@ -1,10 +1,11 @@
-import discord
-from discord.ext import commands
-from discord.commands import slash_command, Option
-import requests
+import datetime
 import json
-from config import LINKS, EMOTES, COLORS
 
+import discord
+import requests
+from config import COLORS, EMOTES, LINKS
+from discord.commands import Option, slash_command
+from discord.ext import commands
 
 langs = ["af", "am", "ar", "az", "be", "bg", "bn", "bs", "ca", "ceb", "co", "cs", "cy", "da", "de", "el", "en", "eo", "es", "et", "eu", "fa", "fi", "fr", "fy", "ga", "gd", "gl", "gu", "ha", "haw", "he", "hi", "hmn", "hr", "ht", "hu", "hy", "id", "ig", "is", "it", "iw", "ja", "jw", "ka", "kk", "km", "kn", "ko", "ku", "ky", "la", "lb", "lo", "lt", "lv", "mg", "mi", "mk", "ml", "mn", "mr", "ms", "mt", "my", "ne", "nl", "no", "ny", "or", "pa", "pl", "ps", "pt", "ro", "ru", "rw", "sd", "si", "sk", "sl", "sm", "sn", "so", "sq", "sr", "st", "su", "sv", "sw", "ta", "te", "tg", "th", "tk", "tl", "tr", "tt", "ug", "uk", "ur", "uz", "vi", "xh", "yi", "yo", "zh", "zh-CN", "zh-TW", "zu"]
 
@@ -39,7 +40,7 @@ class Translator(commands.Cog):
             detectedSourceLanguage = response["data"]["translations"][0]["detectedSourceLanguage"]
 
             infoEmote = EMOTES["info"]
-            embed = discord.Embed(timestamp=discord.utils.utcnow,color=COLORS["info"],description=f"{infoEmote} Processing text from `{detectedSourceLanguage}`(detected) to `{target}`\n\n**Result:** \n`{translatedText}`")
+            embed = discord.Embed(timestamp=datetime.datetime.utcnow,color=COLORS["info"],description=f"{infoEmote} Processing text from `{detectedSourceLanguage}`(detected) to `{target}`\n\n**Result:** \n`{translatedText}`")
             embed.set_footer(text=f"Requested by: {ctx.author}", icon_url=ctx.author.display_avatar.url)
             await ctx.respond(embed=embed)
 
