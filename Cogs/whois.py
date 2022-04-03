@@ -71,7 +71,7 @@ class Whois(commands.Cog):
             name=f"{user.name}#{user.discriminator}", icon_url=user.display_avatar.url)
 
         guild = self.bot.get_guild(372036754078826496)
-        if discord.Utils.get(guild.roles, name="Staff") in user.roles:
+        if discord.utils.get(guild.roles, name="Staff") in user.roles:
 
             Embed.set_thumbnail(url="https://i.imgur.com/ZHJ1Xvc.png")
 
