@@ -39,7 +39,7 @@ class Whois(commands.Cog):
                 roles = None
 
         if not noMember:
-            joined = user.joined_at.timestamp()
+            joined = int(user.joined_at.timestamp())
 
         if not noMember:
             x = user.raw_status
@@ -71,8 +71,9 @@ class Whois(commands.Cog):
             name=f"{user.name}#{user.discriminator}", icon_url=user.display_avatar.url)
 
         guild = self.bot.get_guild(372036754078826496)
-        if discord.utils.get(guild.roles, name="Staff") in user.roles:
-
+        staffRole = discord.utils.get(guild.roles, id=889927613580189716)
+        
+        if staffRole in user.roles:
             Embed.set_thumbnail(url="https://i.imgur.com/ZHJ1Xvc.png")
 
         else:
@@ -82,7 +83,7 @@ class Whois(commands.Cog):
             Embed.add_field(name="Status", value=status, inline=False)
 
         Embed.add_field(name="Account Created",
-                        value=f"<t:{user.created_at.timestamp()}:R> (<t:{user.created_at.timestamp()}:f>)", inline=True)
+                        value=f"<t:{int(user.created_at.timestamp())}:R> (<t:{int(user.created_at.timestamp())}:f>)", inline=True)
 
         if not noMember and roles is not None:
             Embed.add_field(name="Account Joined",
