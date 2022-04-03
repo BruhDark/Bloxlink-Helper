@@ -1,7 +1,7 @@
 import datetime
 
 import discord
-from config import BADGES, COLORS, EMOTES
+from config import BADGES, EMOTES, COLORS
 from discord.commands import Option, slash_command
 from discord.ext import commands
 
@@ -9,6 +9,8 @@ from discord.ext import commands
 class Whois(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.description = "Get information about an user"
+        self.category = "Miscellaneous"
 
     @slash_command()
     @commands.cooldown(1, 10, commands.BucketType.user)
@@ -29,17 +31,15 @@ class Whois(commands.Cog):
             user = await self.bot.fetch_user(id)
             noMember = True
 
-        created = user.created_at.strftime("%x\n%X %Z")
-
         if not noMember:
             roles = [role.mention for role in user.roles[1:]]
             roles.reverse()
 
             if len(roles) == 0:
-                roles.append("None")
+                roles = None
 
         if not noMember:
-            joined = user.joined_at.strftime("%x\n%X %Z")
+            joined = user.joined_at.timestamp()
 
         if not noMember:
             x = user.raw_status
@@ -69,20 +69,27 @@ class Whois(commands.Cog):
 
         Embed.set_author(
             name=f"{user.name}#{user.discriminator}", icon_url=user.display_avatar.url)
-        Embed.set_thumbnail(url=user.display_avatar.url)
+
+        guild = self.bot.get_guild(372036754078826496)
+        if discord.Utils.get(guild.roles, name="Staff") in user.roles:
+
+            Embed.set_thumbnail(url="https://i.imgur.com/ZHJ1Xvc.png")
+
+        else:
+            Embed.set_thumbnail(url=user.display_avatar.url)
 
         if not noMember:
             Embed.add_field(name="Status", value=status, inline=False)
 
         Embed.add_field(name="Account Created",
-                        value=f"{created}", inline=True)
+                        value=f"<t:{user.created_at.timestamp()}:R> (<t:{user.created_at.timestamp()}:f>)", inline=True)
 
-        if not noMember:
+        if not noMember and roles is not None:
             Embed.add_field(name="Account Joined",
-                            value=f"{joined}", inline=True)
+                            value=f"<t:{joined}:R> (<t:{joined}:f>)", inline=True)
             Embed.add_field(name="Highest Role", value=user.top_role.mention)
 
-            if "None" not in roles:
+            if roles is not None:
                 Embed.add_field(
                     name=f"Roles [{len(roles)}]", value=", ".join(roles), inline=False)
 
@@ -147,36 +154,6 @@ class Whois(commands.Cog):
         if "None" not in flags:
             Embed.add_field(name="Profile Badges",
                             value="\n".join(flags), inline=False)
-
-        staffRole = discord.utils.get(ctx.guild.roles, id=889927613580189716)
-        modRole = discord.utils.get(ctx.guild.roles, id=372174398918098944)
-        helperRole = discord.utils.get(ctx.guild.roles, id=412791520316358656)
-        devRole = discord.utils.get(ctx.guild.roles, id=539665515430543360)
-        bugHunterRole = discord.utils.get(
-            ctx.guild.roles, id=506113380688461826)
-        cmRole = discord.utils.get(ctx.guild.roles, id=595733840849534982)
-
-        acks = []
-
-        if staffRole in user.roles:
-            acks.append("Staff")
-        elif cmRole in user.roles:
-            acks.append("Community Manager")
-        elif modRole in user.roles:
-            acks.append("Moderator")
-        elif helperRole in user.roles:
-            acks.append("Helper")
-        elif devRole in user.roles:
-            acks.append("Developer")
-        elif user.id == 449245847767482379:
-            acks.append("Bloxlink Helper Creator")
-        elif user.id == 156872400145874944:
-            acks.append("Cookie Eater")
-        elif user.id == 194962036784889858:
-            acks.append("Tutorials Creator")
-
-        if len(acks) != 0:
-            Embed.add_field(name="Bloxlink Team", value=", ".join(acks))
 
         Embed.set_footer(text=f"ID: {user.id}")
 

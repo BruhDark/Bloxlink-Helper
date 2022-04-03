@@ -1,7 +1,7 @@
 import discord
 
 PREFIX = "o!"
-DESCRIPTION = "Bloxlink's HQ tags bot."
+DESCRIPTION = "Bloxlink HQ's tags bot."
 
 EMOTES = {
     "success": "<:BloxlinkHappy:823633735446167552>",
