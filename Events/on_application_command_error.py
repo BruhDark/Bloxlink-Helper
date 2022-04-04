@@ -21,7 +21,9 @@ class OnApplicationCmdError(commands.Cog):
 
         else:
             x = EMOTES["error"]
-            tb = traceback.format_exception()
+            
+            etype, value, tb = sys.exc_info()
+            tb = traceback.format_exception(etype, value, tb, None)
             list = ['Traceback (most recent call last):\n']
             list = list + traceback.format_tb(tb, None)
 
