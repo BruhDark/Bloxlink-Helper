@@ -37,6 +37,8 @@ class Whois(commands.Cog):
 
             if len(roles) == 0:
                 roles = None
+        else:
+            roles = None
 
         if not noMember:
             joined = int(user.joined_at.timestamp())

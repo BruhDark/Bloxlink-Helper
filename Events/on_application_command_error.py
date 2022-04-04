@@ -21,8 +21,9 @@ class OnApplicationCmdError(commands.Cog):
 
         else:
             x = EMOTES["error"]
+            trace = traceback.format_exc()
             Embed = discord.Embed(
-                description=f"{x} Something went wrong\n\n```py\n{error}```", color=COLORS["error"])
+                description=f"{x} Something went wrong\n\n```py\n{trace}```", color=COLORS["error"])
             await ctx.respond(embed=Embed)
 
 
