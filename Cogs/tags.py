@@ -375,6 +375,7 @@ class Tags(commands.Cog):
             await ctx.respond(embed=embed, ephemeral=True)
 
     @tags.command(description="Get a tags list and a paginator")
+    @commands.cooldown(1, 5, commands.BucketType.default)
     async def all(self, ctx: discord.ApplicationContext):
 
         await ctx.defer()
