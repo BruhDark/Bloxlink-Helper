@@ -27,9 +27,14 @@ class OnCmdError(commands.Cog):
 
         else:
             x = EMOTES["error"]
-            trace = traceback.format_exc()
+            tb = traceback.format_exception()
+            list = ['Traceback (most recent call last):\n']
+            list = list + traceback.format_tb(tb, None)
+
+            tb = ''.join(list)
+
             Embed = discord.Embed(
-                description=f"{x} Something went wrong\n\n```py\n{trace}```", color=COLORS["error"])
+                description=f"{x} Something went wrong\n\n```py\n{tb}```", color=COLORS["error"])
             await ctx.send(embed=Embed)
 
 
