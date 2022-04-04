@@ -39,6 +39,7 @@ class Translator(commands.Cog):
 
             translatedText = response["data"]["translations"][0]["translatedText"]
             translatedText.replace("&#39", "'")
+            translatedText.replace("&#39;", "'")
             detectedSourceLanguage = response["data"]["translations"][0]["detectedSourceLanguage"]
 
             infoEmote = EMOTES["info"]
