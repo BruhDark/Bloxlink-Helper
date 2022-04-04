@@ -63,18 +63,22 @@ class Whois(commands.Cog):
             color = COLORS["info"]
 
         amember = "**This user is not a member of this server.**" if noMember else ""
+        nickname = user.nickname if not noMember else ""
 
         Embed = discord.Embed(color=color, timestamp=datetime.datetime.utcnow(
-        ), description=f"{user.mention}\n{amember}")
+        ), description=f"{user.mention}\n**Nickname** - {nickname}\n{amember}")
 
         Embed.set_author(
             name=f"{user.name}#{user.discriminator}", icon_url=user.display_avatar.url)
 
-        guild = self.bot.get_guild(372036754078826496)
-        staffRole = discord.utils.get(guild.roles, id=889927613580189716)
-        
-        if staffRole in user.roles:
-            Embed.set_thumbnail(url="https://i.imgur.com/ZHJ1Xvc.png")
+        bloxlinkGuild = self.bot.get_guild(372036754078826496)
+        bloxlinkUser = discord.utils.get(bloxlinkGuild.members, id=user.id)
+        staffRole = discord.utils.get(
+            bloxlinkGuild.roles, id=889927613580189716)
+
+        if staffRole in bloxlinkUser.roles:
+            Embed.set_thumbnail(
+                url="https://i.imgur.com/Fcndmhh.png")  # staff shield
 
         else:
             Embed.set_thumbnail(url=user.display_avatar.url)
@@ -82,17 +86,18 @@ class Whois(commands.Cog):
         if not noMember:
             Embed.add_field(name="Status", value=status, inline=False)
 
-        Embed.add_field(name="Account Created",
+        Embed.add_field(name="Registered",
                         value=f"<t:{int(user.created_at.timestamp())}:R> (<t:{int(user.created_at.timestamp())}:f>)", inline=True)
 
-        if not noMember and roles is not None:
-            Embed.add_field(name="Account Joined",
+        if not noMember:
+            Embed.add_field(name="Joined",
                             value=f"<t:{joined}:R> (<t:{joined}:f>)", inline=True)
+
+        if roles is not None:
             Embed.add_field(name="Highest Role", value=user.top_role.mention)
 
-            if roles is not None:
-                Embed.add_field(
-                    name=f"Roles [{len(roles)}]", value=", ".join(roles), inline=False)
+            Embed.add_field(
+                name=f"Roles [{len(roles)}]", value=", ".join(roles), inline=False)
 
         flags = []
 
@@ -155,6 +160,35 @@ class Whois(commands.Cog):
         if "None" not in flags:
             Embed.add_field(name="Profile Badges",
                             value="\n".join(flags), inline=False)
+
+        acks = []
+        helperRole = discord.utils.get(
+            bloxlinkGuild.roles, id=412791520316358656)
+        modRole = discord.utils.get(bloxlinkGuild.roles, id=372174398918098944)
+        cmRole = discord.utils.get(bloxlinkGuild.roles, id=595733840849534982)
+        devRole = discord.utils.get(bloxlinkGuild.roles, id=539665515430543360)
+
+        if staffRole in bloxlinkUser.roles:
+            acks.append("Staff")
+
+        if helperRole in bloxlinkUser.roles:
+            acks.append("Helper")
+
+        if modRole in bloxlinkUser.roles:
+            acks.append("Moderator")
+
+        if cmRole in bloxlinkUser.roles:
+            acks.append("Community Manager")
+
+        if devRole in bloxlinkUser.roles:
+            acks.append("Developer")
+
+        if len(acks) == 0:
+            acks = None
+
+        if acks is not None:
+            Embed.add_field(name="Bloxlink Team",
+                            value=", ".join(acks), inline=False)
 
         Embed.set_footer(text=f"ID: {user.id}")
 
