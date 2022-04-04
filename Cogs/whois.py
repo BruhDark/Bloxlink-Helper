@@ -63,7 +63,7 @@ class Whois(commands.Cog):
             color = COLORS["info"]
 
         amember = "**This user is not a member of this server.**" if noMember else ""
-        nickname = user.nickname if not noMember else ""
+        nickname = user.display_name if not noMember else ""
 
         Embed = discord.Embed(color=color, timestamp=datetime.datetime.utcnow(
         ), description=f"{user.mention}\n**Nickname** - {nickname}\n{amember}")
