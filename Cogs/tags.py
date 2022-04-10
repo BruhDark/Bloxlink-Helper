@@ -404,7 +404,7 @@ class Tags(commands.Cog):
             name = find["name"]
             aliases = ", ".join(find["aliases"])
             content = find["content"]
-            author = self.bot.get_or_fetch_user(find["author"])
+            author = await self.bot.get_or_fetch_user(find["author"])
             createdAt = find["createdAt"]
             lastUpdateAt = find["lastUpdateAt"]
             lastUpdateBy = self.bot.get_user(find["lastUpdateBy"])
