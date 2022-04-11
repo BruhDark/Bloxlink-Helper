@@ -3,6 +3,7 @@ import datetime
 import time
 
 import discord
+import jaro
 import pymongo
 from config import COLORS, EMOTES, LINKS
 from discord.commands import Option, permissions, slash_command
@@ -27,14 +28,26 @@ class Tags(commands.Cog):
 
     async def get_tags(self, ctx: discord.ApplicationContext):
 
+        # Submethod utilized for sorting, sort functions need one parameter while
+        # provided library method requires two. Needs the context value, so it can't be
+        # a unique method.
+        def jaro_sort(key):
+            return jaro.jaro_winkler_metric(key, ctx.value.lower())
+
         collection = self.bot.database["tags"]
         tags = []
         for tag in collection.find():
             tags.append(tag["name"])
 
-        return [tag for tag in tags if tag.startswith(ctx.value.lower())]
+        return sorted(tags, key=jaro_sort, reverse=True)[0:15]
 
     async def get_tags_and_alias(self, ctx: discord.ApplicationContext):
+
+        # Submethod utilized for sorting, sort functions need one parameter while
+        # provided library method requires two. Needs the context value, so it can't be
+        # a unique method.
+        def jaro_sort(key):
+            return jaro.jaro_winkler_metric(key, ctx.value.lower())
 
         collection = self.bot.database["tags"]
         tags = []
@@ -44,7 +57,7 @@ class Tags(commands.Cog):
             if tag["aliases"] != ["None"]:
                 tags.extend(tag["aliases"])
 
-        return [tag for tag in tags if tag.startswith(ctx.value.lower())]
+        return sorted(tags, key=jaro_sort, reverse=True)[0:15]
 
     async def get_aliases(self, ctx: discord.ApplicationContext):
 
