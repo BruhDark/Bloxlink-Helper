@@ -13,7 +13,7 @@ class OnApplicationCmdError(commands.Cog):
     @commands.Cog.listener()
     async def on_application_command_error(self, ctx, error):
 
-        tb = traceback.format_exc()
+        tb = traceback.format_exception(error)
 
         if isinstance(error, commands.CommandOnCooldown):
 
