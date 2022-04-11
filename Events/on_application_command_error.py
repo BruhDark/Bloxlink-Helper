@@ -12,6 +12,9 @@ class OnApplicationCmdError(commands.Cog):
 
     @commands.Cog.listener()
     async def on_application_command_error(self, ctx, error):
+
+        tb = traceback.format_exc()
+
         if isinstance(error, commands.CommandOnCooldown):
 
             x = EMOTES["error"]
@@ -23,7 +26,7 @@ class OnApplicationCmdError(commands.Cog):
             x = EMOTES["error"]
             
             Embed = discord.Embed(
-                description=f"{x} Something went wrong\n\n```py\n{error}```", color=COLORS["error"])
+                description=f"{x} Something went wrong\n\n```py\n{tb}```", color=COLORS["error"])
             await ctx.respond(embed=Embed)
 
 
