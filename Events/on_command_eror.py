@@ -1,6 +1,4 @@
-import datetime
 import traceback
-import sys
 
 import discord
 from config import COLORS, EMOTES
@@ -29,12 +27,7 @@ class OnCmdError(commands.Cog):
         else:
             x = EMOTES["error"]
 
-            etype, value, tb = sys.exc_info()
-            tb = traceback.format_exception(etype, value, tb, None)
-            list = ['Traceback (most recent call last):\n']
-            list = list + traceback.format_tb(tb, None)
-
-            tb = ''.join(list)
+            tb = traceback.format_exc()
 
             Embed = discord.Embed(
                 description=f"{x} Something went wrong\n\n```py\n{tb}```", color=COLORS["error"])
