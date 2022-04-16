@@ -14,6 +14,7 @@ class OnApplicationCmdError(commands.Cog):
     async def on_application_command_error(self, ctx, error):
 
         tb = traceback.format_exception(error)
+        tb = "".join(tb)
 
         if isinstance(error, commands.CommandOnCooldown):
 
