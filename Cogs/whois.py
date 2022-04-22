@@ -170,19 +170,19 @@ class Whois(commands.Cog):
         cmRole = discord.utils.get(bloxlinkGuild.roles, id=595733840849534982)
         devRole = discord.utils.get(bloxlinkGuild.roles, id=539665515430543360)
 
-        if staffRole in bloxlinkUser.roles:
+        if bloxlinkUser is not None and staffRole in bloxlinkUser.roles:
             acks.append("Staff")
 
         if helperRole in bloxlinkUser.roles:
             acks.append("Helper")
 
-        if modRole in bloxlinkUser.roles:
+        if bloxlinkUser is not None and modRole in bloxlinkUser.roles:
             acks.append("Moderator")
 
-        if cmRole in bloxlinkUser.roles:
+        if bloxlinkUser is not None and cmRole in bloxlinkUser.roles:
             acks.append("Community Manager")
 
-        if devRole in bloxlinkUser.roles:
+        if bloxlinkUser is not None and devRole in bloxlinkUser.roles:
             acks.append("Developer")
 
         if len(acks) == 0:
