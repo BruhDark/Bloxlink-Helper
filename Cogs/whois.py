@@ -173,7 +173,7 @@ class Whois(commands.Cog):
         if bloxlinkUser is not None and staffRole in bloxlinkUser.roles:
             acks.append("Staff")
 
-        if helperRole in bloxlinkUser.roles:
+        if bloxlinkUser is not None and helperRole in bloxlinkUser.roles:
             acks.append("Helper")
 
         if bloxlinkUser is not None and modRole in bloxlinkUser.roles:
