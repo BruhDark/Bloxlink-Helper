@@ -78,7 +78,7 @@ class Whois(commands.Cog):
         staffRole = discord.utils.get(
             bloxlinkGuild.roles, id=889927613580189716)
 
-        if staffRole in bloxlinkUser.roles:
+        if staffRole in bloxlinkUser.roles and bloxlinkUser is not None:
             Embed.set_thumbnail(
                 url="https://i.imgur.com/Fcndmhh.png")  # staff shield
 
