@@ -8,7 +8,9 @@ import pymongo
 from config import COLORS, EMOTES, LINKS
 from discord.commands import Option, permissions, slash_command
 from discord.ext import commands, pages
+from discord.ui import InputText, Modal
 
+from Resources.modals import TagCreateModal, TagEditModal
 
 class Tags(commands.Cog):
     def __init__(self, bot):
@@ -71,50 +73,11 @@ class Tags(commands.Cog):
         return [alias for alias in aliases if alias.startswith(ctx.value.lower())]
 
     @tags.command(description="Create a new tag")
-    async def create(self, ctx: discord.ApplicationContext, name: Option(str, "The new tag name"), content: Option(str, "The tag content"), aliases: Option(str, "Aliases for this tag, separated by a comma, no space", required=False, default=None)):
+    async def create(self, ctx: discord.ApplicationContext):
 
         if await Tags.is_staff(self, ctx):
-            collection = self.bot.database["tags"]
-            createdAt = round(time.time() * 1)
-            name = name.lower()
-            aliases = aliases.lower() if aliases is not None else aliases
-            aliases = aliases.replace(
-                " ", "") if aliases is not None else aliases
-            aliases = aliases.split(",") if aliases is not None else ["None"]
-            content = content.replace("\\n", "\n")
-
-            loading = EMOTES["loading"]
-            embed = discord.Embed(
-                description=f"{loading} Working on it....", color=COLORS["info"])
-
-            await ctx.respond(embed=embed)
-            message = await ctx.interaction.original_message()
-
-            newTag = {"name": name, "aliases": aliases, "content": content, "author": ctx.author.id,
-                      "lastUpdateBy": ctx.author.id, "createdAt": createdAt, "lastUpdateAt": createdAt}
-            check = {"name": name}
-            check2 = {"aliases": aliases}
-            find2 = collection.find_one(
-                check2) if aliases[0] != "None" else False
-
-            if collection.find_one(check) or find2:
-                error = EMOTES["error"]
-                embed = discord.Embed(
-                    description=f"{error} A tag with that name/alias already exists!", color=COLORS["error"])
-                await message.edit(embed=embed)
-
-            else:
-                item = collection.insert_one(newTag)
-                aliases = ", ".join(aliases)
-
-                embed = discord.Embed(
-                    title=f":paperclips: Aliases: {aliases}", description=f":page_with_curl: Tag content:\n{content}", color=COLORS["success"], timestamp=datetime.datetime.utcnow())
-                embed.set_footer(
-                    icon_url=LINKS["other"], text=f"Item ID: {item.inserted_id}")
-                embed.set_author(
-                    icon_url=LINKS["success"], name=f"Successfully created tag: {name}")
-
-                await message.edit(embed=embed)
+            modal = TagCreateModal(self.bot, title="Create a new tag")
+            await ctx.send_modal(modal)
 
         else:
             x = EMOTES["error"]
@@ -254,42 +217,11 @@ class Tags(commands.Cog):
             await ctx.respond(embed=embed, ephemeral=True)
 
     @tags.command(description="Edit an existent tag's content")
-    async def edit(self, ctx: discord.ApplicationContext, name: Option(str, "The tag name you want to edit", autocomplete=get_tags), content: Option(str, "The new content for this tag")):
+    async def edit(self, ctx: discord.ApplicationContext):
 
         if await Tags.is_staff(self, ctx):
-            loading = EMOTES["loading"]
-            embed = discord.Embed(
-                description=f"{loading} Working on it....", color=COLORS["info"])
-            await ctx.respond(embed=embed)
-            message = await ctx.interaction.original_message()
+            await ctx.send_modal(TagEditModal(self.bot, title="Edit Tag"))
 
-            collection = self.bot.database["tags"]
-            name = name.lower()
-            check = {"name": name}
-
-            content = content.replace("\\n", "\n")
-            find = collection.find_one(check)
-
-            if find:
-
-                oldContent = find["content"]
-
-                updatedTime = round(time.time() * 1)
-                update = {"$set": {
-                    "content": content, "lastUpdateAt": updatedTime, "lastUpdateBy": ctx.author.id}}
-                collection.update_one(check, update)
-
-                embed = discord.Embed(
-                    description=f":page_with_curl: New tag content:\n{content}", color=COLORS["success"], timestamp=datetime.datetime.utcnow())
-                embed.set_author(
-                    icon_url=LINKS["success"], name=f"Done! Successfully edited: {name}")
-                await message.edit(embed=embed)
-
-            else:
-                x = EMOTES["error"]
-                embed = discord.Embed(
-                    description=f"{x} No tag found by this name", color=COLORS["error"])
-                await message.edit(embed=embed)
         else:
             x = EMOTES["error"]
             embed = discord.Embed(

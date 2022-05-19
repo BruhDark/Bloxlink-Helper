@@ -23,4 +23,4 @@ class IgnoredCommands(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(IgnoredCommands(bot))
+    pass

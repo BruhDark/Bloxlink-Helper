@@ -1,5 +1,5 @@
 import discord
-import requests
+import aiohttp
 from config import COLORS, EMOTES, LINKS
 from discord.ext import commands
 
@@ -11,15 +11,18 @@ class ApiCommand(commands.Cog):
     @commands.command()
     async def api(self, ctx: discord.ApplicationContext, query: str):
 
-        url = f"https://api.blox.link/v1/user/{query}"
-        response = requests.get(url)
+        url = f"https://v3.blox.link/developer/discord/{query}"
+        headers = {"api-key": "657809d4-8daa-4658-bf83-0084d643c88b2b10def8-b27e-4713-a17b-02e5e562aa100c8ee099-a366-4e71-bbdb-946f826646d8"}
 
-        embed = discord.Embed(
-            description=f"Sent request to {url}.\n\n**Response**\n```json\n{response.text}```", color=COLORS["info"])
-        embed.set_author(icon_url=LINKS["success"],
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers) as response:
+                data = await response.text()
+
+                embed = discord.Embed(description=f"Sent request to {url}.\n\n**Response**\n```json\n{data}```", color=COLORS["info"])
+                embed.set_author(icon_url=LINKS["success"],
                          name="Successfully sent request")
 
-        await ctx.send(embed=embed)
+                await ctx.send(embed=embed)
 
 
 def setup(bot):

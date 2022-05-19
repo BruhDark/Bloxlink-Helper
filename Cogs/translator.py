@@ -2,7 +2,7 @@ import datetime
 import json
 
 import discord
-import requests
+import aiohttp
 from config import COLORS, EMOTES, LINKS
 from discord.commands import Option, slash_command
 from discord.ext import commands
@@ -31,15 +31,16 @@ class Translator(commands.Cog):
             'x-rapidapi-host': "google-translate1.p.rapidapi.com"
         }
 
-        response = requests.request("POST", url, data=payload, headers=headers)
-        status = response.status_code
-        response = json.loads(response.text)
+        with aiohttp.ClientSession() as session:
+            async with session.post(url, data=payload, headers=headers) as response:
+                data = await response.json()
 
-        if status == 200:
+        if data["status"] == 200:
 
-            translatedText = response["data"]["translations"][0]["translatedText"]
+            translatedText = data["data"]["translations"][0]["translatedText"]
             translatedText.replace("&#39", "'")
             translatedText.replace("&#39;", "'")
+            translatedText.enconde("utf-8")
             detectedSourceLanguage = response["data"]["translations"][0]["detectedSourceLanguage"]
 
             infoEmote = EMOTES["info"]
@@ -49,7 +50,7 @@ class Translator(commands.Cog):
                 text=f"Requested by: {ctx.author}", icon_url=ctx.author.display_avatar.url)
             await ctx.respond(embed=embed)
 
-        elif status == 400:
+        elif data["status"] == 400:
             message = response["error"]["message"]
             x = EMOTES["error"]
             embed = discord.Embed(

@@ -3,6 +3,7 @@ import asyncio
 import discord
 from config import COLORS, EMOTES, LINKS
 from discord.ext import commands
+from discord.utils import get
 
 
 class TagsPrefixed(commands.Cog):
@@ -34,22 +35,41 @@ class TagsPrefixed(commands.Cog):
 
         text = text if text is not None else None
 
+        message = ctx.message.reference.message_id if ctx.message.reference is not None else None
+        message = get(self.bot.cached_messages, id=message) if message is not None else None
+
         if find:
             if text is not None:
                 await ctx.message.delete()
 
                 tag = find["content"]
 
-                msg = await ctx.send(f"{tag}")
-                await asyncio.sleep(0.1)
-                await msg.edit(f"{text} {tag}")
+                if message is not None:
+                    msg = await message.reply(content=tag, mention_author=True)
+                    await asyncio.sleep(0.1)
+                    await msg.edit(f"{text} {tag}")
+
+                else:
+                 msg = await ctx.send(f"{tag}")
+                 await asyncio.sleep(0.1)
+                 await msg.edit(f"{text} {tag}")
 
             else:
-                await ctx.message.delete()
+                if message is not None:
 
-                tag = find["content"]
+                 await ctx.message.delete()
 
-                await ctx.send(f"{tag}")
+                 tag = find["content"]
+
+                 await message.reply(f"{tag}")
+                
+                else:
+                 await ctx.message.delete()
+
+                 tag = find["content"]
+
+                 await ctx.send(f"{tag}")
+
 
         else:
             x = EMOTES["error"]

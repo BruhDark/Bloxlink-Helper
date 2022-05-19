@@ -1,4 +1,4 @@
-py-cord==2.0.0b1
+py-cord==2.0.0rc1
 requests==2.26.0
 datetime==4.3
 pymongo==4.0.1

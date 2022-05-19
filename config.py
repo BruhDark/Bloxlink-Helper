@@ -1,6 +1,6 @@
 import discord
 
-PREFIX = "o!"
+PREFIX = "."
 DESCRIPTION = "Bloxlink HQ's tags bot."
 
 EMOTES = {
@@ -31,7 +31,7 @@ EMOTES = {
 }
 
 LINKS = {
-    "success": "https://cdn.discordapp.com/emojis/823633735446167552.webp?size=96&quality=lossless",
+    "success": "https://cdn.discordapp.com/emojis/976817167116947507.gif?size=44&quality=lossless",
     "error": "https://cdn.discordapp.com/emojis/823633973967716363.webp?size=96&quality=lossless",
     "other": "https://cdn.discordapp.com/emojis/823634273604468787.webp?size=96&quality=lossless"
 }
