@@ -20,8 +20,7 @@ class Bot(commands.Bot):
             roles=False,
             replied_user=True,
         ),
-            help_command=None,
-            debug_guilds=[881968885279117342])
+            help_command=None)
         self.database = database
 
         for event in os.listdir("Events"):
