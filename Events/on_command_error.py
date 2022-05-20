@@ -29,6 +29,12 @@ class OnCmdError(commands.Cog):
         elif isinstance(error, commands.CommandNotFound):
             pass
 
+        elif isinstance(error, commands.NoPrivateMessage):
+            x = EMOTES["error"]
+            Embed = discord.Embed(
+                description=f"{x} This command is only available in a guild!", color=COLORS["error"])
+            await ctx.send(embed=Embed)
+
         else:
             x = EMOTES["error"]
 

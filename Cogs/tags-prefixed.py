@@ -11,16 +11,20 @@ class TagsPrefixed(commands.Cog):
         self.bot = bot
         self.database = self.bot.database
 
-    async def is_staff(self, ctx: discord.ApplicationContext):
+    def is_staff(self, ctx: discord.ApplicationContext):
 
-        role = discord.utils.get(ctx.guild.roles, name="Staff")
+        role = discord.utils.get(ctx.guild.roles, name="Helpers")
         permission = ctx.author.guild_permissions.manage_messages
 
         check = True if role in ctx.author.roles else False
 
-        return True if check or permission else False
+        if check or permission:
+            return True
+        else:
+            raise commands.CheckFailure("You do not have permission to use this command.")
 
     @commands.command()
+    @commands.guild_only()
     async def tag(self, ctx: discord.ApplicationContext, name: str, *, text: str = None):
 
         name = name.lower()
@@ -82,6 +86,7 @@ class TagsPrefixed(commands.Cog):
             await ctx.message.delete()
 
     @commands.command()
+    @commands.guild_only()
     async def say(self, ctx: discord.ApplicationContext, *, text: str):
         if await TagsPrefixed.is_staff(self, ctx):
 
@@ -95,13 +100,8 @@ class TagsPrefixed(commands.Cog):
                     description=f"{x} Something went wrong\n\n```py\n{e}```", color=COLORS["error"])
                 await ctx.send(embed=Embed)
 
-        else:
-            x = EMOTES["error"]
-            embed = discord.Embed(
-                description=f"{x} You do not have permission to run this command.", color=COLORS["error"])
-            await ctx.send(embed=embed)
-
     @commands.command(aliases=["msgedit"])
+    @commands.guild_only()
     async def editmsg(self, ctx: discord.ApplicationContext, id: int, *, text: str):
 
         if await TagsPrefixed.is_staff(self, ctx):
@@ -117,12 +117,6 @@ class TagsPrefixed(commands.Cog):
                 Embed = discord.Embed(
                     description=f"{x} Something went wrong\n\n```py\n{e}```", color=COLORS["error"])
                 await ctx.send(embed=Embed)
-
-        else:
-            x = EMOTES["error"]
-            embed = discord.Embed(
-                description=f"{x} You do not have permission to run this command.", color=COLORS["error"])
-            await ctx.send(embed=embed, delete_after=3.0)
 
 
 def setup(bot):

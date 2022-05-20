@@ -8,7 +8,6 @@ import pymongo
 from config import COLORS, EMOTES, LINKS
 from discord.commands import Option, permissions, slash_command
 from discord.ext import commands, pages
-from discord.ui import InputText, Modal
 
 from Resources.modals import TagCreateModal, TagEditModal
 
@@ -19,14 +18,17 @@ class Tags(commands.Cog):
 
     tags = discord.SlashCommandGroup("tag", "Tag related commands.")
 
-    async def is_staff(self, ctx: discord.ApplicationContext):
+    def is_staff(self, ctx: discord.ApplicationContext):
 
         role = discord.utils.get(ctx.guild.roles, name="Helpers")
         permission = ctx.author.guild_permissions.manage_messages
 
         check = True if role in ctx.author.roles else False
 
-        return True if check or permission else False
+        if check or permission:
+            return True
+        else:
+            raise commands.CheckFailure("You do not have permission to use this command.")
 
     async def get_tags(self, ctx: discord.ApplicationContext):
 
@@ -73,17 +75,11 @@ class Tags(commands.Cog):
         return [alias for alias in aliases if alias.startswith(ctx.value.lower())]
 
     @tags.command(description="Create a new tag")
+    @commands.guild_only()
     async def create(self, ctx: discord.ApplicationContext):
-
-        if await Tags.is_staff(self, ctx):
+        if Tags.is_staff(self, ctx):
             modal = TagCreateModal(self.bot, title="Create a new tag")
             await ctx.send_modal(modal)
-
-        else:
-            x = EMOTES["error"]
-            embed = discord.Embed(
-                description=f"{x} You do not have permission to run this command.", color=COLORS["error"])
-            await ctx.respond(embed=embed, ephemeral=True)
 
     @tags.command(description="Delete an existent tag")
     async def delete(self, ctx: discord.ApplicationContext, name: Option(str, "The tag name you wish to remove", autocomplete=get_tags)):
@@ -121,12 +117,6 @@ class Tags(commands.Cog):
                 embed = discord.Embed(
                     description=f"{x} A tag with that name does not exist!", color=COLORS["error"])
                 await message.edit(embed=embed)
-
-        else:
-            x = EMOTES["error"]
-            embed = discord.Embed(
-                description=f"{x} You do not have permission to run this command.", color=COLORS["error"])
-            await ctx.respond(embed=embed, ephemeral=True)
 
     @tags.command(description="Get information about a tag")
     async def info(self, ctx: discord.ApplicationContext, name: Option(str, "Search by name or alias", autocomplete=get_tags_and_alias)):
@@ -210,23 +200,11 @@ class Tags(commands.Cog):
                     description=f"{x} No tag found by this name", color=COLORS["error"])
                 await message.edit(embed=embed)
 
-        else:
-            x = EMOTES["error"]
-            embed = discord.Embed(
-                description=f"{x} You do not have permission to run this command.", color=COLORS["error"])
-            await ctx.respond(embed=embed, ephemeral=True)
-
     @tags.command(description="Edit an existent tag's content")
     async def edit(self, ctx: discord.ApplicationContext):
 
         if await Tags.is_staff(self, ctx):
             await ctx.send_modal(TagEditModal(self.bot, title="Edit Tag"))
-
-        else:
-            x = EMOTES["error"]
-            embed = discord.Embed(
-                description=f"{x} You do not have permission to run this command.", color=COLORS["error"])
-            await ctx.respond(embed=embed, ephemeral=True)
 
     @tags.command(description="Add or remove tag aliases")
     async def alias(self, ctx: discord.ApplicationContext, name: Option(str, "The tag name you wish to edit its alias", autocomplete=get_tags), choice: Option(str, "Add or remove an alias?", choices=["add", "remove"]), alias: Option(str, "New alias or alias to be removed", autocomplete=get_aliases)):
@@ -312,12 +290,6 @@ class Tags(commands.Cog):
                 embed = discord.Embed(
                     description=f"{x} No tag found by this name", color=COLORS["error"])
                 await message.edit(embed=embed)
-
-        else:
-            x = EMOTES["error"]
-            embed = discord.Embed(
-                description=f"{x} You do not have permission to run this command.", color=COLORS["error"])
-            await ctx.respond(embed=embed, ephemeral=True)
 
     @tags.command(description="Get a tags list and a paginator")
     @commands.cooldown(1, 5, commands.BucketType.default)

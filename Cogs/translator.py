@@ -19,6 +19,7 @@ class Translator(commands.Cog):
         return [lang for lang in langs if lang.startswith(ctx.value.lower())]
 
     @slash_command(description="Translate text to a language")
+    @commands.guild_only()
     async def translate(self, ctx: discord.ApplicationContext, target: Option(str, "Language you want the text get translated to", autocomplete=get_langs), *, query: Option(str, "Text you want to translate")):
 
         url = "https://google-translate1.p.rapidapi.com/language/translate/v2"

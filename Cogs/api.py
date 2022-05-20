@@ -9,6 +9,7 @@ class ApiCommand(commands.Cog):
         self.bot = bot
 
     @commands.command()
+    @commands.guild_only()
     async def api(self, ctx: discord.ApplicationContext, query: str):
 
         url = f"https://v3.blox.link/developer/discord/{query}"

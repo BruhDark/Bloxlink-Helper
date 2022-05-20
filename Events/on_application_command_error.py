@@ -23,6 +23,20 @@ class OnApplicationCmdError(commands.Cog):
                 description=f"{x} This command is on cooldown! Try again in {round(error.retry_after)} seconds.", color=COLORS["error"])
             await ctx.respond(embed=Embed, ephemeral=True)
 
+        elif isinstance(error, commands.NoPrivateMessage):
+
+            x = EMOTES["error"]
+            Embed = discord.Embed(
+                description=f"{x} This command is only available in a guild!", color=COLORS["error"])
+            await ctx.respond(embed=Embed, ephemeral=True)
+
+        elif isinstance(error, commands.CheckFailure):
+
+            x = EMOTES["error"]
+            Embed = discord.Embed(
+                description=f"{x} {error}", color=COLORS["error"])
+            await ctx.respond(embed=Embed, ephemeral=True)
+
         else:
             x = EMOTES["error"]
             

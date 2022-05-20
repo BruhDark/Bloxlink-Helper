@@ -13,6 +13,7 @@ class Whois(commands.Cog):
         self.category = "Miscellaneous"
 
     @slash_command()
+    @commands.guild_only()
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def whois(self, ctx: commands.Context, member: Option(discord.Member, "Specify a user", required=False, default=None)):
         """Get information about an user."""
