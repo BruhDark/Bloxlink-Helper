@@ -1,13 +1,9 @@
 import os
-
+from time import sleep
+from Resources.mongoFunctions import database
 import discord
-import pymongo
 from discord.ext import commands
-
-client = pymongo.MongoClient(
-    "mongodb+srv://bloxlinkHelper:ZR8otSoEzWCuGLye@cluster0.gee6w.mongodb.net/")
-database = client["bloxlinkHelper"]
-
+from config import AUTHORIZED
 
 class Bot(commands.Bot):
     def __init__(self):
@@ -20,7 +16,8 @@ class Bot(commands.Bot):
             roles=False,
             replied_user=True,
         ),
-            help_command=None)
+            help_command=None,
+            debug_guilds=[881968885279117342])
         self.database = database
 
         for event in os.listdir("Events"):
@@ -33,6 +30,13 @@ class Bot(commands.Bot):
                 self.load_extension(f"Cogs.{command[:-3]}")
                 print(f"Loaded cog: {command}")
 
+    async def is_owner(self, user: discord.User):
+        if user.id in AUTHORIZED:
+            return True
+
+        return await super().is_owner(user)
+
 
 bot = Bot()
-bot.run("OTQzMTUwMDcyODI3MzU1MTc3.Ygu29A.mVwKQoVxIHCI5ztBt-rBb6wlsug")
+bot.run("OTEyODQ2MzU5Nzg5NDYxNTI1.YZ14bA.rDkuSJUXuvXvwhzXMoKICAkGxjI")
+# OTQzMTUwMDcyODI3MzU1MTc3.Ygu29A.mVwKQoVxIHCI5ztBt-rBb6wlsug

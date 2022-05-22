@@ -1,6 +1,7 @@
 import datetime
 import traceback
 import sys
+from types import NoneType
 
 import discord
 from config import COLORS, EMOTES
@@ -15,6 +16,10 @@ class OnCmdError(commands.Cog):
     async def on_command_error(self, ctx: commands.Context, error):
 
         tb = traceback.format_exc()
+        if type(tb) == NoneType:
+            tb = error
+            raise error
+        tb = "".join(tb)
 
         if isinstance(error, commands.CommandOnCooldown):
 
@@ -35,12 +40,19 @@ class OnCmdError(commands.Cog):
                 description=f"{x} This command is only available in a guild!", color=COLORS["error"])
             await ctx.send(embed=Embed)
 
+        elif isinstance(error, commands.CheckFailure):
+            x = EMOTES["error"]
+            Embed = discord.Embed(
+                description=f"{x} {error}", color=COLORS["error"])
+            await ctx.send(embed=Embed)
+
         else:
             x = EMOTES["error"]
 
             Embed = discord.Embed(
                 description=f"{x} Something went wrong\n\n```py\n{tb}```", color=COLORS["error"])
             await ctx.send(embed=Embed)
+            
 
 
 def setup(bot):

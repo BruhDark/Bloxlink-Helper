@@ -6,6 +6,7 @@ DESCRIPTION = "Bloxlink HQ's tags bot."
 EMOTES = {
     "success": "<:BloxlinkHappy:823633735446167552>",
     "error": "<:BloxlinkDead:823633973967716363>",
+    "success2": "<a:BHDone:976817167116947507>",
 
     "warning": ":warning:",
     "info": "<:info:881973831974154250>",
@@ -44,10 +45,11 @@ COLORS = {
     }
 
 RELEASESCOLORS = {
-    "943150072827355177": discord.Colour.from_rgb(58, 61, 255)
+    "943150072827355177": discord.Colour.from_rgb(58, 61, 255),
+    "912846359789461525": discord.Colour.from_rgb(58, 61, 255)
 }
 
-AUTHORIZED = [449245847767482379]
+AUTHORIZED = [449245847767482379, 431480956990390272, 156872400145874944]
 
 BADGES = {
     "bot": "<:Bot:928765691778203719>",

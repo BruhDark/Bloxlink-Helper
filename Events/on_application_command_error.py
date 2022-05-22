@@ -1,5 +1,6 @@
 import traceback
 import sys
+from types import NoneType
 
 import discord
 from config import COLORS, EMOTES
@@ -14,6 +15,10 @@ class OnApplicationCmdError(commands.Cog):
     async def on_application_command_error(self, ctx, error):
 
         tb = traceback.format_exception(error)
+        
+        if type(tb) == NoneType:
+            tb = error
+            raise error
         tb = "".join(tb)
 
         if isinstance(error, commands.CommandOnCooldown):
