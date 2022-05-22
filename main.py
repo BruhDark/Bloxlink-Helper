@@ -16,8 +16,7 @@ class Bot(commands.Bot):
             roles=False,
             replied_user=True,
         ),
-            help_command=None,
-            debug_guilds=[881968885279117342])
+            help_command=None)
         self.database = database
 
         for event in os.listdir("Events"):
@@ -38,5 +37,4 @@ class Bot(commands.Bot):
 
 
 bot = Bot()
-bot.run("OTEyODQ2MzU5Nzg5NDYxNTI1.YZ14bA.rDkuSJUXuvXvwhzXMoKICAkGxjI")
-# OTQzMTUwMDcyODI3MzU1MTc3.Ygu29A.mVwKQoVxIHCI5ztBt-rBb6wlsug
+bot.run("OTQzMTUwMDcyODI3MzU1MTc3.Ygu29A.mVwKQoVxIHCI5ztBt-rBb6wlsug")
