@@ -13,7 +13,7 @@ class Misc(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.command()
+    @commands.command(aliases=["restrict", "r"])
     @commands.is_owner()
     async def blacklist(self, ctx: commands.Context, user: discord.Member, *, reason: str = None):
         """Blacklist a user from using the bot."""
@@ -36,7 +36,7 @@ class Misc(commands.Cog):
             return
 
 
-    @commands.command()
+    @commands.command(aliases=["rblacklist"])
     @commands.is_owner()
     async def unblacklist(self, ctx: commands.Context, user: discord.Member):
         """Unblacklist a user from using the bot."""
@@ -55,7 +55,7 @@ class Misc(commands.Cog):
             embed = discord.Embed(description=f"{x} <@{user}> ({user}) is not on the blacklist.", color=COLORS["error"])
             await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(aliases=["blist"])
     @commands.is_owner()
     async def blacklistlist(self, ctx: commands.Context):
         """List all blacklisted users."""
