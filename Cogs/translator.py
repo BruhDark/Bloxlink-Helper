@@ -32,7 +32,7 @@ class Translator(commands.Cog):
             'x-rapidapi-host': "google-translate1.p.rapidapi.com"
         }
 
-        with aiohttp.ClientSession() as session:
+        async with aiohttp.ClientSession() as session:
             async with session.post(url, data=payload, headers=headers) as response:
                 data = await response.json()
 
