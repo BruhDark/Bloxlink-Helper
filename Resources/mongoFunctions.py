@@ -44,6 +44,16 @@ async def get_aliases(ctx: discord.ApplicationContext) -> list:
 
     return [alias for alias in aliases if alias.startswith(ctx.value.lower())]
 
+async def return_all(collection: str):
+    """Returns all documents"""
+    collection = database[collection]
+    find = collection.find()
+    docs = []
+    for doc in await find.to_list(length=None):
+        docs.append(doc)
+
+    return docs
+
 async def return_all_tags():
     """Returns all tags"""
     find = collection.find()
@@ -53,13 +63,15 @@ async def return_all_tags():
 
     return tags
 
-async def insert_one(doc: dict):
+async def insert_one(collection: str, doc: dict):
     """Inserts a new document"""
+    collection = database[collection]
     find = await collection.insert_one(doc)
     return find
 
-async def find_one(check: dict):
+async def find_one(collection: str, check: dict):
     """Finds a document"""
+    collection = database[collection]
     find = await collection.find_one(check)
     return find
 
@@ -70,8 +82,9 @@ async def find_tag(name: str):
         find = await collection.find_one({"aliases": name})
     return find
 
-async def delete_one(query: dict):
+async def delete_one(collection: str, query: dict):
     """Deletes a document"""
+    collection = database[collection]
     find = await collection.delete_one(query)
     return find
 
