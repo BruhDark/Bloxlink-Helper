@@ -32,16 +32,11 @@ class Tags(commands.Cog):
     async def delete(self, ctx: discord.ApplicationContext, name: Option(str, "The tag name you wish to remove", autocomplete=get_tags)):
 
         name = name.lower()
-        check = {"name": name}
-
-        find = await find_one(check)
+        find = await find_tag(name)
 
         if find:
 
             query = {"name": name}
-            oldContent = find["content"]
-            createdBy = find["author"]
-            id = find["_id"]
 
             await delete_one(query)
             success = EMOTES["success"]
@@ -107,7 +102,7 @@ class Tags(commands.Cog):
 
         name = name.lower()
 
-        find = await find_tag(name)
+        find = await find_tag("tags", name)
 
         if find:
 
@@ -139,7 +134,7 @@ class Tags(commands.Cog):
         alias = alias.lower()
         check = {"name": name}
 
-        find = await find_one(check)
+        find = await find_one("tags", check)
         updatedTime = round(time.time() * 1)
 
         if find:

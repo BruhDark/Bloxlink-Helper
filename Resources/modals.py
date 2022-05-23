@@ -36,16 +36,16 @@ class TagCreateModal(Modal):
         check = {"name": name}
         check2 = {"aliases": aliases}
 
-        find2 = await find_one(check) if aliases[0] != "None" else False
+        find2 = await find_one("tags", check2) if aliases[0] != "None" else False
 
-        if await find_one(check) or find2:
+        if await find_one("tags", check) or find2:
             error = EMOTES["error"]
             embed = discord.Embed(
                 description=f"{error} A tag with that name/alias already exists!", color=COLORS["error"])
             await interaction.response.send_message(embed=embed)
 
         else:
-            item = await insert_one(newTag)
+            item = await insert_one("tags", newTag)
             aliases = ", ".join(aliases)
 
             embed = discord.Embed(
@@ -72,7 +72,7 @@ class TagEditModal(Modal):
         content = self.children[1].value.replace("\\n", "\n")
 
         check = {"name": name}
-        find = await find_one(check)
+        find = await find_one("tags", check)
 
         if find:
             await update_tag(
