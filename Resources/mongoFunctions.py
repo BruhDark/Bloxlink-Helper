@@ -11,7 +11,7 @@ async def get_tags(ctx: discord.ApplicationContext) -> list:
     """ Get all tags names"""
     def jaro_sort(key):
         return jaro.jaro_winkler_metric(key, ctx.value.lower())
-        
+
     tags = []
     async for tag in collection.find():
         tags.append(tag["name"])
@@ -46,8 +46,12 @@ async def get_aliases(ctx: discord.ApplicationContext) -> list:
 
 async def return_all_tags():
     """Returns all tags"""
-    find = await collection.find()
-    return find
+    find = collection.find()
+    tags = []
+    for tag in await find.to_list(length=None):
+        tags.append(tag)
+
+    return tags
 
 async def insert_one(doc: dict):
     """Inserts a new document"""

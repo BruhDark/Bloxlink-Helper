@@ -134,7 +134,7 @@ class Tags(commands.Cog):
     async def alias(self, ctx: discord.ApplicationContext, name: Option(str, "The tag name you wish to edit its alias", autocomplete=get_tags), choice: Option(str, "Add or remove an alias?", choices=["add", "remove"]), alias: Option(str, "New alias or alias to be removed", autocomplete=get_aliases)):
 
         await ctx.defer()
-        
+
         name = name.lower()
         alias = alias.lower()
         check = {"name": name}
@@ -220,7 +220,8 @@ class Tags(commands.Cog):
         pagPages = []
         tags = []
 
-        for tag in await return_all_tags():
+        tagsList  = await return_all_tags()
+        for tag in tagsList:
             tags.append(tag["name"])
 
         tags.sort()
@@ -232,7 +233,7 @@ class Tags(commands.Cog):
         tagsEmbed.set_footer(text="Use the paginator to go over the tags")
         pagPages.append(tagsEmbed)
 
-        async for findTag in tags:
+        for findTag in tags:
 
             check = {"name": findTag}
             find = await find_one(check)
@@ -243,7 +244,7 @@ class Tags(commands.Cog):
             author = await self.bot.get_or_fetch_user(find["author"])
             createdAt = find["createdAt"]
             lastUpdateAt = find["lastUpdateAt"]
-            lastUpdateBy = self.bot.get_user(find["lastUpdateBy"])
+            lastUpdateBy = await self.bot.get_or_fetch_user(find["lastUpdateBy"])
 
             embed = discord.Embed(
                 title=f":paperclips: Aliases: {aliases}", description=f":page_with_curl: Tag content:\n{content}", timestamp=datetime.datetime.utcnow(), color=COLORS["info"])
