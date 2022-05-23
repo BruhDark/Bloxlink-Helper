@@ -18,18 +18,18 @@ class Misc(commands.Cog):
     async def blacklist(self, ctx: commands.Context, user: discord.Member, *, reason: str = None):
         """Blacklist a user from using the bot."""
 
-        user = self.bot.get_or_fetch_user(user) if type(user) == int else user
+        user = user if type(user) == int else user.id
 
-        find = await find_one("blacklist", {"user": user.id})
+        find = await find_one("blacklist", {"user": user})
         if find:
 
-            embed = discord.Embed(description=f"{x} {user.mention} is already blacklisted.", color=COLORS["error"])
+            embed = discord.Embed(description=f"{x} <@{user}> is already blacklisted.", color=COLORS["error"])
             await ctx.send(embed=embed)
             return
         
         else:
             insert = await insert_one("blacklist", {"user": user.id, "reason": reason})
-            embed = discord.Embed(description=f"{s} {user.mention} has been blacklisted.", color=COLORS["success"], timestamp=datetime.datetime.utcnow())
+            embed = discord.Embed(description=f"{s} <@{user}> has been blacklisted.", color=COLORS["success"], timestamp=datetime.datetime.utcnow())
             embed.add_field(name=":clipboard: Reason", value=reason)
             embed.set_footer(text=f"ID: {insert.inserted_id}")
             await ctx.send(embed=embed)
@@ -41,18 +41,18 @@ class Misc(commands.Cog):
     async def unblacklist(self, ctx: commands.Context, user: discord.Member):
         """Unblacklist a user from using the bot."""
 
-        user = self.bot.get_or_fetch_user(user) if type(user) == int else user
+        user = user if type(user) == int else user.id
 
         find = await find_one("blacklist", {"user": user.id})
         if find:
             await delete_one("blacklist", {"user": user.id})
             s = EMOTES["success2"]
-            embed = discord.Embed(description=f"{s} {user.mention} ({user.id}) has been removed from the blacklist.", color=COLORS["success"])
+            embed = discord.Embed(description=f"{s} <@{user}> ({user.id}) has been removed from the blacklist.", color=COLORS["success"])
             await ctx.send(embed=embed)
 
         else:
             s = EMOTES["error"]
-            embed = discord.Embed(description=f"{x} {user.mention} ({user.id}) is not on the blacklist.", color=COLORS["error"])
+            embed = discord.Embed(description=f"{x} <@{user}> ({user}) is not on the blacklist.", color=COLORS["error"])
             await ctx.send(embed=embed)
 
     @commands.command()
