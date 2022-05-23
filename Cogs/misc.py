@@ -51,7 +51,7 @@ class Misc(commands.Cog):
             await ctx.send(embed=embed)
 
         else:
-            s = EMOTES["fail"]
+            s = EMOTES["error"]
             embed = discord.Embed(description=f"{x} {user.mention} ({user.id}) is not on the blacklist.", color=COLORS["error"])
             await ctx.send(embed=embed)
 
@@ -64,7 +64,7 @@ class Misc(commands.Cog):
 
         find = await return_all("blacklist")
         for doc in find:
-            embed = discord.Embed(title="{info} Blacklisted users", color=COLORS["info"])
+            embed = discord.Embed(title=f"{info} Blacklisted users", color=COLORS["info"])
 
             user = await self.bot.get_or_fetch_user(doc["user"])
             reason = doc["reason"] if doc["reason"] else "None"
