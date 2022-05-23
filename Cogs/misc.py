@@ -15,7 +15,7 @@ class Misc(commands.Cog):
 
     @commands.command()
     @commands.is_owner()
-    async def blacklist(self, ctx: commands.Context, choice: str, user: discord.Member, *, reason: str = None):
+    async def blacklist(self, ctx: commands.Context, user: discord.Member, *, reason: str = None):
         """Blacklist a user from using the bot."""
 
         user = self.bot.get_or_fetch_user(user) if type(user) == int else user
@@ -29,9 +29,9 @@ class Misc(commands.Cog):
         
         else:
             insert = await insert_one("blacklist", {"user": user.id, "reason": reason})
-            embed = discord.Embed(description=f"{s} {user.mention} has been blacklisted.", color=COLORS["success"])
+            embed = discord.Embed(description=f"{s} {user.mention} has been blacklisted.", color=COLORS["success"], timestamp=datetime.datetime.utcnow())
             embed.add_field(name=":clipboard: Reason", value=reason)
-            embed.add_field(name="Item ID", value=insert.inserted_id)
+            embed.set_footer(text=f"ID: {insert.inserted_id}")
             await ctx.send(embed=embed)
             return
 
@@ -60,13 +60,15 @@ class Misc(commands.Cog):
     async def blacklistlist(self, ctx: commands.Context):
         """List all blacklisted users."""
 
+        info = EMOTES["info"]
+
         find = await return_all("blacklist")
         for doc in find:
-            embed = discord.Embed(title="Blacklisted users", color=COLORS["info"])
+            embed = discord.Embed(title="{info} Blacklisted users", color=COLORS["info"])
 
             user = await self.bot.get_or_fetch_user(doc["user"])
             reason = doc["reason"] if doc["reason"] else "None"
-            embed.add_field(name=f"User: {user.name}#{user.discriminator} ({user.id})", value=f"Reason: {reason}")
+            embed.add_field(name=f"👤 User: {user.name}#{user.discriminator} ({user.id})", value=f":clipboard: Reason: {reason}")
 
         await ctx.send(embed=embed)
         return
