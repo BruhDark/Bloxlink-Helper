@@ -12,7 +12,7 @@ from config import EMOTES, COLORS, RELEASESCOLORS, DESCRIPTION
 
 
 class Stats(commands.Cog):
-    def __init__(self,bot):
+    def __init__(self, bot):
         self.bot = bot
 
     @slash_command()
@@ -67,6 +67,7 @@ class Stats(commands.Cog):
             description=f"🏓 Latency: `{latency}ms`", color=COLORS['info'])
 
         await ctx.respond(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(Stats(bot))
