@@ -77,6 +77,7 @@ async def find_one(collection: str, check: dict):
 
 async def find_tag(name: str):
     """Finds a tag. If not found by name, finds by aliases"""
+    name = name.lower()
     find = await collection.find_one({"name": name})
     if find is None:
         find = await collection.find_one({"aliases": name})
