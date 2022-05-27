@@ -36,13 +36,18 @@ class Translator(commands.Cog):
             async with session.post(url, data=payload, headers=headers) as response:
                 data = await response.json()
 
-        if data["status"] == 200:
+        try:
+          error = data["error"]["code"]
+        except KeyError:
+            error = None
+        
+        if error is None:
 
             translatedText = data["data"]["translations"][0]["translatedText"]
             translatedText.replace("&#39", "'")
             translatedText.replace("&#39;", "'")
-            translatedText.enconde("utf-8")
-            detectedSourceLanguage = response["data"]["translations"][0]["detectedSourceLanguage"]
+            translatedText.encode(encoding="UTF-8")
+            detectedSourceLanguage = data["data"]["translations"][0]["detectedSourceLanguage"]
 
             infoEmote = EMOTES["info"]
             embed = discord.Embed(timestamp=datetime.datetime.utcnow(
@@ -51,15 +56,15 @@ class Translator(commands.Cog):
                 text=f"Requested by: {ctx.author}", icon_url=ctx.author.display_avatar.url)
             await ctx.respond(embed=embed)
 
-        elif data["status"] == 400:
-            message = response["error"]["message"]
+        elif error == 400:
+            message = data["error"]["message"]
             x = EMOTES["error"]
             embed = discord.Embed(
                 description=f"{x} {message}", color=COLORS["error"])
 
             await ctx.respond(embed=embed)
 
-        elif "quota" in response["message"]:
+        elif "quota" in data["error"]["message"]:
             x = EMOTES["error"]
             embed = discord.Embed(
                 description=f"{x} Exhausted motnhly quota", color=COLORS["error"])
@@ -68,7 +73,7 @@ class Translator(commands.Cog):
         else:
             x = EMOTES["error"]
             embed = discord.Embed(
-                description=f"{x} Something went wrong:\n```py\n{response}```", color=COLORS["error"])
+                description=f"{x} Something went wrong:\n```py\n{data}```", color=COLORS["error"])
             await ctx.respond(embed=embed)
 
 
