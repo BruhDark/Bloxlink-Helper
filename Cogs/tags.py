@@ -8,7 +8,7 @@ from discord.ext import commands, pages
 from Resources.CheckFailure import is_staff, is_blacklisted
 from Resources.modals import TagCreateModal, TagEditModal
 from Resources.mongoFunctions import get_aliases, get_tags, get_tags_and_alias, find_one, find_tag, update_tag, delete_one, return_all_tags
-
+from Resources.paginator import CustomPaginator
 
 class Tags(commands.Cog):
     def __init__(self, bot):
@@ -102,7 +102,7 @@ class Tags(commands.Cog):
 
         name = name.lower()
 
-        find = await find_tag("tags", name)
+        find = await find_tag(name)
 
         if find:
 
@@ -230,8 +230,7 @@ class Tags(commands.Cog):
 
         for findTag in tags:
 
-            check = {"name": findTag}
-            find = await find_one(check)
+            find = await find_tag(findTag)
 
             name = find["name"]
             aliases = ", ".join(find["aliases"])
@@ -244,7 +243,7 @@ class Tags(commands.Cog):
             embed = discord.Embed(
                 title=f":paperclips: Aliases: {aliases}", description=f":page_with_curl: Tag content:\n{content}", timestamp=datetime.datetime.utcnow(), color=COLORS["info"])
             embed.set_author(
-                icon_url=LINKS["success"], name=f"Tag information for: {name}")
+                icon_url=emote, name=f"Tag information for: {name}")
             embed.add_field(name=":clipboard: Created By",
                             value=f"{author.mention} ({author.id})")
             embed.add_field(name=":safety_vest: Last Update By",
@@ -258,7 +257,7 @@ class Tags(commands.Cog):
 
             pagPages.append(embed)
 
-        paginator = pages.Paginator(
+        paginator = CustomPaginator(
             pages=pagPages, disable_on_timeout=True, timeout=60, show_disabled=False)
         await paginator.respond(ctx.interaction, ephemeral=False)
 
