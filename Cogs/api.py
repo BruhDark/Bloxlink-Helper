@@ -1,5 +1,6 @@
 import discord
 import aiohttp
+import datetime
 from config import COLORS, EMOTES, LINKS
 from discord.ext import commands
 
@@ -18,10 +19,14 @@ class ApiCommand(commands.Cog):
         async with aiohttp.ClientSession() as session:
             async with session.get(url, headers=headers) as response:
                 data = await response.text()
+                headers = response.headers
+                quota = headers["quota-remaining"]
+                
 
-                embed = discord.Embed(description=f"Sent request to {url}.\n\n**Response**\n```json\n{data}```", color=COLORS["info"])
+                embed = discord.Embed(timestamp=datetime.datetime.utcnow(), description=f"Sent request to {url}.\n\n**Response**\n```json\n{data}```", color=COLORS["info"])
                 embed.set_author(icon_url=LINKS["success"],
                          name="Successfully sent request")
+                embed.set_footer(text=f"Quota remaining: {quota} requests")
 
                 await ctx.send(embed=embed)
 
