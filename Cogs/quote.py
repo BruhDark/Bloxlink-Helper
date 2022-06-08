@@ -2,8 +2,31 @@ import asyncio
 import re
 
 import discord
-from config import COLORS
+from config import COLORS, EMOTES
 from discord.ext import commands
+
+x = EMOTES["error"]
+
+class ButtonDelete(discord.ui.View):
+    def __init__(self, message: discord.Message):
+        super().__init__(timeout=15.0)
+        self.command = message
+
+
+    async def on_timeout(self) -> None:
+        await self.message.edit(view=None)
+
+    async def interaction_check(self, interaction: discord.Interaction) -> bool:
+        if self.command.author != interaction.user:
+            await interaction.response.send_message(content=f"{x} You can not use this button!", ephemeral=True)
+            return False
+        return True
+
+    @discord.ui.button(label="​", emoji="🗑️", style=discord.ButtonStyle.danger, disabled=False)
+    async def callback(self, button: discord.ui.Button, interaction: discord.Interaction):
+        await self.command.delete()
+        await interaction.response.edit_message(view=None)
+
 
 
 class Quote(commands.Cog):
@@ -48,7 +71,10 @@ class Quote(commands.Cog):
                             name=f"{msg.author} in {msg.channel}", icon_url=msg.author.avatar.url)
                         embed.set_footer(
                             text=f"Quoted by: {message.author}", icon_url=message.author.display_avatar.url)
-                        await message.channel.send(embed=embed)
+                        
+                        view = ButtonDelete(message)
+                        message = await message.channel.send(embed=embed, view=view)
+                        view.message = message
 
 
 def setup(bot):

@@ -18,9 +18,14 @@ class Translator(commands.Cog):
     async def get_langs(self, ctx: discord.AutocompleteContext):
         return [lang for lang in langs if lang.startswith(ctx.value.lower())]
 
-    @slash_command(description="Translate text to a language")
+    @commands.command(aliases=["tr"])
     @commands.guild_only()
-    async def translate(self, ctx: discord.ApplicationContext, target: Option(str, "Language you want the text get translated to", autocomplete=get_langs), *, query: Option(str, "Text you want to translate")):
+    async def translate(self, ctx: commands.Context, target: str, *, query: str):
+
+        if target.lower() not in langs:
+            languages = ", ".join(langs)
+            await ctx.reply(embed=discord.Embed(description=f"{EMOTES['error']} Target language not found. Make sure it is one of these languages: ```{languages}```", color=COLORS["error"]))
+            return
 
         url = "https://google-translate1.p.rapidapi.com/language/translate/v2"
 
@@ -44,17 +49,15 @@ class Translator(commands.Cog):
         if error is None:
 
             translatedText = data["data"]["translations"][0]["translatedText"]
-            translatedText.replace("&#39", "'")
-            translatedText.replace("&#39;", "'")
-            translatedText.encode(encoding="UTF-8")
+            translatedText.encode(encoding="utf-8")
             detectedSourceLanguage = data["data"]["translations"][0]["detectedSourceLanguage"]
 
             infoEmote = EMOTES["info"]
             embed = discord.Embed(timestamp=datetime.datetime.utcnow(
-            ), color=COLORS["info"], description=f"{infoEmote} Processing text from `{detectedSourceLanguage}`(detected) to `{target}`\n\n**Result:** \n`{translatedText}`")
+            ), color=COLORS["info"], description=f"{infoEmote} Processing text from `{detectedSourceLanguage}` (detected) to `{target}`\n\n**Result:** \n`{translatedText}`")
             embed.set_footer(
                 text=f"Requested by: {ctx.author}", icon_url=ctx.author.display_avatar.url)
-            await ctx.respond(embed=embed)
+            await ctx.reply(embed=embed, mention_author=False)
 
         elif error == 400:
             message = data["error"]["message"]
@@ -62,19 +65,19 @@ class Translator(commands.Cog):
             embed = discord.Embed(
                 description=f"{x} {message}", color=COLORS["error"])
 
-            await ctx.respond(embed=embed)
+            await ctx.send(embed=embed)
 
         elif "quota" in data["error"]["message"]:
             x = EMOTES["error"]
             embed = discord.Embed(
                 description=f"{x} Exhausted motnhly quota", color=COLORS["error"])
-            await ctx.respond(embed=embed)
+            await ctx.send(embed=embed)
 
         else:
             x = EMOTES["error"]
             embed = discord.Embed(
                 description=f"{x} Something went wrong:\n```py\n{data}```", color=COLORS["error"])
-            await ctx.respond(embed=embed)
+            await ctx.send(embed=embed)
 
 
 def setup(bot):
