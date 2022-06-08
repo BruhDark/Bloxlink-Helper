@@ -4,8 +4,6 @@ import discord
 
 import math
 import time
-import urllib
-import json
 import datetime
 
 from config import EMOTES, COLORS, RELEASESCOLORS, DESCRIPTION
