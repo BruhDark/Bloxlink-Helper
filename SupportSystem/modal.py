@@ -14,7 +14,7 @@ class FAQCreateModal(Modal):
 
     async def callback(self, interaction: discord.Interaction):
             
-            question = self.children[0].value.lower()
+            question = self.children[0].value
             answer = self.children[1].value.replace("\\n", "\n")
     
             newFAQ = {"q": question, "a": answer}

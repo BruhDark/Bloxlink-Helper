@@ -24,7 +24,7 @@ class ThreadButton(discord.ui.Button):
 
         thread = await interaction.channel.create_thread(name=f"{interaction.user.name} {self.topic}", reason="Support Thread", type=discord.ChannelType.private_thread)
 
-        embedT = discord.Embed(color=COLORS["info"], timestamp=datetime.utcnow(), title="Support Thread", description=f"Thread created by {interaction.user.mention}. Topic: {self.topic}. Thread: {thread.mention}")
+        embedT = discord.Embed(color=COLORS["info"], timestamp=datetime.utcnow(), title="Support Thread", description=f"Thread created by {interaction.user.mention}.\nTopic: {self.topic}.\nThread: {thread.mention}")
         Lchannel = discord.utils.get(interaction.guild.channels, name="support-threads")
         log = await Lchannel.send(embed=embedT)
         
@@ -79,7 +79,7 @@ class CloseThreadView(View):
         await interaction.response.send_message("<:padlock:987837727741464666> This thread has been marked as closed.")
 
         await self.thread.archive(locked=True)
-        embedT = discord.Embed(color=COLORS["error"], timestamp=datetime.utcnow(), title="Support Thread Closed", description=f"Thread created by: <@{user}>. Topic: {topic}. Thread: {self.thread.mention}")
+        embedT = discord.Embed(color=COLORS["error"], timestamp=datetime.utcnow(), title="Support Thread Closed", description=f"Thread created by: <@{user}>.\nTopic: {topic}.\nThread: {self.thread.mention}")
         embedT.set_footer(text=f"Thread closed by: {interaction.user.name}#{interaction.user.discriminator}", icon_url=interaction.user.display_avatar.url)
         Lchannel = discord.utils.get(interaction.guild.channels, name="support-threads")
         
