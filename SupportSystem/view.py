@@ -24,7 +24,11 @@ class ThreadButton(discord.ui.Button):
 
         thread = await interaction.channel.create_thread(name=f"{interaction.user.name} {self.topic}", reason="Support Thread", type=discord.ChannelType.private_thread)
 
-        embedT = discord.Embed(color=COLORS["info"], timestamp=datetime.utcnow(), title="Support Thread", description=f"Thread created by {interaction.user.mention}.\nTopic: {self.topic}.\nThread: {thread.mention}")
+        embedT = discord.Embed(color=COLORS["info"], timestamp=datetime.utcnow(), title="Support Thread")
+        embedT.add_field(name="<:user:988229844301131776> Created By", text=interaction.user.mention)
+        embedT.add_field(name="<:help:988166431109681214> Topic", text=self.topic)
+        embedT.add_field(name="<:thread:988229846188564500> Thread", text=thread.mention)
+        
         Lchannel = discord.utils.get(interaction.guild.channels, name="support-threads")
         log = await Lchannel.send(embed=embedT)
         
@@ -64,26 +68,36 @@ class CloseThreadView(View):
         super().__init__(timeout=None)
         self.thread: discord.Thread = thread
 
-    @discord.ui.button(style=ButtonStyle.red, label=" ", emoji="<:padlock:987837727741464666>")
+    @discord.ui.button(style=ButtonStyle.red, label="​", emoji="<:padlock:987837727741464666>")
     async def ct_callback(self, button: discord.Button, interaction: discord.Interaction):
 
         if not interaction.user.guild_permissions.manage_threads:
-            await interaction.response.send_message("You do not have permission to close this thread")
+            await interaction.response.send_message("<:BloxlinkDead:823633973967716363> You do not have permission to close this thread.")
             return
+        
+        button.disabled = True
         
         object = await find_one("support-users", {"thread": self.thread.id})
         user = object["user"]
         topic = self.thread.name.split(" ")[1]
 
         await delete_one("support-users", {"thread": self.thread.id})
-        await interaction.response.send_message("<:padlock:987837727741464666> This thread has been marked as closed.")
+        await interaction.response.edit_message(view=self)
+        await interaction.followup.send("<:padlock:987837727741464666> This thread has been marked as closed.")
 
         await self.thread.archive(locked=True)
-        embedT = discord.Embed(color=COLORS["error"], timestamp=datetime.utcnow(), title="Support Thread Closed", description=f"Thread created by: <@{user}>.\nTopic: {topic}.\nThread: {self.thread.mention}")
-        embedT.set_footer(text=f"Thread closed by: {interaction.user.name}#{interaction.user.discriminator}", icon_url=interaction.user.display_avatar.url)
+        
+        embedT = discord.Embed(color=COLORS["error"], timestamp=datetime.utcnow(), title="Support Thread Closed")
+        embedT.add_field(name="<:user:988229844301131776> Created By", text=f"<@{user}>")
+        embedT.add_field(name="<:help:988166431109681214> Topic", text=topic)
+        embedT.add_field(name="<:thread:988229846188564500> Thread", text=self.thread.mention)
+        embedT.add_field(name="<:user:988229844301131776> Closed By", text=f"{interaction.user.mention} ({interaction.user.id})")
+
         Lchannel = discord.utils.get(interaction.guild.channels, name="support-threads")
         
-        message = await Lchannel.fetch_message(object["log"])
+        message = interaction.client.get_message(object["log"])
+        message = await Lchannel.fetch_message(object["log"]) if message is None else message
+
         await message.edit(embed=embedT)
 
 class FAQView(View):
@@ -113,7 +127,7 @@ class FAQView(View):
                 qs.append(f"**Q{str(qsn + 1)}** - {q}")
 
             embed = discord.Embed(color=COLORS["info"], title="Verification Related Questions", description="\n".join(qs))
-            embed.set_footer(text="Did not find an asnwer? Click the Get Support button to create a support thread.", icon_url=LINKS["other"])
+            embed.set_footer(text="Did not find an answer? Click the Get Support button to create a support thread.", icon_url=LINKS["other"])
             view = await format_buttons(questions)
             view.add_item(ThreadButton("Verification"))
             await interaction.followup.send(embed=embed, view=view, ephemeral=True)
