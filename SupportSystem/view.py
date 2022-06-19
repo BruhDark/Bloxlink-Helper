@@ -22,7 +22,7 @@ class ThreadButton(discord.ui.Button):
             await interaction.followup.send(f"<:BloxlinkDead:823633973967716363> You are already in a support thread. Please use head to {thread.mention} to join the thread.", ephemeral=True)
             return
 
-        thread = await interaction.channel.create_thread(name=f"{interaction.user.name} {self.topic}", reason="Support Thread", type=discord.ChannelType.public_thread)
+        thread = await interaction.channel.create_thread(name=f"{interaction.user.name} {self.topic}", reason="Support Thread", type=discord.ChannelType.private_thread)
 
         embedT = discord.Embed(color=COLORS["info"], timestamp=datetime.utcnow(), title="Support Thread", description=f"Thread created by {interaction.user.mention}. Topic: {self.topic}. Thread: {thread.mention}")
         Lchannel = discord.utils.get(interaction.guild.channels, name="support-threads")
