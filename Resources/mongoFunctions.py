@@ -89,6 +89,12 @@ async def delete_one(collection: str, query: dict):
     find = await collection.delete_one(query)
     return find
 
+async def update_one(collection: str, check: dict, update: dict):
+    """Updates a document"""
+    collection = database[collection]
+    find = await collection.find_one_and_update(check, {"$set": update})
+    return find
+
 async def update_tag(check: dict, update: dict):
     """Updates a document"""
     find = await collection.find_one_and_update(check, {"$set": update})

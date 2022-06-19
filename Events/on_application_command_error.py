@@ -12,14 +12,9 @@ class OnApplicationCmdError(commands.Cog):
         self.bot = bot
 
     @commands.Cog.listener()
-    async def on_application_command_error(self, ctx, error):
+    async def on_application_command_error(self, ctx, error: Exception):
 
-        tb = traceback.format_exception(error)
-        
-        if type(tb) == NoneType:
-            tb = error
-            raise error
-        tb = "".join(tb)
+        tb = ''.join(traceback.format_tb(error.__traceback__))
 
         if isinstance(error, commands.CommandOnCooldown):
 

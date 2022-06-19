@@ -87,5 +87,7 @@ class TagEditModal(Modal):
         else:
             error = EMOTES["error"]
             embed = discord.Embed(
-                description=f"{error} A tag with that name does not exist!", color=COLORS["error"])
+                description=f"{error} A tag with that name does not exist! Try again.", color=COLORS["error"])
+
+            embed.add_field(name="Oops! Here is what you typed:", value=f"```{content}```")
             await interaction.response.send_message(embed=embed)

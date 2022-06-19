@@ -15,11 +15,7 @@ class OnCmdError(commands.Cog):
     @commands.Cog.listener()
     async def on_command_error(self, ctx: commands.Context, error):
 
-        tb = traceback.format_exc()
-        if type(tb) == NoneType:
-            tb = error
-            raise error
-        tb = "".join(tb)
+        tb = ''.join(traceback.format_tb(error.__traceback__))
 
         if isinstance(error, commands.CommandOnCooldown):
 
