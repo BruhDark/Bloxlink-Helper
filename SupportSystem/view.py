@@ -22,12 +22,12 @@ class ThreadButton(discord.ui.Button):
             await interaction.followup.send(f"<:BloxlinkDead:823633973967716363> You are already in a support thread. Please use head to {thread.mention} to join the thread.", ephemeral=True)
             return
 
-        thread = await interaction.channel.create_thread(name=f"{interaction.user.name} {self.topic}", reason="Support Thread", type=discord.ChannelType.private_thread)
+        thread = await interaction.channel.create_thread(name=f"{interaction.user.name} - {self.topic}", reason="Support Thread", type=discord.ChannelType.private_thread)
 
         embedT = discord.Embed(color=COLORS["info"], timestamp=datetime.utcnow(), title="Support Thread")
-        embedT.add_field(name="<:user:988229844301131776> Created By", text=interaction.user.mention)
-        embedT.add_field(name="<:help:988166431109681214> Topic", text=self.topic)
-        embedT.add_field(name="<:thread:988229846188564500> Thread", text=thread.mention)
+        embedT.add_field(name="<:user:988229844301131776> Created By", value=interaction.user.mention)
+        embedT.add_field(name="<:help:988166431109681214> Topic", value=self.topic)
+        embedT.add_field(name="<:thread:988229846188564500> Thread", value=thread.mention)
         
         Lchannel = discord.utils.get(interaction.guild.channels, name="support-threads")
         log = await Lchannel.send(embed=embedT)
@@ -79,19 +79,19 @@ class CloseThreadView(View):
         
         object = await find_one("support-users", {"thread": self.thread.id})
         user = object["user"]
-        topic = self.thread.name.split(" ")[1]
+        topic = self.thread.name.split(" - ")[1]
 
         await delete_one("support-users", {"thread": self.thread.id})
         await interaction.response.edit_message(view=self)
         await interaction.followup.send("<:padlock:987837727741464666> This thread has been marked as closed.")
 
         await self.thread.archive(locked=True)
-        
+
         embedT = discord.Embed(color=COLORS["error"], timestamp=datetime.utcnow(), title="Support Thread Closed")
-        embedT.add_field(name="<:user:988229844301131776> Created By", text=f"<@{user}>")
-        embedT.add_field(name="<:help:988166431109681214> Topic", text=topic)
-        embedT.add_field(name="<:thread:988229846188564500> Thread", text=self.thread.mention)
-        embedT.add_field(name="<:user:988229844301131776> Closed By", text=f"{interaction.user.mention} ({interaction.user.id})")
+        embedT.add_field(name="<:user:988229844301131776> Created By", value=f"<@{user}>")
+        embedT.add_field(name="<:help:988166431109681214> Topic", value=topic)
+        embedT.add_field(name="<:thread:988229846188564500> Thread", value=self.thread.mention)
+        embedT.add_field(name="<:user:988229844301131776> Closed By", value=f"{interaction.user.mention} ({interaction.user.id})")
 
         Lchannel = discord.utils.get(interaction.guild.channels, name="support-threads")
         
