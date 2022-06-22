@@ -227,7 +227,7 @@ class Tags(commands.Cog):
         tagsEmbed.set_footer(text="Use the paginator to go over the tags")
         pagPages.append(tagsEmbed)
 
-        for findTag in tags:
+        for findTag in tagsList:
 
             name = findTag["name"]
             aliases = ", ".join(findTag["aliases"])
