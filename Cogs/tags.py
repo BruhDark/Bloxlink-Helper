@@ -206,7 +206,6 @@ class Tags(commands.Cog):
     @tags.command(description="Get a tags list and a paginator")
     @commands.cooldown(1, 5, commands.BucketType.default)
     @commands.guild_only()
-    @is_staff()
     @is_blacklisted()
     async def all(self, ctx: discord.ApplicationContext):
 
@@ -230,15 +229,13 @@ class Tags(commands.Cog):
 
         for findTag in tags:
 
-            find = await find_tag(findTag)
-
-            name = find["name"]
-            aliases = ", ".join(find["aliases"])
-            content = find["content"]
-            author = await self.bot.get_or_fetch_user(find["author"])
-            createdAt = find["createdAt"]
-            lastUpdateAt = find["lastUpdateAt"]
-            lastUpdateBy = await self.bot.get_or_fetch_user(find["lastUpdateBy"])
+            name = findTag["name"]
+            aliases = ", ".join(findTag["aliases"])
+            content = findTag["content"]
+            author = await self.bot.get_or_fetch_user(findTag["author"])
+            createdAt = findTag["createdAt"]
+            lastUpdateAt = findTag["lastUpdateAt"]
+            lastUpdateBy = await self.bot.get_or_fetch_user(findTag["lastUpdateBy"])
 
             embed = discord.Embed(
                 title=f":paperclips: Aliases: {aliases}", description=f":page_with_curl: Tag content:\n{content}", timestamp=datetime.datetime.utcnow(), color=COLORS["info"])
