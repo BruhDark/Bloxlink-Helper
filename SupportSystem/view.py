@@ -1,3 +1,4 @@
+import asyncio
 from datetime import datetime
 import discord
 from discord import SelectOption
@@ -34,11 +35,14 @@ class ThreadButton(discord.ui.Button):
         
         object = await insert_one("support-users", {"user": interaction.user.id, "thread": thread.id, "log": log.id})
 
-        embed = discord.Embed(color=COLORS["info"], timestamp=datetime.utcnow(), title="Support Thread", description=f":wave: Welcome to your support thread!\n\n<:BloxlinkSilly:823634273604468787> Our Helpers will assist you in a few minutes. While you wait, please provide as much detail as possible! Consider providing screenshots or/and anything that helps the team to solve your issue faster.\n\n<:time:987836664355373096> Our team is taking too long? If **10 minutes have passed**, consider mentioning the Helpers role to remind them you are here!")
+        embed = discord.Embed(color=COLORS["info"], timestamp=datetime.utcnow(), title="Support Thread", description=f":wave: Welcome to your support thread!\n\n<:BloxlinkSilly:823634273604468787> Our Helpers will assist you in a few minutes. While you wait, please provide as much detail as possible! Consider providing screenshots or/and anything that helps the team to solve your issue faster.\n\n<:time:987836664355373096> Our team is taking too long? If 10 minutes have passed, you can click the **Ping Helpers** button, this will notify our team you are here!")
         embed.set_author(name=f"{interaction.user.name}#{interaction.user.discriminator} | ID: {object.inserted_id}", icon_url=interaction.user.display_avatar.url)
         embed.set_footer(text=f"To close this thread, press the padlock below. Only Helpers can close this thread")
         
-        await thread.send(content=interaction.user.mention, embed=embed, view=CloseThreadView(thread))
+        ThreadView = CloseThreadView(thread)
+        message = await thread.send(content=interaction.user.mention, embed=embed, view=ThreadView)
+        ThreadView.message = message
+        await ThreadView.enableButton()
 
         await interaction.followup.send(f"<:BloxlinkSilly:823634273604468787> You have created a support thread. Please use head to {thread.mention} to join the thread.", ephemeral=True)
 
@@ -57,6 +61,15 @@ async def format_buttons(questions: list):
     for index, question in enumerate(questions):
 
         embed = discord.Embed(color=COLORS["info"], title=question["q"], description=question["a"])
+        
+        try:
+            image = question["image"]
+            if image is None:
+                raise Exception("No image")
+            embed.set_image(url=image)
+        except Exception:
+            pass
+
         Button = NumberButton(str(index + 1), embed)
 
         view.add_item(Button)
@@ -67,6 +80,12 @@ class CloseThreadView(View):
     def __init__(self, thread: int):
         super().__init__(timeout=None)
         self.thread: discord.Thread = thread
+
+    async def enableButton(self) -> None:
+        await asyncio.sleep(float(60*10))
+
+        self.children[1].disabled = False
+        await self.message.edit(view=self)
 
     @discord.ui.button(style=ButtonStyle.red, label="​", emoji="<:padlock:987837727741464666>")
     async def ct_callback(self, button: discord.Button, interaction: discord.Interaction):
@@ -99,6 +118,16 @@ class CloseThreadView(View):
         message = await Lchannel.fetch_message(object["log"]) if message is None else message
 
         await message.edit(embed=embedT)
+
+    @discord.ui.button(style=ButtonStyle.green, emoji="<:notification:990034677836427295>", label="Ping Helpers", disabled=True)
+    async def callback(self, button: Button, interaction: discord.Interaction):
+
+        Hrole = interaction.guild.get_role(412791520316358656)
+        THrole = interaction.guild.get_role(818919735193632858)
+
+        await interaction.channel.send(f"<:notification:990034677836427295> {Hrole.mention} {THrole.mention}", allowed_mentions=discord.AllowedMentions(roles=True))
+        button.disabled = True
+        await interaction.response.edit_message(view=self)
 
 class FAQView(View):
     def __init__(self):
@@ -207,6 +236,6 @@ class SupportView(View):
     @button(custom_id="getHelpButton", style=ButtonStyle.blurple, emoji="<:help:988166431109681214>", label="Open FAQ")
     async def callback(self, button: button, interaction: discord.Interaction):
 
-        embed = discord.Embed(title=":wave: Welcome to Bloxlink's FAQ!", description="\n<:BloxlinkConfused:823633690910916619> **How does this work?**\nTo prevent unnecessary support, we have set a quick FAQ question. Select the **category** (*Verification, Binds, Bloxlink API, Premium/Pro, Other*) that you think your question matches. You will get prompted with some questions, they all have a number. Click the respective number on the buttons below them and get an answer!\n\n<:BloxlinkNervous:823633774939865120> **Did not find an answer?**\nClick the **Get Support** button to create a support thread. Our team will be glad to assist you!", color=COLORS["info"])
+        embed = discord.Embed(title=":wave: Welcome to Bloxlink's FAQ!", description="\n<:BloxlinkConfused:823633690910916619> **How does this work?**\nSelect the category, from the dropdown, that you think your question matches. You will get prompted with some questions, they all have a number. Click the respective number on the buttons below them and get an answer!\n\n<:BloxlinkNervous:823633774939865120> **Did not find an answer?**\nClick the **Get Support** button to create a support thread. Our team will be glad to assist you!", color=COLORS["info"])
 
         await interaction.response.send_message(embed=embed, view=FAQView(), ephemeral=True)
