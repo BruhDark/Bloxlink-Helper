@@ -11,11 +11,14 @@ class FAQCreateModal(Modal):
 
         self.add_item(InputText(label="Question", placeholder="Type the question here", style=discord.InputTextStyle.short))
         self.add_item(InputText(label="Answer", placeholder="Type the answer here", style=discord.InputTextStyle.long))
+        self.add_item(InputText(label="Image URL", placeholder="Paste a image URL here", style=discord.InputTextStyle.short, value=None, required=False))
 
     async def callback(self, interaction: discord.Interaction):
             
             question = self.children[0].value
             answer = self.children[1].value.replace("\\n", "\n")
+            image = self.children[2].value
+
     
             newFAQ = {"q": question, "a": answer}
     
