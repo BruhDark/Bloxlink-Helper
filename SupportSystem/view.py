@@ -60,8 +60,9 @@ async def format_buttons(questions: list):
 
     for index, question in enumerate(questions):
 
-        embed = discord.Embed(color=COLORS["info"], title=question["q"], description=question["a"])
-        
+        q = question["q"]
+        embed = discord.Embed(color=COLORS["info"], title=f"<:BloxlinkConfused:823633690910916619> {q}", description=question["a"])
+
         try:
             image = question["image"]
             if image is None:
