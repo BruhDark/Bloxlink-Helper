@@ -14,13 +14,13 @@ class FAQCreateModal(Modal):
         self.add_item(InputText(label="Image URL", placeholder="Paste a image URL here", style=discord.InputTextStyle.short, value=None, required=False))
 
     async def callback(self, interaction: discord.Interaction):
-            
+        
             question = self.children[0].value
             answer = self.children[1].value.replace("\\n", "\n")
             image = self.children[2].value
 
     
-            newFAQ = {"q": question, "a": answer}
+            newFAQ = {"q": question, "a": answer, "image": image}
     
             check = {"q": question}
     
@@ -41,6 +41,9 @@ class FAQCreateModal(Modal):
                     icon_url=LINKS["other"], text=f"Item ID: {item.inserted_id}")
             embed.set_author(
                     icon_url=LINKS["success"], name=f"Successfully created FAQ: {question}")
+            
+            if image is not None:
+                embed.set_image(url=image)
     
             await interaction.response.send_message(embed=embed)
 
