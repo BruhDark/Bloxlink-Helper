@@ -20,7 +20,7 @@ class ThreadButton(discord.ui.Button):
         
         if userThread is not None:
             thread = interaction.channel.get_thread(userThread["thread"])
-            await interaction.followup.send(f"<:BloxlinkDead:823633973967716363> You are already in a support thread. Please use head to {thread.mention} to join the thread.", ephemeral=True)
+            await interaction.followup.send(f"<:BloxlinkDead:823633973967716363> You are already in a support thread. Please head to {thread.mention} to join the thread.", ephemeral=True)
             return
 
         thread = await interaction.channel.create_thread(name=f"{interaction.user.name} - {self.topic}", reason="Support Thread", type=discord.ChannelType.private_thread)
@@ -42,6 +42,7 @@ class ThreadButton(discord.ui.Button):
         ThreadView = CloseThreadView(thread)
         message = await thread.send(content=interaction.user.mention, embed=embed, view=ThreadView)
         ThreadView.message = message
+        await message.pin(reason="Support Thread Message")
         await ThreadView.enableButton()
 
         await interaction.followup.send(f"<:BloxlinkSilly:823634273604468787> You have created a support thread. Please use head to {thread.mention} to join the thread.", ephemeral=True)
@@ -83,12 +84,18 @@ class CloseThreadView(View):
         self.thread: discord.Thread = thread
 
     async def enableButton(self) -> None:
+        if self.children[0].disabled == True:
+            return
+
         await asyncio.sleep(float(60*10))
+
+        if self.children[0].disabled == True:
+            return
 
         self.children[1].disabled = False
         await self.message.edit(view=self)
 
-    @discord.ui.button(style=ButtonStyle.red, label="​", emoji="<:padlock:987837727741464666>")
+    @discord.ui.button(style=ButtonStyle.red, label="​", emoji="<:padlock:987837727741464666>", custom_id="CloseThreadButton")
     async def ct_callback(self, button: discord.Button, interaction: discord.Interaction):
 
         if not interaction.user.guild_permissions.manage_threads:
@@ -96,6 +103,7 @@ class CloseThreadView(View):
             return
         
         button.disabled = True
+        self.children[1].disabled = True
         
         object = await find_one("support-users", {"thread": self.thread.id})
         user = object["user"]
@@ -120,7 +128,7 @@ class CloseThreadView(View):
 
         await message.edit(embed=embedT)
 
-    @discord.ui.button(style=ButtonStyle.green, emoji="<:notification:990034677836427295>", label="Ping Helpers", disabled=True)
+    @discord.ui.button(style=ButtonStyle.green, emoji="<:notification:990034677836427295>", label="Ping Helpers", disabled=True, custom_id="PingHelpersButton")
     async def callback(self, button: Button, interaction: discord.Interaction):
 
         Hrole = interaction.guild.get_role(412791520316358656)
@@ -230,7 +238,7 @@ class FAQView(View):
 class SupportView(View):
     def __init__(self):
         super().__init__(timeout=None)
-        self.add_item(Button(style=ButtonStyle.url, emoji="<:book:986647611740147712>", label="Bloxlink Documentation", url="https://docs.blox.link/"))
+        self.add_item(Button(style=ButtonStyle.url, emoji="<:book:986647611740147712>", label="Tutorials", url="https://blox.link/tutorials"))
         self.add_item(Button(style=ButtonStyle.url, emoji="<:link:986648044525199390>", label="Verify with Bloxlink", url="https://blox.link/verify"))
         
     

@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from config import COLORS
-from SupportSystem.view import SupportView
+from SupportSystem.view import SupportView, CloseThreadView
 from SupportSystem.modal import FAQCreateModal, FAQEditModal
 from discord.commands import Option
 from Resources.CheckFailure import is_staff
@@ -13,6 +13,7 @@ class SupportSystem(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         self.bot.add_view(SupportView())
+        self.bot.add_view(CloseThreadView())
 
     faq = discord.SlashCommandGroup("faq", "FAQs related commands.")
 
