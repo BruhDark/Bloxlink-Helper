@@ -3,12 +3,15 @@ from Resources.mongoFunctions import database
 import discord
 from discord.ext import commands
 from config import AUTHORIZED, COLORS
-import dotenv
 import sys
 import aiohttp
 import traceback
+import dotenv
 
-dotenv.load_dotenv()
+try:
+ dotenv.load_dotenv()
+except:
+    pass
 
 class Bot(commands.Bot):
     def __init__(self):

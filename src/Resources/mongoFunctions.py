@@ -1,10 +1,13 @@
 import discord
 import jaro
 import motor
-import dotenv
 import os
+import dotenv
 
-dotenv.load_dotenv()
+try:
+ dotenv.load_dotenv()
+except:
+    pass
 
 client = motor.motor_tornado.MotorClient(os.getenv("MONGO_URI"))
 database = client["bloxlinkHelper"]
