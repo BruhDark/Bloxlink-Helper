@@ -1,9 +1,12 @@
 import discord
 import jaro
 import motor
+import dotenv
+import os
 
-client = motor.motor_tornado.MotorClient(
-    "mongodb+srv://bloxlinkHelper:ZR8otSoEzWCuGLye@cluster0.gee6w.mongodb.net/")
+dotenv.load_dotenv()
+
+client = motor.motor_tornado.MotorClient(os.getenv("MONGO_URI"))
 database = client["bloxlinkHelper"]
 collection = database["tags"]
 
