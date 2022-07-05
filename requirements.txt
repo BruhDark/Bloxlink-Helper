@@ -6,4 +6,4 @@ tornado==6.1
 dnspython==2.1.0
 jishaku==2.3.2
 jaro-winkler==2.0.0
-dotenv==0.10.3
+dotenv==0.0.5
