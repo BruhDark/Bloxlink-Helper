@@ -2,14 +2,13 @@ import os
 import sys
 import traceback
 from datetime import datetime
-
 import aiohttp
 import discord
 import dotenv
 from discord.ext import commands
 
 from config import AUTHORIZED, COLORS, EMOTES
-from resources.mongoFunctions import database
+from resources.MongoFunctions import database
 
 try:
     dotenv.load_dotenv()

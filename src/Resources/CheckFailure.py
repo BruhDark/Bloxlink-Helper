@@ -1,6 +1,6 @@
 from discord.ext import commands
 import discord
-from resources.mongoFunctions import database
+from MongoFunctions import database
 
 
 class NotStaff(commands.CheckFailure):

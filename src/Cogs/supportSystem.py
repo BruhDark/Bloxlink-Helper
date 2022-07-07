@@ -1,10 +1,10 @@
-import discord
-from discord.ext import commands
-from config import COLORS
-from supportSystem.view import SupportView, CloseThreadView
-from supportSystem.modal import FAQCreateModal, FAQEditModal
-from discord.commands import Option
 from resources.CheckFailure import is_staff
+from discord.commands import Option
+from supportsystem.modal import FAQCreateModal, FAQEditModal
+from supportsystem.view import SupportView, CloseThreadView
+from config import COLORS
+from discord.ext import commands
+import discord
 
 
 class SupportSystem(commands.Cog):
