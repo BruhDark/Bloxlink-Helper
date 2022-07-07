@@ -5,10 +5,10 @@ import discord
 from config import COLORS, EMOTES, LINKS
 from discord.commands import Option
 from discord.ext import commands, pages
-from Resources.CheckFailure import is_staff, is_blacklisted
-from Resources.modals import TagCreateModal, TagEditModal
-from Resources.mongoFunctions import get_aliases, get_tags, get_tags_and_alias, find_one, find_tag, update_tag, delete_one, return_all_tags
-from Resources.paginator import CustomPaginator
+from resources.CheckFailure import is_staff, is_blacklisted
+from resources.modals import TagCreateModal, TagEditModal
+from resources.mongoFunctions import get_aliases, get_tags, get_tags_and_alias, find_one, find_tag, update_tag, delete_one, return_all_tags
+from resources.paginator import CustomPaginator
 
 class Tags(commands.Cog):
     def __init__(self, bot):

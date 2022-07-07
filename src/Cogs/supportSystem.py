@@ -1,19 +1,23 @@
 import discord
 from discord.ext import commands
 from config import COLORS
-from SupportSystem.view import SupportView, CloseThreadView
-from SupportSystem.modal import FAQCreateModal, FAQEditModal
+from supportSystem.view import SupportView, CloseThreadView
+from supportSystem.modal import FAQCreateModal, FAQEditModal
 from discord.commands import Option
-from Resources.CheckFailure import is_staff
+from resources.CheckFailure import is_staff
 
 class SupportSystem(commands.Cog):
     def __init__(self, bot):
         self.bot: commands.Bot = bot
+        self.persistent_added = False
 
     @commands.Cog.listener()
     async def on_ready(self):
-        self.bot.add_view(SupportView())
-        self.bot.add_view(CloseThreadView())
+        if not self.persistent_added:
+            self.bot.add_view(SupportView())
+            self.bot.add_view(CloseThreadView())
+            self.persistent_added = True
+            print("✅ Added support system views!")
 
     faq = discord.SlashCommandGroup("faq", "FAQs related commands.")
 
