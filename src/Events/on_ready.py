@@ -10,12 +10,10 @@ class OnReady(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         if not self.ready:
-         print(f"✅ Ready! Logged in as {self.bot.user} - ID: {self.bot.user.id}")
-         print("-----------------------------------------------------")
-         print("🕵️‍♂️ Changing presence...")
-         await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="the support channels | blox.link"))
-         print("🕵️‍♂️ Changed presence!")
-         self.ready = True
+            print(
+                f"✅ Ready! Logged in as {self.bot.user} - ID: {self.bot.user.id}")
+            print("-----------------------------------------------------")
+            self.ready = True
 
 
 def setup(bot):

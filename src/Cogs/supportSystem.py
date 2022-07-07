@@ -4,7 +4,7 @@ from config import COLORS
 from supportSystem.view import SupportView, CloseThreadView
 from supportSystem.modal import FAQCreateModal, FAQEditModal
 from discord.commands import Option
-from src.resources.CheckFailure import is_staff
+from resources.CheckFailure import is_staff
 
 
 class SupportSystem(commands.Cog):
