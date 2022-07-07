@@ -4,7 +4,8 @@ from config import COLORS
 from supportSystem.view import SupportView, CloseThreadView
 from supportSystem.modal import FAQCreateModal, FAQEditModal
 from discord.commands import Option
-from resources.CheckFailure import is_staff
+from src.resources.CheckFailure import is_staff
+
 
 class SupportSystem(commands.Cog):
     def __init__(self, bot):
@@ -35,7 +36,6 @@ class SupportSystem(commands.Cog):
         modal = FAQEditModal(category)
         await ctx.send_modal(modal)
 
-
     @faq.command()
     @is_staff()
     @commands.is_owner()
@@ -56,6 +56,7 @@ class SupportSystem(commands.Cog):
 
         await message.edit(embed=embed, view=SupportView())
         await ctx.respond("Done")
+
 
 def setup(bot):
     bot.add_cog(SupportSystem(bot))

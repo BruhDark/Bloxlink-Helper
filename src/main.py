@@ -9,7 +9,7 @@ import dotenv
 from discord.ext import commands
 
 from config import AUTHORIZED, COLORS, EMOTES
-from resources.mongoFunctions import database
+from src.resources.mongoFunctions import database
 
 try:
     dotenv.load_dotenv()

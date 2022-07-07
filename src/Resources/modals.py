@@ -4,7 +4,7 @@ from discord.ui import InputText, Modal
 import time
 import datetime
 from config import EMOTES, LINKS, COLORS
-from resources.mongoFunctions import find_one, insert_one, update_tag
+from src.resources.mongoFunctions import find_one, insert_one, update_tag
 
 
 class TagCreateModal(Modal):
@@ -12,11 +12,14 @@ class TagCreateModal(Modal):
         super().__init__(*args, **kwargs)
         self.bot = bot
 
-        self.add_item(InputText(label="Tag Name", placeholder="Type the tag name here", style=discord.InputTextStyle.short))
+        self.add_item(InputText(
+            label="Tag Name", placeholder="Type the tag name here", style=discord.InputTextStyle.short))
 
-        self.add_item(InputText(label="Tag Aliases", placeholder="Type the tag aliases here, separate them with a comma", style=discord.InputTextStyle.short, value="None", required=False))
+        self.add_item(InputText(label="Tag Aliases", placeholder="Type the tag aliases here, separate them with a comma",
+                      style=discord.InputTextStyle.short, value="None", required=False))
 
-        self.add_item(InputText(label="Tag Content", placeholder="Type the tag content here", style=discord.InputTextStyle.long))
+        self.add_item(InputText(label="Tag Content",
+                      placeholder="Type the tag content here", style=discord.InputTextStyle.long))
 
     async def callback(self, interaction: discord.Interaction):
 
@@ -31,7 +34,7 @@ class TagCreateModal(Modal):
         content = self.children[2].value.replace("\\n", "\n")
 
         newTag = {"name": name, "aliases": aliases, "content": content, "author": interaction.user.id,
-                    "lastUpdateBy": interaction.user.id, "createdAt": createdAt, "lastUpdateAt": createdAt}
+                  "lastUpdateBy": interaction.user.id, "createdAt": createdAt, "lastUpdateAt": createdAt}
 
         check = {"name": name}
         check2 = {"aliases": aliases}
@@ -57,13 +60,16 @@ class TagCreateModal(Modal):
 
             await interaction.response.send_message(embed=embed)
 
+
 class TagEditModal(Modal):
     def __init__(self, bot, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.bot = bot
 
-        self.add_item(InputText(label="Tag Name", placeholder="Type the tag name here", style=discord.InputTextStyle.short))
-        self.add_item(InputText(label="Tag Content", placeholder="Type the new tag content here", style=discord.InputTextStyle.long))
+        self.add_item(InputText(
+            label="Tag Name", placeholder="Type the tag name here", style=discord.InputTextStyle.short))
+        self.add_item(InputText(label="Tag Content",
+                      placeholder="Type the new tag content here", style=discord.InputTextStyle.long))
 
     async def callback(self, interaction: discord.Interaction):
 
@@ -89,5 +95,6 @@ class TagEditModal(Modal):
             embed = discord.Embed(
                 description=f"{error} A tag with that name does not exist! Try again.", color=COLORS["error"])
 
-            embed.add_field(name="Oops! Here is what you typed:", value=f"```{content}```")
+            embed.add_field(name="Oops! Here is what you typed:",
+                            value=f"```{content}```")
             await interaction.response.send_message(embed=embed)
