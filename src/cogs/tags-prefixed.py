@@ -4,8 +4,8 @@ import discord
 from config import COLORS, EMOTES, LINKS
 from discord.ext import commands
 from discord.utils import get
-from Resources.CheckFailure import is_staff, is_blacklisted
-from Resources.mongoFunctions import find_tag
+from resources.CheckFailure import is_staff, is_blacklisted
+from resources.mongoFunctions import find_tag
 
 
 class TagsPrefixed(commands.Cog):

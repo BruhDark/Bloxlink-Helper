@@ -1,4 +1,6 @@
-{
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "editor.formatOnSave": true,
+// enable globally (here: format on save)
+"editor.formatOnSave": true
+// enable per-language (here: Prettier as formatter)
+"[python]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
 }

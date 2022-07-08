@@ -19,11 +19,13 @@ class OnConnect(commands.Cog):
 
         self.bot.time = time.time()
 
-        print("Connected.")
-
+        print("👨‍💻 Registering slash commands...")
         await self.bot.register_commands()
+        print("👨‍💻 Registered slash commands!")
 
-        await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="the support channels"))
+        print("🕵️‍♂️ Changing presence...")
+        await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="blox.link"))
+        print("🕵️‍♂️ Changed presence!")
 
 
 def setup(bot):
