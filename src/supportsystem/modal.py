@@ -2,7 +2,7 @@ import discord
 from discord.ui import InputText, Modal
 import datetime
 from config import EMOTES, LINKS, COLORS
-from resources.MongoFunctions import find_one, insert_one, update_one
+from resources.mongoFunctions import find_one, insert_one, update_one
 
 
 class FAQCreateModal(Modal):

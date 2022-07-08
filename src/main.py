@@ -8,7 +8,7 @@ import dotenv
 from discord.ext import commands
 
 from config import AUTHORIZED, COLORS, EMOTES
-from resources.MongoFunctions import database
+from resources.mongoFunctions import database
 
 try:
     dotenv.load_dotenv()

@@ -3,7 +3,7 @@ import datetime
 import discord
 from discord.ext import commands
 from config import COLORS, EMOTES, LINKS
-from resources.MongoFunctions import find_one, insert_one, delete_one, return_all
+from resources.mongoFunctions import find_one, insert_one, delete_one, return_all
 
 s = EMOTES["success2"]
 x = EMOTES["error"]

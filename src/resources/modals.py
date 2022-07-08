@@ -4,7 +4,7 @@ from discord.ui import InputText, Modal
 import time
 import datetime
 from config import EMOTES, LINKS, COLORS
-from MongoFunctions import find_one, insert_one, update_tag
+from resources.mongoFunctions import find_one, insert_one, update_tag
 
 
 class TagCreateModal(Modal):

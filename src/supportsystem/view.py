@@ -5,7 +5,7 @@ import discord
 from config import COLORS, LINKS
 from discord import ButtonStyle, SelectOption
 from discord.ui import Button, View, button
-from resources.MongoFunctions import (delete_one, find_one, insert_one,
+from resources.mongoFunctions import (delete_one, find_one, insert_one,
                                       return_all)
 
 
