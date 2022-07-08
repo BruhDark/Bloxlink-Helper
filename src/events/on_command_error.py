@@ -55,17 +55,18 @@ class OnCmdError(commands.Cog):
             async with aiohttp.ClientSession() as session:
                 url = os.getenv("WEBHOOK_URL")
                 webhook = discord.Webhook.from_url(url, session=session)
-                tb = ''.join(traceback.format_tb(sys.exc_info()[2]))
-                tb = tb + "\n" + str(sys.exc_info()[1])
+                tb = ''.join(traceback.format_tb(error))
+                tb = tb + "\n" + str(error)
 
                 embed = discord.Embed(
-                    title=f"{EMOTES['error']} Something Went Wrong", color=COLORS["error"], timestamp=datetime.utcnow())
+                    title=f"{EMOTES['error']} Something Went Wrong", color=COLORS["error"], timestamp=datetime.datetime.utcnow())
                 embed.description = f"```py\n{tb}```"
-                embed.add_field(name="Command", value=f"{ctx.command.qualified_name}")
-                embed.add_field(name="Guild", value=f"{ctx.guild.name} ({ctx.guild.id})")
+                embed.add_field(
+                    name="Command", value=f"{ctx.command.qualified_name}")
+                embed.add_field(
+                    name="Guild", value=f"{ctx.guild.name} ({ctx.guild.id})")
 
                 await webhook.send(embed=embed)
-            
 
 
 def setup(bot):
