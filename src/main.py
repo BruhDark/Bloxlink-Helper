@@ -65,7 +65,7 @@ class Bot(commands.Bot):
             embed.description = f"```py\n{tb}```"
             await webhook.send(embed=embed)
 
-    @tasks.loop(seconds=60*5)
+    @tasks.loop(seconds=60*5)  # 5 minutes
     async def changing_presence(self):
         presences = [{"type": discord.ActivityType.listening,
                       "status": "questions | blox.link"}, {"type": discord.ActivityType.watching,
