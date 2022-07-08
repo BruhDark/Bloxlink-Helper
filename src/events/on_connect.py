@@ -23,10 +23,6 @@ class OnConnect(commands.Cog):
         await self.bot.register_commands()
         print("👨‍💻 Registered slash commands!")
 
-        print("🕵️‍♂️ Changing presence...")
-        await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="blox.link"))
-        print("🕵️‍♂️ Changed presence!")
-
 
 def setup(bot):
     bot.add_cog(OnConnect(bot))
