@@ -23,7 +23,13 @@ class OnCmdError(commands.Cog):
 
             x = EMOTES["error"]
             Embed = discord.Embed(
-                description=f"{x} This command is on cooldown!", color=COLORS["error"])
+                description=f"{x} This command is on cooldown! Try again in {round(error.retry_after)} seconds.", color=COLORS["error"])
+            await ctx.send(embed=Embed)
+
+        elif isinstance(error, commands.UserNotFound):
+
+            Embed = discord.Embed(
+                description=f"{EMOTES['error']} {error}", color=COLORS["error"])
             await ctx.send(embed=Embed)
 
         elif isinstance(error, commands.MissingRequiredArgument):
