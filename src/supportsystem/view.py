@@ -166,7 +166,7 @@ class FAQView(View):
     options = [
         SelectOption(label="Verification", value="verification", emoji="<:link:986648044525199390>",
                      description="Link/Remove a Roblox account, nickname templates"),
-        SelectOption(label="Binding", value="binds", emoji="<:box:987447660510334976>",
+        SelectOption(label="Binds", value="binds", emoji="<:box:987447660510334976>",
                      description="Add/Remove group/role/badge binds"),
         SelectOption(label="Bloxlink API", value="api", emoji="<:api:987447659025547284>",
                      description="How to use the API, how to get an API key"),
