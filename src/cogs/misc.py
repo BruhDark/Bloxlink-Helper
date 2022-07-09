@@ -119,6 +119,11 @@ class Misc(commands.Cog):
                                             url=user.activity.track_url, style=discord.ButtonStyle.url))
             return await ctx.send(embed=Embed, view=View)
 
+    @commands.command()
+    async def error(self, ctx):
+        """Error test"""
+        raise Exception("Error test")
+
 
 def setup(bot):
     bot.add_cog(Misc(bot))

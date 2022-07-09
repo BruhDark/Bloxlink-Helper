@@ -70,7 +70,7 @@ class Bot(commands.Bot):
         presences = [{"type": discord.ActivityType.listening,
                       "status": "questions | blox.link"}, {"type": discord.ActivityType.watching,
                                                            "status": f"{len(self.users)} users | blox.link"}, {"type": discord.ActivityType.playing,
-                                                                                                               "status": f"/tag send | blox.link"}]
+                                                                                                               "status": f"/tag send | blox.link"}, {"type": discord.ActivityType.watching, "status": f"tutorials | blox.link/tutorials"}]
         await self.change_presence(status=discord.Status.online, activity=discord.Activity(type=presences[self.presence_index]["type"], name=presences[self.presence_index]["status"]))
         print("✅ Changed presence to: " +
               presences[self.presence_index]["status"])
@@ -84,4 +84,4 @@ class Bot(commands.Bot):
 
 
 bot = Bot()
-bot.run(os.getenv("TOKEN"))
+bot.run(os.getenv("LOCAL_TOKEN"))

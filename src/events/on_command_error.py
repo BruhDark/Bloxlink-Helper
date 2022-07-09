@@ -15,7 +15,7 @@ class OnCmdError(commands.Cog):
         self.bot = bot
 
     @commands.Cog.listener()
-    async def on_command_error(self, ctx: commands.Context, error):
+    async def on_command_error(self, ctx: commands.Context, error: Exception):
 
         tb = error
 
@@ -55,8 +55,9 @@ class OnCmdError(commands.Cog):
             async with aiohttp.ClientSession() as session:
                 url = os.getenv("WEBHOOK_URL")
                 webhook = discord.Webhook.from_url(url, session=session)
-                tb = ''.join(traceback.format_tb(error))
-                tb = tb + "\n" + str(error)
+                tb = ''.join(traceback.format_exception(
+                    error, error, error.__traceback__))
+                tb = tb + "\n"
 
                 embed = discord.Embed(
                     title=f"{EMOTES['error']} Something Went Wrong", color=COLORS["error"], timestamp=datetime.datetime.utcnow())
