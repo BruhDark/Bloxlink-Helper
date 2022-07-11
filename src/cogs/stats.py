@@ -5,6 +5,8 @@ import discord
 import math
 import time
 import datetime
+import psutil
+import os
 
 from config import EMOTES, COLORS, RELEASESCOLORS, DESCRIPTION
 
@@ -40,19 +42,34 @@ class Stats(commands.Cog):
 
         pycordV = discord.__version__
 
-        embed = discord.Embed(description=DESCRIPTION, timestamp=datetime.datetime.utcnow(
+        # Getting loadover15 minutes
+        load1, load5, load15 = psutil.getloadavg()
+
+        cpu_usage = (load15/os.cpu_count()) * 100
+
+        # Getting memory usage
+        memory = psutil.virtual_memory()[2]
+
+        embed = discord.Embed(description="Bloxlink Staff's right hand. Managing tags with useful information and many other automations.", timestamp=datetime.datetime.utcnow(
         ), color=RELEASESCOLORS[f"{self.bot.user.id}"])
 
         embed.set_author(
             name=f"{self.bot.user.name}#{self.bot.user.discriminator}", icon_url=self.bot.user.avatar.url)
 
-        embed.add_field(name=f"Bot Version", value="?", inline=True)
+        embed.add_field(name=f"<:Bot:928765691778203719> Bot Version",
+                        value="<:CatPride:759852911651586068>", inline=True)
         embed.add_field(name=":clock1: Uptime", value=uptime, inline=True)
         latency = str(round(self.bot.latency * 1000))
-        embed.add_field(name=":ping_pong: Bot Latency", value=f"`{latency}ms`")
+        embed.add_field(name=":ping_pong: Bot Latency", value=f"{latency}ms")
 
         embed.add_field(name=":snake: PyCord Version",
                         value=f"{pycordV}", inline=True)
+        embed.add_field(name="🖥️ CPU Usage (15 min)",
+                        value=f"{cpu_usage}%", inline=True)
+        embed.add_field(name="⚙️ Memory Usage",
+                        value=f"{memory}%", inline=True)
+
+        embed.set_footer(text="Made with ❤️ by Dark, Nub and Mich")
 
         await ctx.respond(embed=embed)
 
