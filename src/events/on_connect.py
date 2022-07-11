@@ -12,7 +12,7 @@ from discord.ext import commands
 
 class OnConnect(commands.Cog):
     def __init__(self, bot):
-        self.bot = bot
+        self.bot: commands.Bot = bot
 
     @commands.Cog.listener()
     async def on_connect(self):
@@ -20,7 +20,7 @@ class OnConnect(commands.Cog):
         self.bot.time = time.time()
 
         print("👨‍💻 Registering slash commands...")
-        await self.bot.register_commands()
+        await self.bot.sync_commands()
         print("👨‍💻 Registered slash commands!")
 
 
