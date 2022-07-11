@@ -45,10 +45,10 @@ class Stats(commands.Cog):
         # Getting loadover15 minutes
         load1, load5, load15 = psutil.getloadavg()
 
-        cpu_usage = (load15/os.cpu_count()) * 100
+        cpu_usage = round((load15/os.cpu_count()) * 100)
 
         # Getting memory usage
-        memory = psutil.virtual_memory()[2]
+        memory = round(psutil.virtual_memory()[2])
 
         embed = discord.Embed(description="Bloxlink Staff's right hand. Managing tags with useful information and many other automations.", timestamp=datetime.datetime.utcnow(
         ), color=RELEASESCOLORS[f"{self.bot.user.id}"])
