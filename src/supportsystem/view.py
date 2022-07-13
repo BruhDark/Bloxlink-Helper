@@ -1,5 +1,6 @@
 import asyncio
 from datetime import datetime
+import time
 
 import discord
 from config import COLORS, LINKS
@@ -7,6 +8,98 @@ from discord import ButtonStyle, SelectOption
 from discord.ui import Button, View, button
 from resources.mongoFunctions import (delete_one, find_one, insert_one,
                                       return_all)
+
+
+class RatingView(discord.ui.View):
+    def __init__(self):
+        super().__init__()
+
+    async def on_timeout(self) -> None:
+        self.disable_all_items()
+        embed = self.message.embeds[0]
+        field = embed.fields[0]
+        field.name = "You took too long to select a rating!"
+        await self.message.edit(view=self, embed=embed)
+
+    @discord.ui.button(style=ButtonStyle.gray, label=" ", emoji="⭐", custom_id="1star")
+    async def one_star(self, button: discord.Button, interaction: discord.Interaction):
+        date = round(time.time())
+        await insert_one("rating", {"user": interaction.user.id, "rating": 1, "date": date})
+
+        button.style = ButtonStyle.blurple
+        self.disable_all_items()
+
+        rateEmbed = self.message.embeds[0]
+        field = rateEmbed.fields[0]
+        field.name = "Thank you so much for your rating!"
+
+        await interaction.response.edit_message(embed=rateEmbed, view=self)
+
+    @discord.ui.button(style=ButtonStyle.gray, label=" ", emoji="⭐", custom_id="2stars")
+    async def two_stars(self, button: discord.Button, interaction: discord.Interaction):
+        date = round(time.time())
+        await insert_one("rating", {"user": interaction.user.id, "rating": 2, "date": date})
+
+        for children in self.children:
+            if children.custom_id == "3stars":
+                break
+            children.style = ButtonStyle.blurple
+
+        self.disable_all_items()
+
+        rateEmbed = self.message.embeds[0]
+        field = rateEmbed.fields[0]
+        field.name = "Thank you so much for your rating!"
+        await interaction.response.edit_message(embed=rateEmbed, view=self)
+
+    @discord.ui.button(style=ButtonStyle.gray, label=" ", emoji="⭐", custom_id="3stars")
+    async def three_stars(self, button: discord.Button, interaction: discord.Interaction):
+        date = round(time.time())
+        await insert_one("rating", {"user": interaction.user.id, "rating": 3, "date": date})
+
+        for children in self.children:
+            if children.custom_id == "4stars":
+                break
+            children.style = ButtonStyle.blurple
+        self.disable_all_items()
+
+        rateEmbed = self.message.embeds[0]
+        field = rateEmbed.fields[0]
+        field.name = "Thank you so much for your rating!"
+
+        await interaction.response.edit_message(embed=rateEmbed, view=self)
+
+    @discord.ui.button(style=ButtonStyle.gray, label=" ", emoji="⭐", custom_id="4stars")
+    async def four_stars(self, button: discord.Button, interaction: discord.Interaction):
+        date = round(time.time())
+        await insert_one("rating", {"user": interaction.user.id, "rating": 4, "date": date})
+
+        for children in self.children:
+            if children.custom_id == "5stars":
+                break
+            children.style = ButtonStyle.blurple
+        self.disable_all_items()
+
+        rateEmbed = self.message.embeds[0]
+        field = rateEmbed.fields[0]
+        field.name = "Thank you so much for your rating!"
+
+        await interaction.response.edit_message(embed=rateEmbed, view=self)
+
+    @discord.ui.button(style=ButtonStyle.gray, label=" ", emoji="⭐", custom_id="5stars")
+    async def five_stars(self, button: discord.Button, interaction: discord.Interaction):
+        date = round(time.time())
+        await insert_one("rating", {"user": interaction.user.id, "rating": 5, "date": date})
+
+        for children in self.children:
+            children.style = ButtonStyle.blurple
+        self.disable_all_items()
+
+        rateEmbed = self.message.embeds[0]
+        field = rateEmbed.fields[0]
+        field.name = "Thank you so much for your rating!"
+
+        await interaction.response.edit_message(embed=rateEmbed, view=self)
 
 
 class ThreadButton(discord.ui.Button):
@@ -26,7 +119,12 @@ class ThreadButton(discord.ui.Button):
             await interaction.followup.send(f"<:BloxlinkDead:823633973967716363> You are already in a support thread. Please head to {thread.mention} to join the thread.", ephemeral=True)
             return
 
-        thread = await interaction.channel.create_thread(name=f"{interaction.user.name} - {self.topic}", reason="Support Thread", type=discord.ChannelType.private_thread)
+        try:
+            thread = await interaction.channel.create_thread(name=f"{interaction.user.name} - {self.topic}", reason="Support Thread", type=discord.ChannelType.private_thread)
+        except:
+            thread = await interaction.channel.create_thread(name=f"{interaction.user.name} - {self.topic}", reason="Support Thread", type=discord.ChannelType.public_thread)
+
+        await interaction.followup.send(f"<:BloxlinkSilly:823634273604468787> You have created a support thread. Please head to {thread.mention} to join the thread.", ephemeral=True)
 
         embedT = discord.Embed(
             color=COLORS["info"], timestamp=datetime.utcnow(), title="Support Thread")
@@ -54,8 +152,6 @@ class ThreadButton(discord.ui.Button):
         ThreadView.message = message
         await message.pin(reason="Support Thread Message")
         await ThreadView.enableButton()
-
-        await interaction.followup.send(f"<:BloxlinkSilly:823634273604468787> You have created a support thread. Please use head to {thread.mention} to join the thread.", ephemeral=True)
 
 
 class NumberButton(discord.ui.Button):
@@ -117,10 +213,9 @@ class CloseThreadView(View):
 
         button.disabled = True
         self.children[1].disabled = True
-        thread: discord.Thread = interaction.channel.get_thread(
-            interaction.channel.id)
+        thread: discord.Thread = interaction.channel
 
-        object = await find_one("support-users", {"thread": self.thread.id})
+        object = await find_one("support-users", {"thread": thread.id})
         user = object["user"]
         topic = thread.name.split(" - ")[1]
 
@@ -136,7 +231,7 @@ class CloseThreadView(View):
             name="<:user:988229844301131776> Created By", value=f"<@{user}>")
         embedT.add_field(name="<:help:988166431109681214> Topic", value=topic)
         embedT.add_field(
-            name="<:thread:988229846188564500> Thread", value=self.thread.mention)
+            name="<:thread:988229846188564500> Thread", value=thread.mention)
         embedT.add_field(name="<:user:988229844301131776> Closed By",
                          value=f"{interaction.user.mention} ({interaction.user.id})")
 
@@ -145,6 +240,19 @@ class CloseThreadView(View):
 
         message = interaction.client.get_message(object["log"])
         message = await Lchannel.fetch_message(object["log"]) if message is None else message
+
+        rateView = RatingView()
+        rateEmbed = discord.Embed(title="<:BloxlinkHappy:823633735446167552> Thanks for contacting us!",
+                                  description="We appreciate you and want to know your satisfaction with the support given by our team.\nFeel free to rate us by clicking the :star: (star) and telling us your satisfaction level. Being the first one, 1 (I was not satisfied by the support given), and the last one 5 (I was very satified by the support given).", color=COLORS["info"])
+        rateEmbed.timestamp = datetime.utcnow()
+        rateEmbed.set_author(
+            name=f"Hello, {interaction.user.name}!", icon_url=interaction.user.avatar.url)
+        rateEmbed.add_field(name="Awaiting feedback...",
+                            value="​")
+        rateEmbed.set_footer(
+            text="Thanks for choosing Bloxlink! We hope you have a great day!", icon_url=LINKS["other"])
+        user = await interaction.client.get_or_fetch_user(user)
+        await user.send(embed=rateEmbed, view=rateView)
 
         await message.edit(embed=embedT)
 

@@ -25,7 +25,7 @@ EMOTES = {
     "loading": "<a:loading:946809583194767400>",
     "spotify": "<:Spotify:929060525881565224>",
     "943150072827355177": "<:BloxlinkSilly:823634273604468787>",
- 
+
     "add": "<:add:930273857363927110>",
     "remove": "<:edit:930273882919821322>",
     "edit": "<:remove:930273905569042472>",
@@ -34,19 +34,20 @@ EMOTES = {
 LINKS = {
     "success": "https://cdn.discordapp.com/emojis/976817167116947507.gif?size=44&quality=lossless",
     "error": "https://cdn.discordapp.com/emojis/823633973967716363.webp?size=96&quality=lossless",
-    "other": "https://cdn.discordapp.com/emojis/823634273604468787.webp?size=96&quality=lossless"
+    "other": "https://cdn.discordapp.com/emojis/823634273604468787.webp?size=96&quality=lossless",
+    "heart": "https://media.discordapp.net/attachments/947298060646613032/996566385750712400/BloxHeart.png"
 }
 
 COLORS = {
     "success": discord.Colour.from_rgb(67, 181, 130),
     "error": discord.Colour.from_rgb(240, 74, 71),
     "warning": discord.Colour.from_rgb(255, 155, 0),
-    "info": discord.Colour.from_rgb(113, 134, 213),
-    }
+    "info": discord.Colour.from_rgb(82, 113, 255),
+}
 
 RELEASESCOLORS = {
-    "943150072827355177": discord.Colour.from_rgb(58, 61, 255),
-    "912846359789461525": discord.Colour.from_rgb(58, 61, 255)
+    "943150072827355177": discord.Colour.from_rgb(82, 113, 255),
+    "912846359789461525": discord.Colour.from_rgb(82, 113, 255)
 }
 
 AUTHORIZED = [449245847767482379, 431480956990390272, 156872400145874944]

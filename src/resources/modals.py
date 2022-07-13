@@ -23,7 +23,7 @@ class TagCreateModal(Modal):
 
     async def callback(self, interaction: discord.Interaction):
 
-        createdAt = round(time.time() * 1)
+        createdAt = round(time.time())
         name = self.children[0].value.lower()
         name = name.replace(" ", "")
         aliases = self.children[1].value
