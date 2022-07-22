@@ -216,13 +216,10 @@ class Tags(commands.Cog):
         tags = []
 
         tagsList = await return_all_tags()
-        for tag in tagsList:
-            tags.append(tag["name"])
-
-        tags.sort()
+        tagsList.sort(key=lambda x: x["name"])
 
         tagsEmbed = discord.Embed(description=", ".join(
-            tags), color=COLORS["info"], timestamp=datetime.datetime.utcnow())
+            tagsList), color=COLORS["info"], timestamp=datetime.datetime.utcnow())
         emote = LINKS["other"]
         tagsEmbed.set_author(icon_url=emote, name="Listing all tags:")
         tagsEmbed.set_footer(text="Use the paginator to go over the tags")
