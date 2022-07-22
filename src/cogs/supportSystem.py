@@ -6,6 +6,9 @@ from config import COLORS
 from discord.ext import commands
 import discord
 
+ThreadButtonView = discord.ui.View()
+ThreadButtonView.add_item(ThreadButton("Premium Support"))
+
 
 class SupportSystem(commands.Cog):
     def __init__(self, bot):
@@ -16,8 +19,8 @@ class SupportSystem(commands.Cog):
     async def on_ready(self):
         if not self.persistent_added:
             self.bot.add_view(SupportView())
-            self.bot.add_view(CloseThreadView())
-            self.bot.add_view(ThreadButton("Premium Support"))
+            self.bot.add_view(ThreadButtonView())
+            self.bot.add_view()
             self.persistent_added = True
             print("✅ Added support system views!")
 
@@ -68,7 +71,7 @@ class SupportSystem(commands.Cog):
         """Owner only command to send the get support message."""
         embed = discord.Embed(color=COLORS["info"], title=":wave: Welcome to Bloxlink's premium support system!",
                               description="Hello! You have come to the right place if you are looking for help with Bloxlink.\n\n<:lifesaver:986648046592983150> **How do I open a thread?**\n\nClick the **Get Support** button, a thread will get privately created for you to get on instant contact with our staff team.")
-        await channel.send(embed=embed, view=ThreadButton("Premium Support"))
+        await channel.send(embed=embed, view=ThreadButtonView("Premium Support"))
         await ctx.respond("Done")
 
 
