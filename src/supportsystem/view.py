@@ -301,10 +301,9 @@ class FAQView(View):
             embed = discord.Embed(
                 color=COLORS["info"], title="Verification Related Questions", description="\n".join(qs))
             embed.set_footer(
-                text="Did not find an answer? Click the Get Support button to create a support thread.", icon_url=LINKS["other"])
-            view = await format_buttons(questions)
-            view.add_item(ThreadButton("Verification"))
-            await interaction.followup.send(embed=embed, view=view, ephemeral=True)
+                text="Did not find an answer? Use our support channels.", icon_url=LINKS["other"])
+
+            await interaction.followup.send(embed=embed, ephemeral=True)
 
         elif select.values[0] == "binds":
             questions = await return_all("faq-binds")
@@ -318,11 +317,9 @@ class FAQView(View):
             embed = discord.Embed(
                 color=COLORS["info"], title="Binds Related Questions", description="\n".join(qs))
             embed.set_footer(
-                text="Did not find an asnwer? Click the Get Support button to create a support thread.", icon_url=LINKS["other"])
+                text="Did not find an asnwer? Use our support channels.", icon_url=LINKS["other"])
 
-            view = await format_buttons(questions)
-            view.add_item(ThreadButton("Binds"))
-            await interaction.followup.send(embed=embed, view=view, ephemeral=True)
+            await interaction.followup.send(embed=embed, ephemeral=True)
 
         elif select.values[0] == "api":
             questions = await return_all("faq-api")
@@ -336,11 +333,9 @@ class FAQView(View):
             embed = discord.Embed(
                 color=COLORS["info"], title="Bloxlink API Related Questions", description="\n".join(qs))
             embed.set_footer(
-                text="Did not find an asnwer? Click the Get Support button to create a support thread.", icon_url=LINKS["other"])
+                text="Did not find an asnwer? Use our support channels.", icon_url=LINKS["other"])
 
-            view = await format_buttons(questions)
-            view.add_item(ThreadButton("API"))
-            await interaction.followup.send(embed=embed, view=view, ephemeral=True)
+            await interaction.followup.send(embed=embed, ephemeral=True)
 
         elif select.values[0] == "premium":
             questions = await return_all("faq-premium")
@@ -354,11 +349,9 @@ class FAQView(View):
             embed = discord.Embed(
                 color=COLORS["info"], title="Premium Related Questions", description="\n".join(qs))
             embed.set_footer(
-                text="Did not find an asnwer? Click the Get Support button to create a support thread.", icon_url=LINKS["other"])
+                text="Did not find an asnwer? Use our support channels.", icon_url=LINKS["other"])
 
-            view = await format_buttons(questions)
-            view.add_item(ThreadButton("Premium"))
-            await interaction.followup.send(embed=embed, view=view, ephemeral=True)
+            await interaction.followup.send(embed=embed, ephemeral=True)
 
         elif select.values[0] == "other":
             questions = await return_all("faq-other")
@@ -372,11 +365,9 @@ class FAQView(View):
             embed = discord.Embed(
                 color=COLORS["info"], title="Other Non-Categorised Questions", description="\n".join(qs))
             embed.set_footer(
-                text="Did not find an asnwer? Click the Get Support button to create a support thread.", icon_url=LINKS["other"])
+                text="Did not find an asnwer? Use our support channels.", icon_url=LINKS["other"])
 
-            view = await format_buttons(questions)
-            view.add_item(ThreadButton("Other"))
-            await interaction.followup.send(embed=embed, view=view, ephemeral=True)
+            await interaction.followup.send(embed=embed, ephemeral=True)
 
 
 class SupportView(View):
@@ -391,6 +382,6 @@ class SupportView(View):
     async def callback(self, button: button, interaction: discord.Interaction):
 
         embed = discord.Embed(title=":wave: Welcome to Bloxlink's FAQ!",
-                              description="\n<:BloxlinkConfused:823633690910916619> **How does this work?**\nSelect the category, from the dropdown, that you think your question matches. You will get prompted with some questions, they all have a number. Click the respective number on the buttons below them and get an answer!\n\n<:BloxlinkNervous:823633774939865120> **Did not find an answer?**\nClick the **Get Support** button to create a support thread. Our team will be glad to assist you!", color=COLORS["info"])
+                              description="\n<:BloxlinkConfused:823633690910916619> **How does this work?**\nSelect the category, from the dropdown, that you think your question matches. You will get prompted with some questions, they all have a number. Click the respective number on the buttons below them and get an answer!\n\n<:BloxlinkNervous:823633774939865120> **Did not find an answer?**\nState your issue with as much detail as possible in our support channels, our team will be glad to assit you!", color=COLORS["info"])
 
         await interaction.response.send_message(embed=embed, view=FAQView(), ephemeral=True)
