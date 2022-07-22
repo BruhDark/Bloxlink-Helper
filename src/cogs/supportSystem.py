@@ -17,7 +17,7 @@ class SupportSystem(commands.Cog):
         if not self.persistent_added:
             self.bot.add_view(SupportView())
             self.bot.add_view(CloseThreadView())
-            self.bot.add_view(ThreadButton())
+            self.bot.add_view(ThreadButton("Premium Support"))
             self.persistent_added = True
             print("✅ Added support system views!")
 
