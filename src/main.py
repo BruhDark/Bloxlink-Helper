@@ -84,4 +84,4 @@ class Bot(commands.Bot):
 
 
 bot = Bot()
-bot.run(os.getenv("LOCAL_TOKEN"))
+bot.run(os.getenv("TOKEN"))
