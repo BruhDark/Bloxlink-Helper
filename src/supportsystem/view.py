@@ -105,7 +105,7 @@ class RatingView(discord.ui.View):
 class ThreadButton(discord.ui.Button):
     def __init__(self, topic: str):
         super().__init__(style=ButtonStyle.blurple, label="Get Support",
-                         emoji="<:lifesaver:986648046592983150>")
+                         emoji="<:lifesaver:986648046592983150>", custom_id="PersistentThreadButton")
         self.topic = topic
 
     async def callback(self, interaction: discord.Interaction):
@@ -152,6 +152,12 @@ class ThreadButton(discord.ui.Button):
         ThreadView.message = message
         await message.pin(reason="Support Thread Message")
         await ThreadView.enableButton()
+
+
+class CreateThreadView(View):
+    def __init__(self):
+        super().__init__(timeout=None)
+        self.add_item(ThreadButton("Premium Support"))
 
 
 class NumberButton(discord.ui.Button):
@@ -284,7 +290,7 @@ class FAQView(View):
                      description="None of the above categories match your question?"),
     ]
 
-    @discord.ui.select(placeholder="Select a category", min_values=1, max_values=1, options=options)
+    @discord.ui.select(placeholder="Select a category", min_values=1, max_values=1, options=options, custom_id="FAQSelect")
     async def select_callback(self, select: discord.ui.Select, interaction: discord.Interaction):
 
         await interaction.response.defer()
@@ -303,7 +309,9 @@ class FAQView(View):
             embed.set_footer(
                 text="Did not find an answer? Use our support channels.", icon_url=LINKS["other"])
 
-            await interaction.followup.send(embed=embed, ephemeral=True)
+            view = await format_buttons(questions)
+
+            await interaction.followup.send(embed=embed, view=view, ephemeral=True)
 
         elif select.values[0] == "binds":
             questions = await return_all("faq-binds")
@@ -319,7 +327,9 @@ class FAQView(View):
             embed.set_footer(
                 text="Did not find an asnwer? Use our support channels.", icon_url=LINKS["other"])
 
-            await interaction.followup.send(embed=embed, ephemeral=True)
+            view = await format_buttons(questions)
+
+            await interaction.followup.send(embed=embed, view=view, ephemeral=True)
 
         elif select.values[0] == "api":
             questions = await return_all("faq-api")
@@ -335,7 +345,9 @@ class FAQView(View):
             embed.set_footer(
                 text="Did not find an asnwer? Use our support channels.", icon_url=LINKS["other"])
 
-            await interaction.followup.send(embed=embed, ephemeral=True)
+            view = await format_buttons(questions)
+
+            await interaction.followup.send(embed=embed, view=view, ephemeral=True)
 
         elif select.values[0] == "premium":
             questions = await return_all("faq-premium")
@@ -351,7 +363,9 @@ class FAQView(View):
             embed.set_footer(
                 text="Did not find an asnwer? Use our support channels.", icon_url=LINKS["other"])
 
-            await interaction.followup.send(embed=embed, ephemeral=True)
+            view = await format_buttons(questions)
+
+            await interaction.followup.send(embed=embed, view=view, ephemeral=True)
 
         elif select.values[0] == "other":
             questions = await return_all("faq-other")
@@ -367,7 +381,9 @@ class FAQView(View):
             embed.set_footer(
                 text="Did not find an asnwer? Use our support channels.", icon_url=LINKS["other"])
 
-            await interaction.followup.send(embed=embed, ephemeral=True)
+            view = await format_buttons(questions)
+
+            await interaction.followup.send(embed=embed, view=view, ephemeral=True)
 
 
 class SupportView(View):
