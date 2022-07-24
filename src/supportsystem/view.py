@@ -145,7 +145,7 @@ class ThreadButton(discord.ui.Button):
         embed.set_author(name=f"{interaction.user.name}#{interaction.user.discriminator} | ID: {object.inserted_id}",
                          icon_url=interaction.user.display_avatar.url)
         embed.set_footer(
-            text=f"To close this thread, press the padlock below. Only Helpers can close this thread")
+            text=f"To close this thread, press the padlock below.")
 
         ThreadView = CloseThreadView()
         message = await thread.send(content=interaction.user.mention, embed=embed, view=ThreadView)
@@ -213,9 +213,9 @@ class CloseThreadView(View):
     @discord.ui.button(style=ButtonStyle.red, label="​", emoji="<:padlock:987837727741464666>", custom_id="CloseThreadButton")
     async def ct_callback(self, button: discord.Button, interaction: discord.Interaction):
 
-        if not interaction.user.guild_permissions.manage_threads:
-            await interaction.response.send_message("<:BloxlinkDead:823633973967716363> You do not have permission to close this thread.")
-            return
+        # if not interaction.user.guild_permissions.manage_threads:
+        #   await interaction.response.send_message("<:BloxlinkDead:823633973967716363> You do not have permission to close this thread.", ephemeral=True)
+        #   return
 
         button.disabled = True
         self.children[1].disabled = True

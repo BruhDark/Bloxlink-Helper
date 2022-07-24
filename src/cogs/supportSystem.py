@@ -65,7 +65,7 @@ class SupportSystem(commands.Cog):
     async def send_get_support(self, ctx: discord.ApplicationContext, channel: discord.TextChannel):
         """Owner only command to send the get support message."""
         embed = discord.Embed(color=COLORS["info"], title=":wave: Welcome to Bloxlink's premium support system!",
-                              description="Hello! You have come to the right place if you are looking for help with Bloxlink.\n\n<:lifesaver:986648046592983150> **How do I open a thread?**\n\nClick the **Get Support** button, a thread will get privately created for you to get on instant contact with our staff team.")
+                              description="Thanks for purchasing premium! You know have access to priority support, our team is ready to asssist you in just a few minutes.\n\n<:lifesaver:986648046592983150> **How do I open a thread?**\n\nClick the **Get Support** button, a thread will get privately created for you to get on instant contact with our staff team.")
         await channel.send(embed=embed, view=CreateThreadView())
         await ctx.respond("Done")
 
