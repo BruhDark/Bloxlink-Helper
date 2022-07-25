@@ -46,6 +46,10 @@ async def format_buttons(questions: list):
 class FAQView(View):
     def __init__(self):
         super().__init__(timeout=None)
+        self.add_item(Button(style=ButtonStyle.url, emoji="<:book:986647611740147712>",
+                      label="Tutorials", url="https://blox.link/tutorials"))
+        self.add_item(Button(style=ButtonStyle.url, emoji="<:link:986648044525199390>",
+                      label="Verify with Bloxlink", url="https://blox.link/verify"))
 
     options = [
         SelectOption(label="Verification", value="verification", emoji="<:link:986648044525199390>",
@@ -125,7 +129,7 @@ class FAQView(View):
 
             view = await format_buttons(questions)
 
-        await interaction.followup.send(embed=embed, view=view)
+        await interaction.followup.send(embed=embed, view=view, ephemeral=True)
 
 
 class SupportView(View):

@@ -2,7 +2,7 @@ from resources.CheckFailure import is_staff
 from discord.commands import Option
 from supportsystem.modal import FAQCreateModal, FAQEditModal
 from supportsystem.faqview import FAQView
-from supportsystem.threadviews import CreateThreadView
+from supportsystem.threadviews import CloseThreadView, CreateThreadView
 from config import COLORS
 from discord.ext import commands
 import discord
@@ -14,6 +14,14 @@ class SupportSystem(commands.Cog):
         self.persistent_added = False
 
     faq = discord.SlashCommandGroup("faq", "FAQs related commands.")
+
+    @commands.Cog.listener()
+    async def on_ready(self):
+        if not self.bot.ready:
+            self.bot.add_view(FAQView())
+            self.bot.add_view(CreateThreadView())
+            self.bot.add_view(CloseThreadView())
+            print("✅ Loaded support system views.")
 
     @faq.command()
     @is_staff()
