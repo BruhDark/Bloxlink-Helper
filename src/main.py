@@ -27,7 +27,7 @@ class Bot(commands.Bot):
             roles=False,
             replied_user=True,
         ),
-            help_command=None, guild_ids=[881968885279117342])
+            help_command=None)
         self.database = database
         self.presence_index = 0
         self.ready = False
@@ -94,4 +94,4 @@ class Bot(commands.Bot):
 
 
 bot = Bot()
-bot.run(os.getenv("TOKEN"))
+bot.run(os.getenv("LOCAL_TOKEN"))
