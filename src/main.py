@@ -27,9 +27,10 @@ class Bot(commands.Bot):
             roles=False,
             replied_user=True,
         ),
-            help_command=None)
+            help_command=None, guild_ids=[881968885279117342])
         self.database = database
         self.presence_index = 0
+        self.ready = False
         self.changing_presence.start()
 
         for event in os.listdir("src/events"):
@@ -47,6 +48,15 @@ class Bot(commands.Bot):
                     print(f"✅ Loaded cog: {command}")
                 except Exception as e:
                     print(f"❌ Failed to load cog: {command}: {e}")
+
+    async def on_connect(self):
+        await self.sync_commands()
+        print(f":ping_pong: Connected to Discord and registered slash commands.")
+
+    async def on_ready(self):
+        if not self.ready:
+            print("✅ Ready")
+            self.ready = True
 
     async def is_owner(self, user: discord.User):
         if user.id in AUTHORIZED:
