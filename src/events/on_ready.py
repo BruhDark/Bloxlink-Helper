@@ -1,15 +1,17 @@
-import discord
 from discord.ext import commands
+from supportsystem.faqview import FAQView
+from supportsystem.threadviews import CloseThreadView, CreateThreadView
 
 
 class OnReady(commands.Cog):
     def __init__(self, bot):
-        self.bot = bot
+        self.bot: commands.Bot = bot
         self.ready = False
 
     @commands.Cog.listener()
     async def on_ready(self):
         if not self.ready:
+
             print(
                 f"✅ Ready! Logged in as {self.bot.user} - ID: {self.bot.user.id}")
             print("-----------------------------------------------------")
@@ -17,4 +19,4 @@ class OnReady(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(OnReady(bot))
+    pass
