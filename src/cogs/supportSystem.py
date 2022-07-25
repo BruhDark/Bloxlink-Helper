@@ -2,7 +2,7 @@ from resources.CheckFailure import is_staff
 from discord.commands import Option
 from supportsystem.modal import FAQCreateModal, FAQEditModal
 from supportsystem.faqview import FAQView
-from supportsystem.threadviews import CloseThreadView, CreateThreadView
+from supportsystem.threadviews import CreateThreadView
 from config import COLORS
 from discord.ext import commands
 import discord
@@ -13,20 +13,11 @@ class SupportSystem(commands.Cog):
         self.bot: commands.Bot = bot
         self.persistent_added = False
 
-    @commands.Cog.listener()
-    async def on_ready(self):
-        if not self.persistent_added:
-            self.bot.add_view(FAQView())
-            self.bot.add_view(CloseThreadView())
-            self.bot.add_view(CreateThreadView())
-            self.persistent_added = True
-            print("✅ Added support system views!")
-
     faq = discord.SlashCommandGroup("faq", "FAQs related commands.")
 
     @faq.command()
     @is_staff()
-    async def create(self, ctx, category: Option(str, "The category the FAQ will be created in", choices=["verification", "api", "binds", "premium", "other"])):
+    async def create(self, ctx: discord.ApplicationContext, category: Option(str, "The category the FAQ will be created in", choices=["verification", "api", "binds", "premium", "other"])):
         """Create a FAQ."""
         modal = FAQCreateModal(category)
         await ctx.send_modal(modal)
