@@ -1,7 +1,8 @@
 from resources.CheckFailure import is_staff
 from discord.commands import Option
 from supportsystem.modal import FAQCreateModal, FAQEditModal
-from supportsystem.view import FAQView, CloseThreadView, CreateThreadView
+from supportsystem.faqview import FAQView
+from supportsystem.threadviews import CloseThreadView, CreateThreadView
 from config import COLORS
 from discord.ext import commands
 import discord
