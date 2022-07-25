@@ -36,7 +36,7 @@ class Bot(commands.Bot):
         for event in os.listdir("src/events"):
             if event.endswith(".py"):
                 try:
-                    self.load_extension(f"events.{event[:-3]}")
+                    self.load_extension(f"events.{event[:-3]}", store = False)
                     print(f"✅ Loaded event: {event}")
                 except Exception as e:
                     print(f"❌ Failed to load event: {event}: {e}")
@@ -44,7 +44,7 @@ class Bot(commands.Bot):
         for command in os.listdir("src/cogs"):
             if command.endswith(".py"):
                 try:
-                    self.load_extension(f"cogs.{command[:-3]}")
+                    self.load_extension(f"cogs.{command[:-3]}", store = False)
                     print(f"✅ Loaded cog: {command}")
                 except Exception as e:
                     print(f"❌ Failed to load cog: {command}: {e}")

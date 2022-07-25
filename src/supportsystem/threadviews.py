@@ -5,7 +5,7 @@ from resources.mongoFunctions import insert_one, find_one, delete_one
 from config import COLORS, LINKS
 import datetime
 import asyncio
-from rateview import RatingView
+from supportsystem.rateview import RatingView
 
 
 class CloseThreadView(discord.ui.View):
