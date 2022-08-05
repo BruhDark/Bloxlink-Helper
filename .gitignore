@@ -131,3 +131,4 @@ dmypy.json
 .editorconfig
 .tmp
 src/cogs/music.py
+src/cogs/application.yml
