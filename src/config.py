@@ -14,30 +14,30 @@ class Emotes:
         self.warning = ":warning:"
         self.info = "<:info:881973831974154250>"
         self.question = "<:Question:929051955962195999>"
-        self.operational = "<:Operational:882404710148083724>",
-        self.partialoutage = "<:PartialOutage:882404755949895730>",
-        self.majoroutage = "<:MajorOutage:882404641286000681>",
-        self.maintenance = "<:UnderMaintenance:881969909247148052>",
+        self.operational = "<:Operational:882404710148083724>"
+        self.partialoutage = "<:PartialOutage:882404755949895730>"
+        self.majoroutage = "<:MajorOutage:882404641286000681>"
+        self.maintenance = "<:UnderMaintenance:881969909247148052>"
 
-        self.dnd = "<:DoNotDisturb:928716110822518834>",
-        self.idle = "<:Idle:929049988573581352>",
-        self.online = "<:Online:928716318054694993>",
-        self.offline = "<:Offline:928716879474851870>",
+        self.dnd = "<:DoNotDisturb:928716110822518834>"
+        self.idle = "<:Idle:929049988573581352>"
+        self.online = "<:Online:928716318054694993>"
+        self.offline = "<:Offline:928716879474851870>"
 
-        self.loading = "<a:loading:946809583194767400>",
-        self.spotify = "<:Spotify:929060525881565224>",
-        self.bloxlink = "<:BloxlinkSilly:823634273604468787>",
+        self.loading = "<a:loading:946809583194767400>"
+        self.spotify = "<:Spotify:929060525881565224>"
+        self.bloxlink = "<:BloxlinkSilly:823634273604468787>"
 
-        self.add = "<:add:930273857363927110>",
-        self.remove = "<:edit:930273882919821322>",
-        self.edit = "<:remove:930273905569042472>",
+        self.add = "<:add:930273857363927110>"
+        self.remove = "<:edit:930273882919821322>"
+        self.edit = "<:remove:930273905569042472>"
 
 
 class Links:
     def __init__(self):
-        self.success = "https://cdn.discordapp.com/emojis/976817167116947507.gif?size=44&quality=lossless",
-        self.error = "https://cdn.discordapp.com/emojis/823633973967716363.webp?size=96&quality=lossless",
-        self.other = "https://cdn.discordapp.com/emojis/823634273604468787.webp?size=96&quality=lossless",
+        self.success = "https://cdn.discordapp.com/emojis/976817167116947507.gif?size=44&quality=lossless"
+        self.error = "https://cdn.discordapp.com/emojis/823633973967716363.webp?size=96&quality=lossless"
+        self.other = "https://cdn.discordapp.com/emojis/823634273604468787.webp?size=96&quality=lossless"
         self.heart = "https://media.discordapp.net/attachments/947298060646613032/996566385750712400/BloxHeart.png"
 
 
@@ -58,18 +58,18 @@ class Releasescolors:
 
 class Badges:
     def __init__(self):
-        self.bot = "<:Bot:928765691778203719>",
-        self.bughunter = "<:BugHunter:928765827107422268>",
-        self.moderator = "<:DiscordCertifiedModerator:881971670921916518>",
-        self.staff = "<:DiscordStaff:882405445136965633>",
-        self.events = "<:HypeSquadEvents:928765434281488534>",
-        self.balance = "<:HypeSquad_Balance:928765104110047273>",
-        self.bravery = "<:HypeSquad_Bravery:928765052427841628>",
-        self.brilliance = "<:HypeSquad_Brilliance:928764974103404554>",
-        self.verfiedbot = "<:VerifiedBot:848277286927073280>",
-        self.bughunter2 = "<:BugHunter:928768063933939783>",
-        self.partner = "<:DiscordPartner:928768159215923230>",
-        self.early = "<:EarlySupporter:928768119072231454>",
+        self.bot = "<:Bot:928765691778203719>"
+        self.bughunter = "<:BugHunter:928765827107422268>"
+        self.moderator = "<:DiscordCertifiedModerator:881971670921916518>"
+        self.staff = "<:DiscordStaff:882405445136965633>"
+        self.events = "<:HypeSquadEvents:928765434281488534>"
+        self.balance = "<:HypeSquad_Balance:928765104110047273>"
+        self.bravery = "<:HypeSquad_Bravery:928765052427841628>"
+        self.brilliance = "<:HypeSquad_Brilliance:928764974103404554>"
+        self.verfiedbot = "<:VerifiedBot:848277286927073280>"
+        self.bughunter2 = "<:BugHunter:928768063933939783>"
+        self.partner = "<:DiscordPartner:928768159215923230>"
+        self.early = "<:EarlySupporter:928768119072231454>"
         self.botdev = "<:VerfiedBotDeveloper:928765568058785852>"
 
 
