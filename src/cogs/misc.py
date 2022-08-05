@@ -3,11 +3,11 @@ from typing import Union
 
 import discord
 from discord.ext import commands
-from config import COLORS, EMOTES, LINKS
+from config import colors, emotes, links
 from resources.mongoFunctions import find_one, insert_one, delete_one, return_all
 
-s = EMOTES["success2"]
-x = EMOTES["error"]
+s = emotes.success2
+x = emotes.error
 
 
 class Misc(commands.Cog):
@@ -21,14 +21,14 @@ class Misc(commands.Cog):
         user: discord.Member = user or ctx.author
         if not isinstance(user.activity, discord.Spotify):
             embed = discord.Embed(
-                description=f"{x} {user.mention} is not listening to Spotify or a CustomActivity is blocking me from accessing it.", color=COLORS["error"])
+                description=f"{x} {user.mention} is not listening to Spotify or a CustomActivity is blocking me from accessing it.", color=colors.error)
             return await ctx.send(embed=embed)
 
         else:
-            emoji = EMOTES["spotify"]
+            emoji = emotes.spotify
 
             Embed = discord.Embed(
-                description=f"{user.mention} | {EMOTES['spotify']}", timestamp=datetime.datetime.utcnow(), color=user.color)
+                description=f"{user.mention} | {emotes['spotify']}", timestamp=datetime.datetime.utcnow(), color=user.color)
             Embed.set_author(
                 name=f"{user.name}#{user.discriminator}", icon_url=user.display_avatar.url)
 

@@ -1,7 +1,7 @@
 import datetime
 
 import discord
-from config import BADGES, EMOTES, COLORS
+from config import badges, emotes, colors
 from discord.commands import Option, slash_command
 from discord.ext import commands
 
@@ -47,23 +47,23 @@ class Whois(commands.Cog):
         if not noMember:
             x = user.raw_status
             if x == "online":
-                status = EMOTES["online"]
+                status = emotes.online
 
             elif x == "idle":
-                status = EMOTES["idle"]
+                status = emotes.idle
 
             elif x == "dnd":
-                status = EMOTES["dnd"]
+                status = emotes.dnd
 
             elif x == "offline":
-                status = EMOTES["offline"]
+                status = emotes.offline
 
             else:
-                status = EMOTES["question"]
+                status = emotes.question
 
-        color = user.color if not noMember else COLORS["info"]
+        color = user.color if not noMember else colors.info
         if user.id == self.bot.user.id:
-            color = COLORS["info"]
+            color = colors.info
 
         amember = "**This user is not a member of this server.**" if noMember else ""
         nickname = f"**Nickname:** {user.display_name}" if not noMember else ""
@@ -105,57 +105,43 @@ class Whois(commands.Cog):
         flags = []
 
         if user.public_flags.staff:
-            staff = BADGES["staff"]
-            flags.append(f"{staff} Discord Staff")
+            flags.append(f"{badges.staff} Discord Staff")
 
         if user.public_flags.partner:
-            partner = BADGES["partner"]
-            flags.append(f"{partner} Partnered Server Owner")
+            flags.append(f"{badges.partner} Partnered Server Owner")
 
         if user.public_flags.discord_certified_moderator:
-            moderator = BADGES["moderator"]
-            flags.append(f"{moderator} Discord Certified Moderator")
+            flags.append(f"{badges.moderator} Discord Certified Moderator")
 
         if user.public_flags.verified_bot_developer or user.public_flags.early_verified_bot_developer:
-            botdev = BADGES["botdev"]
-            flags.append(f"{botdev} Verified Bot Developer")
+            flags.append(f"{badges.botdev} Verified Bot Developer")
 
         if user.public_flags.bug_hunter:
-            bughunter = BADGES["bughunter"]
-            flags.append(f"{bughunter} Bug Hunter")
+            flags.append(f"{badges.bughunter} Bug Hunter")
 
         if user.public_flags.bug_hunter_level_2:
-            bughunter2 = BADGES["bughunter2"]
-            flags.append(f"{bughunter2} Bug Hunter")
+            flags.append(f"{badges.bughunter2} Bug Hunter")
 
         if user.public_flags.early_supporter:
-            early = BADGES["early"]
-            flags.append(f"{early} Early Supporter")
+            flags.append(f"{badges.early} Early Supporter")
 
         if user.public_flags.hypesquad:
-            events = BADGES["events"]
-            flags.append(f"{events} Hypesquad Events")
+            flags.append(f"{badges.events} Hypesquad Events")
 
         if user.public_flags.hypesquad_bravery:
-            bravery = BADGES["bravery"]
-            flags.append(f"{bravery} Hypesquad Bravery")
+            flags.append(f"{badges.bravery} Hypesquad Bravery")
 
         elif user.public_flags.hypesquad_brilliance:
-            brilliance = BADGES["brilliance"]
-            flags.append(f"{brilliance} Hypesquad Brilliance")
+            flags.append(f"{badges.brilliance} Hypesquad Brilliance")
 
         elif user.public_flags.hypesquad_balance:
-            balance = BADGES["balance"]
-            flags.append(f"{balance} Hypesquad Balance")
+            flags.append(f"{badges.balance} Hypesquad Balance")
 
         if user.bot:
-            bot = BADGES["bot"]
-            flags.append(f"{bot} Bot")
+            flags.append(f"{badges.bot} Bot")
 
         if user.public_flags.verified_bot:
-            verifiedbot = BADGES["verifiedbot"]
-
-            flags.append(f"{verifiedbot} Verified Bot")
+            flags.append(f"{badges.verifiedbot} Verified Bot")
 
         if len(flags) == 0:
             flags.append("None")
@@ -200,17 +186,14 @@ class Whois(commands.Cog):
     @commands.command(aliases=["w", "userinfo"])
     @commands.guild_only()
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def whois(self, ctx: commands.Context, member: discord.Member = None):
+    async def whois(self, ctx: commands.Context, member: str = None):
         """Get information about an user."""
 
-        if member == None:
-            id = ctx.author.id
-        elif type(member) == int:
-            id = member
+        if member is None:
+            user = ctx.author
         else:
-            id = member.id
-
-        user = ctx.guild.get_member(id)
+            converter = commands.MemberConverter()
+            user = await converter.convert(ctx, member)
         noMember = False
 
         if user == None:
@@ -232,26 +215,26 @@ class Whois(commands.Cog):
         if not noMember:
             x = user.raw_status
             if x == "online":
-                status = EMOTES["online"]
+                status = emotes.online
 
             elif x == "idle":
-                status = EMOTES["idle"]
+                status = emotes.idle
 
             elif x == "dnd":
-                status = EMOTES["dnd"]
+                status = emotes.dnd
 
             elif x == "offline":
-                status = EMOTES["offline"]
+                status = emotes.offline
 
             else:
-                status = EMOTES["question"]
+                status = emotes.question
 
-        color = user.color if not noMember else COLORS["info"]
+        color = user.color if not noMember else colors.info
         if user.id == self.bot.user.id:
-            color = COLORS["info"]
+            color = colors.info
 
-        amember = "**This user is not a member of this server.**" if noMember else ""
-        nickname = f"**Nickname:** {user.display_name}" if not noMember else ""
+        nickname = f"**Nickname:** {user.display_name}" if not noMember and user.name != user.display_name else ""
+        amember = f"**This user is not a member of this server.**\n{nickname}" if noMember else nickname
 
         Embed = discord.Embed(color=color, timestamp=datetime.datetime.utcnow(
         ), description=f"{user.mention}\n{nickname}\n{amember}")
@@ -290,57 +273,43 @@ class Whois(commands.Cog):
         flags = []
 
         if user.public_flags.staff:
-            staff = BADGES["staff"]
-            flags.append(f"{staff} Discord Staff")
+            flags.append(f"{badges.staff} Discord Staff")
 
         if user.public_flags.partner:
-            partner = BADGES["partner"]
-            flags.append(f"{partner} Partnered Server Owner")
+            flags.append(f"{badges.partner} Partnered Server Owner")
 
         if user.public_flags.discord_certified_moderator:
-            moderator = BADGES["moderator"]
-            flags.append(f"{moderator} Discord Certified Moderator")
+            flags.append(f"{badges.moderator} Discord Certified Moderator")
 
         if user.public_flags.verified_bot_developer or user.public_flags.early_verified_bot_developer:
-            botdev = BADGES["botdev"]
-            flags.append(f"{botdev} Verified Bot Developer")
+            flags.append(f"{badges.botdev} Verified Bot Developer")
 
         if user.public_flags.bug_hunter:
-            bughunter = BADGES["bughunter"]
-            flags.append(f"{bughunter} Bug Hunter")
+            flags.append(f"{badges.bughunter} Bug Hunter")
 
         if user.public_flags.bug_hunter_level_2:
-            bughunter2 = BADGES["bughunter2"]
-            flags.append(f"{bughunter2} Bug Hunter")
+            flags.append(f"{badges.bughunter2} Bug Hunter")
 
         if user.public_flags.early_supporter:
-            early = BADGES["early"]
-            flags.append(f"{early} Early Supporter")
+            flags.append(f"{badges.early} Early Supporter")
 
         if user.public_flags.hypesquad:
-            events = BADGES["events"]
-            flags.append(f"{events} Hypesquad Events")
+            flags.append(f"{badges.events} Hypesquad Events")
 
         if user.public_flags.hypesquad_bravery:
-            bravery = BADGES["bravery"]
-            flags.append(f"{bravery} Hypesquad Bravery")
+            flags.append(f"{badges.bravery} Hypesquad Bravery")
 
         elif user.public_flags.hypesquad_brilliance:
-            brilliance = BADGES["brilliance"]
-            flags.append(f"{brilliance} Hypesquad Brilliance")
+            flags.append(f"{badges.brilliance} Hypesquad Brilliance")
 
         elif user.public_flags.hypesquad_balance:
-            balance = BADGES["balance"]
-            flags.append(f"{balance} Hypesquad Balance")
+            flags.append(f"{badges.balance} Hypesquad Balance")
 
         if user.bot:
-            bot = BADGES["bot"]
-            flags.append(f"{bot} Bot")
+            flags.append(f"{badges.bot} Bot")
 
         if user.public_flags.verified_bot:
-            verifiedbot = BADGES["verifiedbot"]
-
-            flags.append(f"{verifiedbot} Verified Bot")
+            flags.append(f"{badges.verifiedbot} Verified Bot")
 
         if len(flags) == 0:
             flags.append("None")

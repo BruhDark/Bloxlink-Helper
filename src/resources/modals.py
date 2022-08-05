@@ -3,7 +3,7 @@ from discord.ui import InputText, Modal
 
 import time
 import datetime
-from config import EMOTES, LINKS, COLORS
+from config import emotes, links, colors
 from resources.mongoFunctions import find_one, insert_one, update_tag
 
 
@@ -42,9 +42,9 @@ class TagCreateModal(Modal):
         find2 = await find_one("tags", check2) if aliases[0] != "None" else False
 
         if await find_one("tags", check) or find2:
-            error = EMOTES["error"]
+            error = emotes.error
             embed = discord.Embed(
-                description=f"{error} A tag with that name/alias already exists!", color=COLORS["error"])
+                description=f"{error} A tag with that name/alias already exists!", color=colors.error)
             await interaction.response.send_message(embed=embed)
 
         else:
@@ -52,11 +52,11 @@ class TagCreateModal(Modal):
             aliases = ", ".join(aliases)
 
             embed = discord.Embed(
-                title=f":paperclips: Aliases: {aliases}", description=f":page_with_curl: Tag content:\n{content}", color=COLORS["success"], timestamp=datetime.datetime.utcnow())
+                title=f":paperclips: Aliases: {aliases}", description=f":page_with_curl: Tag content:\n{content}", color=colors.success, timestamp=datetime.datetime.utcnow())
             embed.set_footer(
-                icon_url=LINKS["other"], text=f"Item ID: {item.inserted_id}")
+                icon_url=links.other, text=f"Item ID: {item.inserted_id}")
             embed.set_author(
-                icon_url=LINKS["success"], name=f"Successfully created tag: {name}")
+                icon_url=links.success, name=f"Successfully created tag: {name}")
 
             await interaction.response.send_message(embed=embed)
 
@@ -84,16 +84,16 @@ class TagEditModal(Modal):
             await update_tag(
                 check, {"content": content, "lastUpdateBy": interaction.user.id, "lastUpdateAt": round(time.time() * 1)})
             embed = discord.Embed(
-                description=f":page_with_curl: New tag content:\n{content}", color=COLORS["success"], timestamp=datetime.datetime.utcnow())
+                description=f":page_with_curl: New tag content:\n{content}", color=colors.success, timestamp=datetime.datetime.utcnow())
             embed.set_author(
-                icon_url=LINKS["success"], name=f"Successfully updated tag: {name}")
+                icon_url=links.success, name=f"Successfully updated tag: {name}")
 
             await interaction.response.send_message(embed=embed)
 
         else:
-            error = EMOTES["error"]
+            error = emotes.error
             embed = discord.Embed(
-                description=f"{error} A tag with that name does not exist! Try again.", color=COLORS["error"])
+                description=f"{error} A tag with that name does not exist! Try again.", color=colors.error)
 
             embed.add_field(name="Oops! Here is what you typed:",
                             value=f"```{content}```")

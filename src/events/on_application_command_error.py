@@ -5,7 +5,7 @@ import traceback
 
 import aiohttp
 import discord
-from config import COLORS, EMOTES
+from config import colors, emotes
 from discord.ext import commands
 
 
@@ -18,30 +18,30 @@ class OnApplicationCmdError(commands.Cog):
 
         if isinstance(error, commands.CommandOnCooldown):
 
-            x = EMOTES["error"]
+            x = emotes.error
             Embed = discord.Embed(
-                description=f"{x} This command is on cooldown! Try again in {round(error.retry_after)} seconds.", color=COLORS["error"])
+                description=f"{x} This command is on cooldown! Try again in {round(error.retry_after)} seconds.", color=colors.error)
             await ctx.respond(embed=Embed, ephemeral=True)
 
         elif isinstance(error, commands.NoPrivateMessage):
 
-            x = EMOTES["error"]
+            x = emotes.error
             Embed = discord.Embed(
-                description=f"{x} This command is only available in a guild!", color=COLORS["error"])
+                description=f"{x} This command is only available in a guild!", color=colors.error)
             await ctx.respond(embed=Embed, ephemeral=True)
 
         elif isinstance(error, commands.CheckFailure):
 
-            x = EMOTES["error"]
+            x = emotes.error
             Embed = discord.Embed(
-                description=f"{x} {error}", color=COLORS["error"])
+                description=f"{x} {error}", color=colors.error)
             await ctx.respond(embed=Embed, ephemeral=True)
 
         else:
-            x = EMOTES["error"]
+            x = emotes.error
 
             Embed = discord.Embed(
-                description=f"{x} Something went wrong\n\n```py\n{error}```", color=COLORS["error"])
+                description=f"{x} Something went wrong\n\n```py\n{error}```", color=colors.error)
 
             await ctx.respond(embed=Embed)
 
@@ -53,7 +53,7 @@ class OnApplicationCmdError(commands.Cog):
                 tb = tb + "\n"
 
                 embed = discord.Embed(
-                    title=f"{EMOTES['error']} Something Went Wrong", color=COLORS["error"], timestamp=datetime.utcnow())
+                    title=f"{emotes.error} Something Went Wrong", color=colors.error, timestamp=datetime.utcnow())
                 embed.description = f"```py\n{tb}```"
                 embed.add_field(
                     name="Command", value=f"{ctx.command.qualified_name}")

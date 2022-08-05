@@ -2,7 +2,7 @@ import discord
 from discord import ButtonStyle
 from discord import Button
 from resources.mongoFunctions import insert_one, find_one, delete_one
-from config import COLORS, LINKS
+from config import colors, links
 import datetime
 import asyncio
 from supportsystem.rateview import RatingView
@@ -46,7 +46,7 @@ class CloseThreadView(discord.ui.View):
         await thread.archive(locked=True)
 
         embedT = discord.Embed(
-            color=COLORS["error"], timestamp=datetime.utcnow(), title="Support Thread Closed")
+            color=colors.error, timestamp=datetime.utcnow(), title="Support Thread Closed")
         embedT.add_field(
             name="<:user:988229844301131776> Created By", value=f"<@{user}>")
         embedT.add_field(name="<:help:988166431109681214> Topic", value=topic)
@@ -66,14 +66,14 @@ class CloseThreadView(discord.ui.View):
         user = await interaction.client.get_or_fetch_user(user)
 
         rateEmbed = discord.Embed(title="<:BloxlinkHappy:823633735446167552> Thanks for contacting us!",
-                                  description="We appreciate you and want to know your satisfaction with the support given by our team.\nFeel free to rate us by clicking the :star: (star) and telling us your satisfaction level. Being the first one, 1 (I was not satisfied by the support given), and the last one 5 (I was very satified by the support given).", color=COLORS["info"])
+                                  description="We appreciate you and want to know your satisfaction with the support given by our team.\nFeel free to rate us by clicking the :star: (star) and telling us your satisfaction level. Being the first one, 1 (I was not satisfied by the support given), and the last one 5 (I was very satified by the support given).", color=colors.info)
         rateEmbed.timestamp = datetime.utcnow()
         rateEmbed.set_author(
             name=f"Hello, {user.name}!", icon_url=user.avatar.url)
         rateEmbed.add_field(name="Awaiting feedback...",
                             value="​")
         rateEmbed.set_footer(
-            text="Thanks for choosing Bloxlink! We hope you have a great day!", icon_url=LINKS["other"])
+            text="Thanks for choosing Bloxlink! We hope you have a great day!", icon_url=links.other)
 
         await user.send(embed=rateEmbed, view=rateView)
 
@@ -122,7 +122,7 @@ class ThreadButton(discord.ui.Button):
         await interaction.followup.send(f"<:BloxlinkSilly:823634273604468787> You have created a support thread. Please head to {thread.mention} to join the thread.", ephemeral=True)
 
         embedT = discord.Embed(
-            color=COLORS["info"], timestamp=datetime.utcnow(), title="Support Thread")
+            color=colors.info, timestamp=datetime.utcnow(), title="Support Thread")
         embedT.add_field(
             name="<:user:988229844301131776> Created By", value=interaction.user.mention)
         embedT.add_field(
@@ -136,7 +136,7 @@ class ThreadButton(discord.ui.Button):
 
         object = await insert_one("support-users", {"user": interaction.user.id, "thread": thread.id, "log": log.id})
 
-        embed = discord.Embed(color=COLORS["info"], timestamp=datetime.utcnow(), title="Support Thread", description=f":wave: Welcome to your support thread!\n\n<:BloxlinkSilly:823634273604468787> Our Helpers will assist you in a few minutes. While you wait, please provide as much detail as possible! Consider providing screenshots or/and anything that helps the team to solve your issue faster.\n\n<:time:987836664355373096> Our team is taking too long? If 10 minutes have passed, you can click the **Ping Helpers** button, this will notify our team you are here!")
+        embed = discord.Embed(color=colors.info, timestamp=datetime.utcnow(), title="Support Thread", description=f":wave: Welcome to your support thread!\n\n<:BloxlinkSilly:823634273604468787> Our Helpers will assist you in a few minutes. While you wait, please provide as much detail as possible! Consider providing screenshots or/and anything that helps the team to solve your issue faster.\n\n<:time:987836664355373096> Our team is taking too long? If 10 minutes have passed, you can click the **Ping Helpers** button, this will notify our team you are here!")
         embed.set_author(name=f"{interaction.user.name}#{interaction.user.discriminator} | ID: {object.inserted_id}",
                          icon_url=interaction.user.display_avatar.url)
         embed.set_footer(

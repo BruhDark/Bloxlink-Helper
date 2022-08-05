@@ -1,7 +1,7 @@
 import discord
 from discord.ui import InputText, Modal
 import datetime
-from config import EMOTES, LINKS, COLORS
+from config import emotes, links, colors
 from resources.mongoFunctions import find_one, insert_one, update_one
 
 
@@ -30,20 +30,20 @@ class FAQCreateModal(Modal):
         find = await find_one(f"faq-{self.category}", check)
 
         if find:
-            error = EMOTES["error"]
+            error = emotes.error
             embed = discord.Embed(
-                description=f"{error} A FAQ with that question already exists!", color=COLORS["error"])
+                description=f"{error} A FAQ with that question already exists!", color=colors.error)
             await interaction.response.send_message(embed=embed)
             return
 
         item = await insert_one(f"faq-{self.category}", newFAQ)
 
         embed = discord.Embed(
-            title=f":paperclips: Question: {question}", description=f":page_with_curl: Answer:\n{answer}", color=COLORS["success"], timestamp=datetime.datetime.utcnow())
+            title=f":paperclips: Question: {question}", description=f":page_with_curl: Answer:\n{answer}", color=colors.success, timestamp=datetime.datetime.utcnow())
         embed.set_footer(
-            icon_url=LINKS["other"], text=f"Item ID: {item.inserted_id}")
+            icon_url=links.other, text=f"Item ID: {item.inserted_id}")
         embed.set_author(
-            icon_url=LINKS["success"], name=f"Successfully created FAQ: {question}")
+            icon_url=links.success, name=f"Successfully created FAQ: {question}")
 
         if image is not None:
             embed.set_image(url=image)
@@ -70,9 +70,9 @@ class FAQEditModal(Modal):
         find = await find_one(f"faq-{self.category}", check)
 
         if not find:
-            error = EMOTES["error"]
+            error = emotes.error
             embed = discord.Embed(
-                description=f"{error} No FAQ with that ID exists!", color=COLORS["error"])
+                description=f"{error} No FAQ with that ID exists!", color=colors.error)
             await interaction.response.send_message(embed=embed)
             return
 
@@ -81,11 +81,11 @@ class FAQEditModal(Modal):
             await update_one(f"faq-{self.category}", check, update)
 
             embed = discord.Embed(
-                title=f":paperclips: Question: {find['q']}", description=f":page_with_curl: Answer:\n{answer}", color=COLORS["success"], timestamp=datetime.datetime.utcnow())
+                title=f":paperclips: Question: {find['q']}", description=f":page_with_curl: Answer:\n{answer}", color=colors.success, timestamp=datetime.datetime.utcnow())
             embed.set_footer(
-                icon_url=LINKS["other"], text=f"Item ID: {id}")
+                icon_url=links.other, text=f"Item ID: {id}")
             embed.set_author(
-                icon_url=LINKS["success"], name=f"Successfully edited FAQ: {find['q']}")
+                icon_url=links.success, name=f"Successfully edited FAQ: {find['q']}")
 
             await interaction.response.send_message(embed=embed)
             return

@@ -1,10 +1,12 @@
 from discord.ext.pages import Paginator
 import discord
-from config import EMOTES, COLORS
+from config import emotes, colors
 
-e = EMOTES["error"]
-ce = COLORS["error"]
-embed = discord.Embed(description=f"{e} This paginator is not for you!", color=ce)
+e = emotes.error
+ce = colors.error
+embed = discord.Embed(
+    description=f"{e} This paginator is not for you!", color=ce)
+
 
 class CustomPaginator(Paginator):
     def __init__(self, *args, **kwargs):

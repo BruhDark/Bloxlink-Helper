@@ -8,7 +8,7 @@ import datetime
 import psutil
 import os
 
-from config import EMOTES, COLORS, RELEASESCOLORS, DESCRIPTION
+from config import emotes, colors, releasescolors, DESCRIPTION
 
 
 class Stats(commands.Cog):
@@ -51,7 +51,7 @@ class Stats(commands.Cog):
         memory = round(psutil.virtual_memory()[2])
 
         embed = discord.Embed(description="Bloxlink Staff's right hand. Managing tags with useful information and many other automations.", timestamp=datetime.datetime.utcnow(
-        ), color=RELEASESCOLORS[f"{self.bot.user.id}"])
+        ), color=releasescolors.main)
 
         embed.set_author(
             name=f"{self.bot.user.name}#{self.bot.user.discriminator}", icon_url=self.bot.user.avatar.url)
@@ -79,7 +79,7 @@ class Stats(commands.Cog):
 
         latency = str(round(self.bot.latency * 1000))
         embed = discord.Embed(
-            description=f"🏓 Latency: `{latency}ms`", color=COLORS['info'])
+            description=f"🏓 Latency: `{latency}ms`", color=colors.info)
 
         await ctx.respond(embed=embed)
 

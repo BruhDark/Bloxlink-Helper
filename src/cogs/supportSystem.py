@@ -3,7 +3,7 @@ from discord.commands import Option
 from supportsystem.modal import FAQCreateModal, FAQEditModal
 from supportsystem.faqview import FAQView
 from supportsystem.threadviews import CloseThreadView, CreateThreadView
-from config import COLORS
+from config import colors
 from discord.ext import commands
 import discord
 
@@ -42,7 +42,7 @@ class SupportSystem(commands.Cog):
     async def send_faq(self, ctx, channel: discord.TextChannel):
         """Owner only command to send the FAQs to a channel."""
 
-        embed = discord.Embed(color=COLORS["info"], title=":wave: Welcome to Bloxlink's FAQ!",
+        embed = discord.Embed(color=colors.info, title=":wave: Welcome to Bloxlink's FAQ!",
                               description="Welcome! You have come to the right place if you are looking for help with Bloxlink.\n\n<:lifesaver:986648046592983150> **How do I use this FAQ system?**\n\nSelect the category from the dropdown you think your question fits in, a new message will pop up with questions related to the category selected. Found your question? Click the respective button number to get your answer.")
 
         await channel.send(embed=embed, view=FAQView())
@@ -54,7 +54,7 @@ class SupportSystem(commands.Cog):
         """Owner only command to update the support system message."""
 
         message = await channel.fetch_message(int(message))
-        embed = discord.Embed(color=COLORS["info"], title=":wave: Welcome to Bloxlink's support system!",
+        embed = discord.Embed(color=colors.info, title=":wave: Welcome to Bloxlink's support system!",
                               description="Hello! You have come to the right place if you are looking for help with Bloxlink.\n\n<:lifesaver:986648046592983150> **How do I use the FAQ system?**\n\nClick the **Open FAQ** button to open the FAQs. Select the category you think your question fits in. Found your question? Click the respective button number!")
 
         await message.edit(embed=embed, view=FAQView())
@@ -64,7 +64,7 @@ class SupportSystem(commands.Cog):
     @commands.is_owner()
     async def send_get_support(self, ctx: discord.ApplicationContext, channel: discord.TextChannel):
         """Owner only command to send the get support message."""
-        embed = discord.Embed(color=COLORS["info"], title=":wave: Welcome to Bloxlink's premium support system!",
+        embed = discord.Embed(color=colors.info, title=":wave: Welcome to Bloxlink's premium support system!",
                               description="Thanks for purchasing premium! You know have access to priority support, our team is ready to asssist you in just a few minutes.\n\n<:lifesaver:986648046592983150> **How do I open a thread?**\n\nClick the **Get Support** button, a thread will get privately created for you to get on instant contact with our staff team.")
         await channel.send(embed=embed, view=CreateThreadView())
         await ctx.respond("Done")

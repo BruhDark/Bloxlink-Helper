@@ -1,7 +1,7 @@
 import asyncio
 
 import discord
-from config import COLORS, EMOTES, LINKS
+from config import colors, emotes, links
 from discord.ext import commands
 from discord.utils import get
 from resources.CheckFailure import is_staff, is_blacklisted
@@ -58,9 +58,9 @@ class TagsPrefixed(commands.Cog):
                     await ctx.send(f"{tag}")
 
         else:
-            x = EMOTES["error"]
+            x = emotes.error
             embed = discord.Embed(
-                description=f"{x} No tag matching your search.", color=COLORS["error"])
+                description=f"{x} No tag matching your search.", color=colors.error)
             message = await ctx.send(embed=embed)
 
             await asyncio.sleep(3.0)
@@ -77,9 +77,9 @@ class TagsPrefixed(commands.Cog):
             await ctx.send(text)
 
         except Exception as e:
-            x = EMOTES["error"]
+            x = emotes.error
             Embed = discord.Embed(
-                description=f"{x} Something went wrong\n\n```py\n{e}```", color=COLORS["error"])
+                description=f"{x} Something went wrong\n\n```py\n{e}```", color=colors.error)
             await ctx.send(embed=Embed)
 
     @commands.command(aliases=["msgedit"])
@@ -94,9 +94,9 @@ class TagsPrefixed(commands.Cog):
             await message.edit(text)
 
         except Exception as e:
-            x = EMOTES["error"]
+            x = emotes.error
             Embed = discord.Embed(
-                description=f"{x} Something went wrong\n\n```py\n{e}```", color=COLORS["error"])
+                description=f"{x} Something went wrong\n\n```py\n{e}```", color=colors.error)
             await ctx.send(embed=Embed)
 
 

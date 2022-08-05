@@ -7,7 +7,7 @@ import discord
 import dotenv
 from discord.ext import commands, tasks
 
-from config import AUTHORIZED, COLORS, EMOTES
+from config import AUTHORIZED, colors, emotes
 from resources.mongoFunctions import database
 
 try:
@@ -48,6 +48,7 @@ class Bot(commands.Bot):
                     print(f"✅ Loaded cog: {command}")
                 except Exception as e:
                     print(f"❌ Failed to load cog: {command}: {e}")
+                    raise e
 
     async def on_connect(self):
         await self.sync_commands()
@@ -66,7 +67,7 @@ class Bot(commands.Bot):
             tb = tb + "\n" + str(sys.exc_info()[1])
 
             embed = discord.Embed(
-                title=f"{EMOTES['error']} Something Went Wrong | Event: {event}", color=COLORS["error"], timestamp=datetime.utcnow())
+                title=f"{emotes.error} Something Went Wrong | Event: {event}", color=colors.error, timestamp=datetime.utcnow())
             embed.description = f"```py\n{tb}```"
             await webhook.send(embed=embed)
 

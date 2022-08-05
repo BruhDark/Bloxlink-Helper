@@ -2,10 +2,10 @@ import asyncio
 import re
 
 import discord
-from config import COLORS, EMOTES
+from config import colors, emotes
 from discord.ext import commands
 
-x = EMOTES["error"]
+x = emotes.error
 
 
 class ButtonDelete(discord.ui.View):
@@ -70,7 +70,7 @@ class Quote(commands.Cog):
                         await message.remove_reaction("📦", message.author)
 
                         embed = discord.Embed(
-                            title=f"Jump to message", url=f"https://discord.com/channels/{server_id}/{channel_id}/{msg_id}", description=msg.content, color=COLORS["info"], timestamp=msg.created_at)
+                            title=f"Jump to message", url=f"https://discord.com/channels/{server_id}/{channel_id}/{msg_id}", description=msg.content, color=colors.info, timestamp=msg.created_at)
                         embed.set_author(
                             name=f"{msg.author} in {msg.channel}", icon_url=msg.author.avatar.url)
                         embed.set_footer(

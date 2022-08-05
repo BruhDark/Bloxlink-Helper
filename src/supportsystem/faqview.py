@@ -3,7 +3,7 @@ from datetime import datetime
 import time
 
 import discord
-from config import COLORS, LINKS
+from config import colors, links
 from discord import ButtonStyle, SelectOption
 from discord.ui import Button, View, button
 from resources.mongoFunctions import return_all
@@ -26,7 +26,7 @@ async def format_buttons(questions: list):
 
         q = question["q"]
         embed = discord.Embed(
-            color=COLORS["info"], title=f"<:BloxlinkConfused:823633690910916619> {q}", description=question["a"])
+            color=colors.info, title=f"<:BloxlinkConfused:823633690910916619> {q}", description=question["a"])
 
         try:
             image = question["image"]
@@ -69,9 +69,9 @@ class FAQView(View):
 
         await interaction.response.defer()
 
-        embed = discord.Embed(color=COLORS["info"])
+        embed = discord.Embed(color=colors.info)
         embed.set_footer(
-            text="Did not find an answer? Use our support channels.", icon_url=LINKS["other"])
+            text="Did not find an answer? Use our support channels.", icon_url=links.other)
         view = None
 
         if select.values[0] == "verification":
@@ -144,6 +144,6 @@ class SupportView(View):
     async def callback(self, button: button, interaction: discord.Interaction):
 
         embed = discord.Embed(title=":wave: Welcome to Bloxlink's FAQ!",
-                              description="\n<:BloxlinkConfused:823633690910916619> **How does this work?**\nSelect the category, from the dropdown, that you think your question matches. You will get prompted with some questions, they all have a number. Click the respective number on the buttons below them and get an answer!\n\n<:BloxlinkNervous:823633774939865120> **Did not find an answer?**\nState your issue with as much detail as possible in our support channels, our team will be glad to assit you!", color=COLORS["info"])
+                              description="\n<:BloxlinkConfused:823633690910916619> **How does this work?**\nSelect the category, from the dropdown, that you think your question matches. You will get prompted with some questions, they all have a number. Click the respective number on the buttons below them and get an answer!\n\n<:BloxlinkNervous:823633774939865120> **Did not find an answer?**\nState your issue with as much detail as possible in our support channels, our team will be glad to assit you!", color=colors.info)
 
         await interaction.response.send_message(embed=embed, view=FAQView(), ephemeral=True)

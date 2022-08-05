@@ -2,7 +2,7 @@ import datetime
 import time
 
 import discord
-from config import COLORS, EMOTES, LINKS
+from config import colors, emotes, links
 from discord.commands import Option
 from discord.ext import commands
 from resources.CheckFailure import is_staff, is_blacklisted
@@ -40,17 +40,17 @@ class Tags(commands.Cog):
             query = {"name": name}
 
             await delete_one(query)
-            success = EMOTES["success"]
+            success = emotes.success
 
             embed = discord.Embed(
-                description=f"{success} Successfully **deleted**: {name}", color=COLORS["success"])
+                description=f"{success} Successfully **deleted**: {name}", color=colors.success)
 
             await ctx.respond(embed=embed)
 
         else:
-            x = EMOTES["error"]
+            x = emotes.error
             embed = discord.Embed(
-                description=f"{x} A tag with that name does not exist!", color=COLORS["error"])
+                description=f"{x} A tag with that name does not exist!", color=colors.error)
             await ctx.respond(embed=embed)
 
     @tags.command(description="Get information about a tag")
@@ -74,9 +74,9 @@ class Tags(commands.Cog):
             content = find["content"]
 
             embed = discord.Embed(
-                title=f":paperclips: Aliases: {aliases}", description=f":page_with_curl: Tag content:\n{content}", timestamp=datetime.datetime.utcnow(), color=COLORS["info"])
+                title=f":paperclips: Aliases: {aliases}", description=f":page_with_curl: Tag content:\n{content}", timestamp=datetime.datetime.utcnow(), color=colors.info)
             embed.set_author(
-                icon_url=LINKS["other"], name=f"Tag information for: {name}")
+                icon_url=links.other, name=f"Tag information for: {name}")
             embed.add_field(name=":clipboard: Created By",
                             value=f"{author.mention} ({author.id})")
             embed.add_field(name=":safety_vest: Last Update By",
@@ -91,9 +91,9 @@ class Tags(commands.Cog):
             await ctx.respond(embed=embed)
 
         else:
-            x = EMOTES["error"]
+            x = emotes.error
             embed = discord.Embed(
-                description=f"{x} No tag found by this name", color=COLORS["error"])
+                description=f"{x} No tag found by this name", color=colors.error)
             await ctx.respond(embed=embed)
 
     @tags.command(description="Get the raw content of a tag")
@@ -111,9 +111,9 @@ class Tags(commands.Cog):
             await ctx.respond(content=f":page_with_curl: Raw content for: {name}\n```\n{content}```", embed=None)
 
         else:
-            x = EMOTES["error"]
+            x = emotes.error
             embed = discord.Embed(
-                description=f"{x} No tag found by this name", color=COLORS["error"])
+                description=f"{x} No tag found by this name", color=colors.error)
             await ctx.respond(embed=embed)
 
     @tags.command(description="Edit an existent tag's content")
@@ -161,15 +161,15 @@ class Tags(commands.Cog):
 
                     await update_tag(check, aliases)
 
-                    success = EMOTES["success"]
+                    success = emotes.success
                     embed = discord.Embed(
-                        description=f"{success} **Added** alias: {alias}", color=COLORS["success"], timestamp=datetime.datetime.utcnow())
+                        description=f"{success} **Added** alias: {alias}", color=colors.success, timestamp=datetime.datetime.utcnow())
                     await ctx.respond(embed=embed)
 
                 else:
-                    x = EMOTES["error"]
+                    x = emotes.error
                     embed = discord.Embed(
-                        description=f"{x} This alias already exists", color=COLORS["error"])
+                        description=f"{x} This alias already exists", color=colors.error)
                     await ctx.respond(embed=embed)
 
             elif choice == "remove":
@@ -185,23 +185,23 @@ class Tags(commands.Cog):
                         "aliases": aliases, "lastUpdateAt": updatedTime, "lastUpdateBy": ctx.author.id}
                     await update_tag(check, update)
 
-                    success = EMOTES["success"]
+                    success = emotes.success
                     embed = discord.Embed(
-                        description=f"{success} **Removed** alias: {alias}", color=COLORS["success"], timestamp=datetime.datetime.utcnow())
+                        description=f"{success} **Removed** alias: {alias}", color=colors.success, timestamp=datetime.datetime.utcnow())
                     await ctx.respond(embed=embed)
 
                 except Exception:
-                    x = EMOTES["error"]
+                    x = emotes.error
                     embed = discord.Embed(
-                        description=f"{x} No alias found for this tag", color=COLORS["error"])
+                        description=f"{x} No alias found for this tag", color=colors.error)
                     await ctx.respond(embed=embed)
 
             else:
                 await ctx.respond("Invalid typeAlias selected.")
         else:
-            x = EMOTES["error"]
+            x = emotes.error
             embed = discord.Embed(
-                description=f"{x} No tag found by this name", color=COLORS["error"])
+                description=f"{x} No tag found by this name", color=colors.error)
             await ctx.respond(embed=embed)
 
     @tags.command(description="Get a tags list and a paginator")
@@ -220,8 +220,8 @@ class Tags(commands.Cog):
         tags = [tag['name'] for tag in tagsList]
 
         tagsEmbed = discord.Embed(description=", ".join(
-            tags), color=COLORS["info"], timestamp=datetime.datetime.utcnow())
-        emote = LINKS["other"]
+            tags), color=colors.info, timestamp=datetime.datetime.utcnow())
+        emote = links.other
         tagsEmbed.set_author(icon_url=emote, name="Listing all tags:")
         tagsEmbed.set_footer(text="Use the paginator to go over the tags")
         pagPages.append(tagsEmbed)
@@ -237,7 +237,7 @@ class Tags(commands.Cog):
             lastUpdateBy = await self.bot.get_or_fetch_user(findTag["lastUpdateBy"])
 
             embed = discord.Embed(
-                title=f":paperclips: Aliases: {aliases}", description=f":page_with_curl: Tag content:\n{content}", timestamp=datetime.datetime.utcnow(), color=COLORS["info"])
+                title=f":paperclips: Aliases: {aliases}", description=f":page_with_curl: Tag content:\n{content}", timestamp=datetime.datetime.utcnow(), color=colors.info)
             embed.set_author(
                 icon_url=emote, name=f"Tag information for: {name}")
             embed.add_field(name=":clipboard: Created By",
@@ -274,9 +274,9 @@ class Tags(commands.Cog):
             await ctx.respond(f"{text} {tag}")
 
         else:
-            x = EMOTES["error"]
+            x = emotes.error
             embed = discord.Embed(
-                description=f"{x} No tag matching your search.", color=COLORS["error"])
+                description=f"{x} No tag matching your search.", color=colors.error)
             await ctx.respond(embed=embed, delete_after=5.0)
 
 
