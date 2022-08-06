@@ -24,10 +24,11 @@ sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id=os.getenv(
     "SPOTIFY_CLIENT_ID"), client_secret=os.getenv("SPOTIFY_CLIENT_SECRET")))
 
 
-def create_embed(guild: discord.Guild, track: lavalink.AudioTrack, position):
+def create_embed(guild: discord.Guild, track: lavalink.AudioTrack, position: int):
     pos = datetime.timedelta(seconds=position / 1000)
     dur = datetime.timedelta(seconds=int(track.duration / 1000))
     duration = dur - pos
+    en = datetime.datetime.utcnow() + duration
     en = datetime.datetime.utcnow() + duration
     endsat = round(en.timestamp())
 
@@ -49,9 +50,9 @@ def confirmation(message):
     return embed
 
 
-async def cleanup(player):
-    player.queue.clear()
-    await player.stop()
+async def cleanup(player: lavalink.DefaultPlayer):
+    player.queue = []
+    await player.skip()
 
 
 class Player(discord.VoiceClient):
@@ -96,9 +97,9 @@ class SongSelect(discord.ui.Select):
         options = []
         for track in self.tracks:
             options.append(discord.SelectOption(
-                label=f"{track.title}", description=f"By {track.author}", emoji="<:playlist:1005265606821548163>"))
-            self.keys[f'{track.title}'] = track
-        super().__init__(placeholder="Pick a song",
+                label=f"{track.title}", description=f"By {track.author}", emoji="<:playlist:1005265606821548163>", value=track.identifier))
+            self.keys[f'{track.identifier}'] = track
+        super().__init__(placeholder="Select a song",
                          min_values=1, max_values=1, options=options)
 
     async def callback(self, interaction: discord.Interaction):
@@ -219,7 +220,7 @@ class Buttons(discord.ui.View):
             self.children[1].disabled = False
             button.disabled = True
             await interaction.response.edit_message(embed=embed, view=self)
-            await interaction.followup.send(f"{emotes.bloxlink} {interaction.user.mention} resumed the player!", allowed_mentions=discord.AllowedMentions(users=False))
+            await interaction.followup.send(f"{emotes.bloxlink} {interaction.user.mention} resumed the player!", delete_after=10.0, allowed_mentions=discord.AllowedMentions(users=False))
 
     @discord.ui.button(emoji="<:pause:1005256663000961205>", label="Pause", style=discord.ButtonStyle.gray, row=1)
     async def button_pause(self, button: discord.ui.Button, interaction: discord.Interaction):
@@ -231,25 +232,24 @@ class Buttons(discord.ui.View):
             self.children[0].disabled = False
             button.disabled = True
             await interaction.response.edit_message(embed=embed, view=self)
-            await interaction.followup.send(f"{emotes.bloxlink} {interaction.user.mention} paused the player!", allowed_mentions=discord.AllowedMentions(users=False))
+            await interaction.followup.send(f"{emotes.bloxlink} {interaction.user.mention} paused the player!", delete_after=10.0, allowed_mentions=discord.AllowedMentions(users=False))
 
     @discord.ui.button(emoji="<:skip:1005260620989481021>", label="Skip", style=discord.ButtonStyle.gray, row=1)
     async def button_forward(self, button: discord.ui.Button, interaction: discord.Interaction):
         player = self.controller(interaction)
+        await interaction.response.edit_message()
+        await interaction.followup.send(f"{emotes.bloxlink} {interaction.user.mention} skipped the song!", delete_after=10.0, allowed_mentions=discord.AllowedMentions(users=False))
         await player.skip()
-        await interaction.response.edit_message(view=self)
-        await interaction.followup.send(f"{emotes.bloxlink} {interaction.user.mention} skipped the song!", allowed_mentions=discord.AllowedMentions(users=False))
 
     @discord.ui.button(emoji="<:stop:1005261869113675800>", label="Stop", style=discord.ButtonStyle.gray, row=1)
     async def button_stop(self, button: discord.ui.Button, interaction: discord.Interaction):
+        if not interaction.user.guild_permissions.manage_messages:
+            await interaction.response.send_message(f"{emotes.error} You are not allowed to stop the player.", ephemeral=True)
+            return
+
         player = self.controller(interaction)
-        embed = discord.Embed(title=f"Stopping player...",
-                              color=discord.Color.red())
-        voice = interaction.guild.voice_client
-        await interaction.response.edit_message(embed=embed, view=None)
-        await interaction.followup.send(f"{emotes.bloxlink} {interaction.user.mention} stopped the player!", allowed_mentions=discord.AllowedMentions(users=False))
-        if voice:
-            await voice.disconnect(force=True)
+        await interaction.response.send_message(f"{emotes.bloxlink} {interaction.user.mention} stopped the player!", allowed_mentions=discord.AllowedMentions(users=False))
+
         await cleanup(player)
 
     @discord.ui.button(emoji="<:shuffle:1005261849199128576>", label="Shuffle", style=discord.ButtonStyle.gray, row=2)
@@ -260,10 +260,10 @@ class Buttons(discord.ui.View):
         await interaction.response.edit_message(embed=embed, view=self)
         if not player.shuffle:
             player.set_shuffle(shuffle=True)
-            await interaction.followup.send(f"{emotes.success} Shuffling the queue!")
+            await interaction.followup.send(f"{emotes.success} Shuffling the queue!", delete_after=10.0)
         else:
             player.set_shuffle(shuffle=False)
-            await interaction.followup.send(f"{emotes.success} No longer shuffling the queue!")
+            await interaction.followup.send(f"{emotes.success} No longer shuffling the queue!", delete_after=10.0)
 
     @discord.ui.button(emoji="<:repeat:1005256716050518216>", label="Repeat", style=discord.ButtonStyle.gray, row=2)
     async def button_loop(self, button: discord.ui.Button, interaction: discord.Interaction):
@@ -273,10 +273,10 @@ class Buttons(discord.ui.View):
         await interaction.response.edit_message(embed=embed, view=self)
         if not player.repeat:
             player.set_repeat(repeat=True)
-            await interaction.channel.send(f"{emotes.success} Looping the queue!")
+            await interaction.channel.send(f"{emotes.success} Looping the queue!", delete_after=10.0)
         else:
             player.set_repeat(repeat=False)
-            await interaction.channel.send(f"{emotes.success} No longer looping the queue!")
+            await interaction.channel.send(f"{emotes.success} No longer looping the queue!", delete_after=10.0)
 
     @discord.ui.button(emoji="<:queue:1005256368112029696>", label="Queue", style=discord.ButtonStyle.gray, row=2)
     async def button_queue(self, button: discord.ui.Button, interaction: discord.Interaction):
@@ -314,9 +314,32 @@ class Music(commands.Cog):
 
     @lavalink.listener(lavalink.events.QueueEndEvent)
     async def queue_ending(self, event: lavalink.QueueEndEvent):
-        guild_id = event.player.guild_id
-        guild = self.client.get_guild(guild_id)
-        await guild.voice_client.disconnect(force=True)
+        players = self.client.active_players
+        for player in players:
+            message: discord.Message = self.client.get_message(player)
+            embed = message.embeds[0]
+            embed.title = "<a:music:1005254786486124625>  Queue ended"
+            embed.description = "There is nothing left to play! Please use `/music` to start a new queue.\nI will automatically leave in 2 minutes if nothing is playing."
+            embed.fields[0].name = "Queue Ended"
+            embed.fields[0].value = f"<t:{round(time.time())}:R>"
+
+            embed.fields[1].name = "Last Song Played"
+            await message.edit(embed=embed)
+
+        await asyncio.sleep(60*2)
+        player: lavalink.DefaultPlayer = event.player
+        if not player.is_playing:
+            guild: discord.Guild = self.client.get_guild(
+                int(event.player.guild_id))
+            voice = guild.voice_client
+            await voice.disconnect(force=True)
+            self.client.active_players = []
+
+            for player in players:
+                message: discord.Message = self.client.get_message(player)
+                view = discord.ui.View.from_message(message)
+                view.disable_all_items()
+                await message.edit(view=view)
 
     @lavalink.listener(lavalink.events.TrackStartEvent)
     async def track_started(self, event: lavalink.TrackStartEvent):
@@ -330,7 +353,7 @@ class Music(commands.Cog):
         await event.player.skip()
 
     @staticmethod
-    def is_privileged(user, track):
+    def is_privileged(user: discord.Member, track: lavalink.AudioTrack):
         return True
 
     @staticmethod
@@ -431,7 +454,7 @@ class Music(commands.Cog):
                         await player.play()
                 case lavalink.LoadType.TRACK:
                     song = tracks[0]
-                    if len(self.client.active_players) != 0:
+                    if len(self.client.active_players) == 0:
                         await ctx.respond(embed=confirmation(f"Adding {song.title} to the queue"))
                         bview = Buttons(self.client, ctx.interaction)
                         if not self.is_privileged(ctx.author, player.current):
@@ -453,30 +476,37 @@ class Music(commands.Cog):
                     view.add_item(SongSelect(
                         self.client, tracks[:5], ctx.author))
 
-                    if len(self.client.active_players) != 0:
-                        message = await ctx.respond(view=view, ephemeral=True)
+                    if len(self.client.active_players) == 0:
+                        message = await ctx.respond(view=view)
 
                     else:
-                        message = await ctx.respond(view=view)
+                        message = await ctx.respond(view=view, ephemeral=True)
                     await view.wait()
 
-                    if not view.children[0].disabled:  # returns True if a song wasn't picked
-                        
+                    # returns True if a song wasn't picked
+                    if not view.children[0].disabled:
+
                         await message.edit_original_message(content=f"{emotes.error} No song selected! Prompt cancelled.", view=None)
                 case _:
                     if 'open.spotify.com' or 'spotify:' in search:
-                        await ctx.defer()
+                        if len(self.client.active_players) == 0:
+                            await ctx.defer()
+                        else:
+                            await ctx.defer(ephemeral=True)
+
                         spotifysongs = self.get_spotify_tracks(query=search)
                         if not spotifysongs:
                             return await ctx.respond("Couldn't find any music!", ephemeral=True)
                         s_results = await asyncio.wait_for(asyncio.gather(*[player.node.get_tracks(
                             f'ytsearch:{song}') for song in spotifysongs]), timeout=30)
                         count = 0
+
                         for track in s_results:
                             if total + count < 250:
                                 player.add(
                                     track=track.tracks[0], requester=ctx.author.id)
                                 count += 1
+
                         if len(self.client.active_players) == 0:
                             await ctx.respond(embed=confirmation(f"Added {count} spotify song(s) to the queue"))
                             bview = Buttons(self.client, ctx.interaction)
