@@ -124,7 +124,7 @@ class SongSelect(discord.ui.Select):
             embed = create_embed(
                 guild=interaction.guild, track=player.current, position=player.position)
             mplayer: discord.WebhookMessage = await interaction.followup.send(embed=embed, view=bview)
-            bview.message = mplayer.id
+            bview.message = mplayer
             self.client.active_players.append(mplayer.id)
         self.disabled = True
 
@@ -182,8 +182,8 @@ class Buttons(discord.ui.View):
 
     async def on_timeout(self) -> None:
         self.disable_all_items()
-        message = self.client.get_message(self.message)
-        embed = message.embeds[0]
+        # message = self.client.get_message(self.message)
+        embed = self.message.embeds[0]
         embed.color = colors.error
         embed.set_author(name="Timed out. This player won't update anymore.")
         await self.message.edit(view=self)
@@ -420,7 +420,7 @@ class Music(commands.Cog):
                             embed = create_embed(
                                 guild=ctx.guild, track=player.current, position=player.position)
                             mplayer = await ctx.interaction.followup.send(embed=embed, view=bview)
-                            bview.message = mplayer.id
+                            bview.message = mplayer
                             self.client.active_players.append(mplayer.id)
 
                     else:
@@ -439,7 +439,7 @@ class Music(commands.Cog):
                             embed = create_embed(
                                 guild=ctx.guild, track=player.current, position=player.position)
                             mplayer = await ctx.interaction.followup.send(embed=embed, view=bview)
-                            bview.message = mplayer.id
+                            bview.message = mplayer
                             self.client.active_players.append(mplayer.id)
                     else:
                         await ctx.respond(embed=confirmation(f"Adding {song.title} to the queue"), ephemeral=True)
@@ -485,7 +485,7 @@ class Music(commands.Cog):
                                 embed = create_embed(
                                     guild=ctx.guild, track=player.current, position=player.position)
                                 mplayer = await ctx.interaction.followup.send(embed=embed, view=bview)
-                                bview.message = mplayer.id
+                                bview.message = mplayer
                                 self.client.active_players.append(
                                     mplayer.id)
 
