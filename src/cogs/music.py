@@ -176,13 +176,15 @@ class Queue(discord.ui.View):
 class Buttons(discord.ui.View):
 
     def __init__(self, client, interaction):
-        super().__init__(timeout=120)
+        super().__init__(timeout=60*4)
         self.client = client
         self.check_buttons(interaction)
 
     async def on_timeout(self) -> None:
         self.disable_all_items()
-        embed = self.message.embeds[0]
+        message = self.client.get_message(self.message)
+        embed = message.embeds[0]
+        embed.color = colors.error
         embed.set_author(name="Timed out. This player won't update anymore.")
         await self.message.edit(view=self)
 
