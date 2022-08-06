@@ -455,7 +455,7 @@ class Music(commands.Cog):
 
                     else:
                         message = await ctx.respond(view=view)
-                    view.wait()
+                    await view.wait()
 
                     if view.children[0].success:  # returns True if a song wasn't picked
                         
