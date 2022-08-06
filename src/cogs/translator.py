@@ -6,7 +6,7 @@ import aiohttp
 from config import colors, emotes
 from discord.commands import Option, slash_command
 from discord.ext import commands
-from googletrans import Translator
+import googletrans
 
 langs = ["af", "am", "ar", "az", "be", "bg", "bn", "bs", "ca", "ceb", "co", "cs", "cy", "da", "de", "el", "en", "eo", "es", "et", "eu", "fa", "fi", "fr", "fy", "ga", "gd", "gl", "gu", "ha", "haw", "he", "hi", "hmn", "hr", "ht", "hu", "hy", "id", "ig", "is", "it", "iw", "ja", "jw", "ka", "kk", "km", "kn", "ko", "ku", "ky", "la", "lb", "lo",
          "lt", "lv", "mg", "mi", "mk", "ml", "mn", "mr", "ms", "mt", "my", "ne", "nl", "no", "ny", "or", "pa", "pl", "ps", "pt", "ro", "ru", "rw", "sd", "si", "sk", "sl", "sm", "sn", "so", "sq", "sr", "st", "su", "sv", "sw", "ta", "te", "tg", "th", "tk", "tl", "tr", "tt", "ug", "uk", "ur", "uz", "vi", "xh", "yi", "yo", "zh", "zh-CN", "zh-TW", "zu"]
@@ -19,18 +19,18 @@ class Translator(commands.Cog):
     async def get_langs(self, ctx: discord.AutocompleteContext):
         return [lang for lang in langs if lang.startswith(ctx.value.lower())]
 
-    @commands.command(aliases=["tr"])
+    @commands.command(aliases=["tr"], name="translate")
     @commands.guild_only()
-    async def translate(self, ctx: commands.Context, target: str, *, query: str):
+    async def translate_text(self, ctx: commands.Context, target: str, *, query: str):
 
         if target.lower() not in langs:
             languages = ", ".join(langs)
             await ctx.reply(embed=discord.Embed(description=f"{emotes.error} Target language not found. Make sure it is one of these languages: ```{languages}```", color=colors.error))
             return
 
-        translator = Translator()
+        translator = googletrans.Translator()
 
-        translation = translator.translate(query, dest=target.lower())
+        translation = translator.translate(query, dest=target)
         translatedText = translation.text
         detectedSourceLanguage = translation.src
         pronounciation = translation.pronunciation

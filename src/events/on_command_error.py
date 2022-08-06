@@ -50,6 +50,11 @@ class OnCmdError(commands.Cog):
                 description=f"{x} {error}", color=colors.error)
             await ctx.send(embed=Embed)
 
+        elif isinstance(error, commands.DisabledCommand):
+            Embed = discord.Embed(
+                description=f"{emotes.error} This command is disabled", color=colors.error)
+            await ctx.send(embed=Embed)
+
         else:
             x = emotes.error
 
