@@ -28,7 +28,7 @@ def create_embed(guild: discord.Guild, track: lavalink.AudioTrack, position: int
     pos = datetime.timedelta(seconds=position / 1000)
     dur = datetime.timedelta(seconds=int(track.duration / 1000))
     duration = dur - pos
-    en = datetime.datetime.now() + duration
+    en = datetime.datetime.utcnow() + duration
     endsat = round(en.timestamp())
 
     requester: discord.Member = guild.get_member(track.requester)
