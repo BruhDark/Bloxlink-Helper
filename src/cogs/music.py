@@ -91,6 +91,7 @@ class SongSelect(discord.ui.Select):
         self.tracks = tracks
         self.requester = requester
         self.keys = {}
+        self.success = False
 
         options = []
         for track in self.tracks:
@@ -125,6 +126,7 @@ class SongSelect(discord.ui.Select):
             mplayer: discord.WebhookMessage = await interaction.followup.send(embed=embed, view=bview)
             bview.message = mplayer.id
             self.client.active_players.append(mplayer.id)
+        self.success = True
 
 
 class Queue(discord.ui.View):
@@ -454,11 +456,9 @@ class Music(commands.Cog):
                     else:
                         message = await ctx.respond(view=view)
 
-                    test_for_response = await view.wait()
-                    if test_for_response:  # returns True if a song wasn't picked
-                        embed = discord.Embed(
-                            title="No song selected! Cancelled.", color=discord.Color.red())
-                        await message.edit_original_message(embed=embed, view=None)
+                    if view.success:  # returns True if a song wasn't picked
+                        
+                        await message.edit_original_message(f"{emotes.error} No song selected! Prompt cancelled.", view=None)
                 case _:
                     if 'open.spotify.com' or 'spotify:' in search:
                         await ctx.defer()
