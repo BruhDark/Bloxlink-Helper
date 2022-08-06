@@ -26,7 +26,7 @@ sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id=os.getenv(
 
 def create_embed(guild: discord.Guild, track: lavalink.AudioTrack, position: int):
     pos = datetime.timedelta(seconds=position / 1000)
-    dur = datetime.timedelta(seconds=int(track.duration / 1000))
+    dur = datetime.timedelta(seconds=int(track.duration / 1000)+10)
     duration = dur - pos
     en = datetime.datetime.utcnow() + duration
     endsat = round(en.timestamp())
@@ -437,14 +437,11 @@ class Music(commands.Cog):
                     if len(self.client.active_players) == 0:
                         await ctx.interaction.followup.send(embed=confirmation(f"Added {count} songs to the queue"))
                         bview = Buttons(self.client, ctx.interaction)
-                        if not self.is_privileged(ctx.author, player.current):
-                            bview.disable_all_items()
-                            bview.children[5].disabled = False
-                            embed = create_embed(
-                                guild=ctx.guild, track=player.current, position=player.position)
-                            mplayer = await ctx.interaction.followup.send(embed=embed, view=bview)
-                            bview.message = mplayer
-                            self.client.active_players.append(mplayer.id)
+                        embed = create_embed(
+                            guild=ctx.guild, track=player.current, position=player.position)
+                        mplayer = await ctx.interaction.followup.send(embed=embed, view=bview)
+                        bview.message = mplayer
+                        self.client.active_players.append(mplayer.id)
 
                     else:
                         await ctx.respond(embed=confirmation(f"Added {count} songs to the queue"), ephemeral=True)
@@ -456,14 +453,11 @@ class Music(commands.Cog):
                     if len(self.client.active_players) == 0:
                         await ctx.respond(embed=confirmation(f"Adding {song.title} to the queue"))
                         bview = Buttons(self.client, ctx.interaction)
-                        if not self.is_privileged(ctx.author, player.current):
-                            bview.disable_all_items()
-                            bview.children[5].disabled = False
-                            embed = create_embed(
-                                guild=ctx.guild, track=player.current, position=player.position)
-                            mplayer = await ctx.interaction.followup.send(embed=embed, view=bview)
-                            bview.message = mplayer
-                            self.client.active_players.append(mplayer.id)
+                        embed = create_embed(
+                            guild=ctx.guild, track=player.current, position=player.position)
+                        mplayer = await ctx.interaction.followup.send(embed=embed, view=bview)
+                        bview.message = mplayer
+                        self.client.active_players.append(mplayer.id)
                     else:
                         await ctx.respond(embed=confirmation(f"Adding {song.title} to the queue"), ephemeral=True)
 
@@ -509,15 +503,12 @@ class Music(commands.Cog):
                         if len(self.client.active_players) == 0:
                             await ctx.respond(embed=confirmation(f"Added {count} spotify song(s) to the queue"))
                             bview = Buttons(self.client, ctx.interaction)
-                            if not self.is_privileged(ctx.author, player.current):
-                                bview.disable_all_items()
-                                bview.children[5].disabled = False
-                                embed = create_embed(
-                                    guild=ctx.guild, track=player.current, position=player.position)
-                                mplayer = await ctx.interaction.followup.send(embed=embed, view=bview)
-                                bview.message = mplayer
-                                self.client.active_players.append(
-                                    mplayer.id)
+                            embed = create_embed(
+                                guild=ctx.guild, track=player.current, position=player.position)
+                            mplayer = await ctx.interaction.followup.send(embed=embed, view=bview)
+                            bview.message = mplayer
+                            self.client.active_players.append(
+                                mplayer.id)
 
                         else:
                             await ctx.respond(embed=confirmation(f"Added {count} spotify song(s) to the queue"), ephemeral=True)
@@ -530,9 +521,6 @@ class Music(commands.Cog):
             if not player.is_playing:
                 return await ctx.respond(f"{emotes.error} No music playing!", ephemeral=True)
             bview = Buttons(self.client, ctx.interaction)
-            if not self.is_privileged(ctx.author, player.current):
-                bview.disable_all_items()
-                bview.children[5].disabled = False
             embed = create_embed(
                 guild=ctx.guild, track=player.current, position=player.position)
             mplayer = await ctx.respond(embed=embed, view=bview)
