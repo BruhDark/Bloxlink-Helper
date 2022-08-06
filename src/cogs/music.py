@@ -455,8 +455,9 @@ class Music(commands.Cog):
 
                     else:
                         message = await ctx.respond(view=view)
+                    view.wait()
 
-                    if view.success:  # returns True if a song wasn't picked
+                    if view.children[0].success:  # returns True if a song wasn't picked
                         
                         await message.edit_original_message(f"{emotes.error} No song selected! Prompt cancelled.", view=None)
                 case _:
