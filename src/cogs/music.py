@@ -182,7 +182,7 @@ class Buttons(discord.ui.View):
         self.check_buttons(interaction)
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
-        return interaction.user.voice == interaction.guild.me.voice
+        return interaction.user.voice.channel == interaction.guild.me.voice.channel
 
     async def on_timeout(self) -> None:
         self.disable_all_items()
