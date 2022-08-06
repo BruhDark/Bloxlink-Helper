@@ -113,6 +113,7 @@ class SongSelect(discord.ui.Select):
         else:
             await interaction.response.edit_message(embed=confirmation(f"Added {info['title']} to the queue!"), view=None)
 
+        await interaction.followup.send(content=f"{emotes.bloxlink} **{info['title']}** was added to the queue by {interaction.user.mention}", delete_after=60, allowed_mentions=discord.AllowedMentions(users=False))
         player = self.client.lavalink.player_manager.get(interaction.guild.id)
         player.add(track=song, requester=self.requester.id)
 
@@ -176,14 +177,18 @@ class Queue(discord.ui.View):
 class Buttons(discord.ui.View):
 
     def __init__(self, client, interaction):
-        super().__init__(timeout=60*4)
+        super().__init__(timeout=60*5)
         self.client = client
         self.check_buttons(interaction)
+
+    async def interaction_check(self, interaction: discord.Interaction) -> bool:
+        return interaction.user.voice == interaction.guild.me.voice
 
     async def on_timeout(self) -> None:
         self.disable_all_items()
         # message = self.client.get_message(self.message)
-        embed = self.message.embeds[0]
+        message = self.client.get_message(self.message.id)
+        embed = message.embeds[0]
         embed.color = colors.error
         embed.set_author(name="Timed out. This player won't update anymore.")
         await self.message.edit(embed=embed, view=self)
@@ -444,7 +449,7 @@ class Music(commands.Cog):
                         self.client.active_players.append(mplayer.id)
 
                     else:
-                        await ctx.respond(embed=confirmation(f"Added {count} songs to the queue"), ephemeral=True)
+                        await ctx.respond(embed=confirmation(f"Added {count} songs to the queue"), delete_after=30)
 
                     if not player.is_playing:
                         await player.play()
@@ -459,7 +464,7 @@ class Music(commands.Cog):
                         bview.message = mplayer
                         self.client.active_players.append(mplayer.id)
                     else:
-                        await ctx.respond(embed=confirmation(f"Adding {song.title} to the queue"), ephemeral=True)
+                        await ctx.respond(embed=confirmation(f"Adding {song.title} to the queue"), delete_after=30)
 
                     player.add(track=song, requester=ctx.author.id)
                     if not player.is_playing:
@@ -511,7 +516,7 @@ class Music(commands.Cog):
                                 mplayer.id)
 
                         else:
-                            await ctx.respond(embed=confirmation(f"Added {count} spotify song(s) to the queue"), ephemeral=True)
+                            await ctx.respond(embed=confirmation(f"Added {count} spotify song(s) to the queue"), delete_after=30)
 
                         if not player.is_playing:
                             await player.play()
