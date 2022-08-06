@@ -187,6 +187,7 @@ class Buttons(discord.ui.View):
         embed.color = colors.error
         embed.set_author(name="Timed out. This player won't update anymore.")
         await self.message.edit(embed=embed, view=self)
+        self.client.active_players.remove(self.message.id)
 
     def controller(self, interaction):
         player = self.client.lavalink.player_manager.get(interaction.guild.id)
