@@ -186,19 +186,20 @@ class Whois(commands.Cog):
     @commands.command(aliases=["w", "userinfo"])
     @commands.guild_only()
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def whois(self, ctx: commands.Context, member: str = None):
+    async def whois(self, ctx: commands.Context, *, member: str = None):
         """Get information about an user."""
 
         if member is None:
             user = ctx.author
         else:
-            converter = commands.MemberConverter()
-            user = await converter.convert(ctx, member)
-        noMember = False
+            try:
+              converter = commands.MemberConverter()
+              user = await converter.convert(ctx, member)
+              noMember = False
 
-        if user == None:
-            user = await self.bot.fetch_user(id)
-            noMember = True
+            except:
+              user = await self.bot.fetch_user(id)
+              noMember = True
 
         if not noMember:
             roles = [role.mention for role in user.roles[1:]]
