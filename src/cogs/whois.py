@@ -197,7 +197,11 @@ class Whois(commands.Cog):
               user = await converter.convert(ctx, member)
               noMember = False
 
-            except:
+            except Exeption as e:
+              try:
+                id = int(member)
+              except:
+                raise e
               user = await self.bot.fetch_user(id)
               noMember = True
 
