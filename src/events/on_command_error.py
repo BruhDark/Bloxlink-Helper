@@ -60,7 +60,6 @@ class OnCmdError(commands.Cog):
 
             Embed = discord.Embed(
                 description=f"{x} Something went wrong\n\n```py\n{tb}```", color=colors.error)
-            Embed.set_footer(text="Check #error-logs for more info.")
             await ctx.send(embed=Embed)
 
             async with aiohttp.ClientSession() as session:
