@@ -191,13 +191,14 @@ class Whois(commands.Cog):
 
         if member is None:
             user = ctx.author
+            noMember = False
         else:
             try:
               converter = commands.MemberConverter()
               user = await converter.convert(ctx, member)
               noMember = False
 
-            except Exeption as e:
+            except Exception as e:
               try:
                 id = int(member)
               except:
