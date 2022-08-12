@@ -66,7 +66,7 @@ class Badges:
         self.balance = "<:HypeSquad_Balance:928765104110047273>"
         self.bravery = "<:HypeSquad_Bravery:928765052427841628>"
         self.brilliance = "<:HypeSquad_Brilliance:928764974103404554>"
-        self.verfiedbot = "<:VerifiedBot:848277286927073280>"
+        self.verifiedbot = "<:VerifiedBot:848277286927073280>"
         self.bughunter2 = "<:BugHunter:928768063933939783>"
         self.partner = "<:DiscordPartner:928768159215923230>"
         self.early = "<:EarlySupporter:928768119072231454>"
