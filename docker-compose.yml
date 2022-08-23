@@ -4,3 +4,5 @@ services:
   helper-bot:
     build: .
     restart: on-failure
+    env_file:
+      - stack.env
