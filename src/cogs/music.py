@@ -20,8 +20,8 @@ except:
     pass
 
 RURL = re.compile(r'https?://(?:www\.)?.+')
-sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id=os.getenv(
-    "SPOTIFY_CLIENT_ID"), client_secret=os.getenv("SPOTIFY_CLIENT_SECRET")))
+# sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id=os.getenv(
+#    "SPOTIFY_CLIENT_ID"), client_secret=os.getenv("SPOTIFY_CLIENT_SECRET")))
 
 
 def create_embed(guild: discord.Guild, track: lavalink.AudioTrack, position: int):
@@ -534,4 +534,5 @@ class Music(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(Music(bot))
+    pass
+    #bot.add_cog(Music(bot))
