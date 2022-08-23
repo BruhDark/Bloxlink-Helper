@@ -22,8 +22,8 @@ except:
     pass
 
 RURL = re.compile(r'https?://(?:www\.)?.+')
-sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id=os.getenv(
-    "SPOTIFY_CLIENT_ID"), client_secret=os.getenv("SPOTIFY_CLIENT_SECRET")))
+# sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id=os.getenv(
+#    "SPOTIFY_CLIENT_ID"), client_secret=os.getenv("SPOTIFY_CLIENT_SECRET")))
 
 genius = Genius(os.getenv("GENIUS_TOKEN"))
 
@@ -567,4 +567,5 @@ class Music(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(Music(bot))
+    pass
+    #bot.add_cog(Music(bot))
