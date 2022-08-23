@@ -102,7 +102,6 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
 .venv
 env/
 venv/
@@ -127,7 +126,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-.env
 .editorconfig
 .tmp
-src/cogs/music.py
+src/.env
