@@ -25,7 +25,7 @@ RURL = re.compile(r'https?://(?:www\.)?.+')
 # sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id=os.getenv(
 #    "SPOTIFY_CLIENT_ID"), client_secret=os.getenv("SPOTIFY_CLIENT_SECRET")))
 
-genius = Genius(os.getenv("GENIUS_TOKEN"))
+# genius = Genius(os.getenv("GENIUS_TOKEN"))
 
 
 def create_embed(guild: discord.Guild, track: lavalink.AudioTrack, position: int):
