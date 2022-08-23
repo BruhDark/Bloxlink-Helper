@@ -13,6 +13,8 @@ from spotipy import SpotifyClientCredentials
 import os
 import dotenv
 from config import colors, emotes
+from lyricsgenius import Genius
+import lyricsgenius
 
 try:
     dotenv.load_dotenv()
@@ -23,10 +25,12 @@ RURL = re.compile(r'https?://(?:www\.)?.+')
 sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id=os.getenv(
     "SPOTIFY_CLIENT_ID"), client_secret=os.getenv("SPOTIFY_CLIENT_SECRET")))
 
+genius = Genius(os.getenv("GENIUS_TOKEN"))
+
 
 def create_embed(guild: discord.Guild, track: lavalink.AudioTrack, position: int):
     pos = datetime.timedelta(seconds=position / 1000)
-    dur = datetime.timedelta(seconds=int(track.duration / 1000)+10)
+    dur = datetime.timedelta(seconds=int(track.duration / 1000))
     duration = dur - pos
     en = datetime.datetime.utcnow() + duration
     endsat = round(en.timestamp())
@@ -99,23 +103,33 @@ class SongSelect(discord.ui.Select):
                 label=f"{track.title}", description=f"By {track.author}", emoji="<:playlist:1005265606821548163>", value=track.identifier))
             self.keys[f'{track.identifier}'] = track
         super().__init__(placeholder="Select a song",
-                         min_values=1, max_values=1, options=options)
+                         min_values=1, max_values=5, options=options)
 
     async def callback(self, interaction: discord.Interaction):
         if interaction.user != self.requester:
             return await interaction.response.send_message("Invalid user!", ephemeral=True)
-        selection = self.values[0]
-        song = self.keys[f"{selection}"]
-        info = song['info']
+        selection = self.values
+        titles = []
+        for track in selection:
+            song = self.keys[f"{track}"]
+            info = song["info"]
+            titles.append(info["title"])
+
+        titlesn = " ,".join(titles)
 
         if len(self.client.active_players) == 0:
-            await interaction.response.edit_message(embed=confirmation(f"Added {info['title']} to the queue!"), view=None)
+            await interaction.response.edit_message(embed=confirmation(f"Added **{titlesn}** to the queue!"), view=None)
         else:
-            await interaction.response.edit_message(embed=confirmation(f"Added {info['title']} to the queue!"), view=None)
+            await interaction.response.edit_message(embed=confirmation(f"Added **{titlesn}** to the queue!"), view=None)
 
-        await interaction.followup.send(content=f"{emotes.bloxlink} **{info['title']}** was added to the queue by {interaction.user.mention}", delete_after=60, allowed_mentions=discord.AllowedMentions(users=False))
-        player = self.client.lavalink.player_manager.get(interaction.guild.id)
-        player.add(track=song, requester=self.requester.id)
+            await interaction.followup.send(content=f"{emotes.bloxlink} **{titlesn}** was added to the queue by {interaction.user.mention}", delete_after=60, allowed_mentions=discord.AllowedMentions(users=False))
+
+        player: lavalink.DefaultPlayer = self.client.lavalink.player_manager.get(
+            interaction.guild.id)
+
+        for track in selection:
+            song = self.keys[f"{track}"]
+            player.add(track=song, requester=self.requester.id)
 
         if not player.is_playing:
             await player.play()
@@ -177,7 +191,7 @@ class Queue(discord.ui.View):
 class Buttons(discord.ui.View):
 
     def __init__(self, client, interaction):
-        super().__init__(timeout=60*5)
+        super().__init__(timeout=60*10)
         self.client = client
         self.check_buttons(interaction)
 
@@ -298,6 +312,25 @@ class Buttons(discord.ui.View):
         ex = view.children[1:] if len(queue) > 10 else view.children[1:2]
         view.disable_all_items(exclusions=ex)
         await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+
+    @discord.ui.button(emoji="<:lyrics:1007803511028863066>", label="Lyrics", style=discord.ButtonStyle.gray, row=2)
+    async def button_lyrics(self, button: discord.ui.Button, interaction: discord.Interaction):
+        player: lavalink.DefaultPlayer = self.controller(interaction)
+        if not player.current:
+            await interaction.response.send_message(f"{emotes.error} No song is playing.", ephemeral=True)
+            return
+
+        title = player.current.title
+
+        song = genius.search_song(title)
+        if not song:
+            await interaction.response.send_message(f"{emotes.error} No lyrics found.", ephemeral=True)
+            return
+
+        embed = discord.Embed(
+            title=f"{player.current.title} | Lyrics", description=song.lyrics, color=colors.info)
+        print(song.lyrics)
+        await interaction.response.send_message(embed=embed, ephemeral=True)
 
 
 class Music(commands.Cog):
