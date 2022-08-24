@@ -6,3 +6,4 @@ services:
     restart: on-failure
     env_file:
       - stack.env
+    container_name: helper-bot

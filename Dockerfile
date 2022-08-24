@@ -1,8 +1,9 @@
 FROM python:3.10.5
 
-WORKDIR /helper-bot
-
-COPY . .
-
+COPY requirements.txt .
 RUN pip install -r requirements.txt
-RUN python src/main.py
+
+COPY src/ src/
+COPY stack.env ./
+
+CMD ["python", "-u", "src/main.py"]
