@@ -10,6 +10,7 @@ class ApiCommand(commands.Cog):
         self.bot = bot
 
     @commands.command()
+    @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.guild_only()
     async def api(self, ctx: discord.ApplicationContext, *, query: str):
         verified = discord.utils.get(ctx.guild.roles, name="Verified")
