@@ -11,6 +11,7 @@ from discord.ext import commands
 from spotipy import SpotifyClientCredentials
 import os
 import dotenv
+from typing import Union
 from config import colors, emotes
 from lyricsgenius import Genius
 import lyricsgenius
@@ -567,4 +568,4 @@ class Music(commands.Cog):
 
 def setup(bot):
     pass
-    #bot.add_cog(Music(bot))
+    # bot.add_cog(Music(bot))
