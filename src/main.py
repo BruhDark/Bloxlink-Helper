@@ -31,6 +31,10 @@ class Bot(commands.Bot):
         self.database = database
         self.presence_index = 0
         self.ready = False
+        self.presences = [{"type": discord.ActivityType.listening,
+                           "status": "questions | blox.link"}, {"type": discord.ActivityType.watching,
+                                                                "status": f"{len(self.users)} users | blox.link"}, {"type": discord.ActivityType.playing,
+                                                                                                                    "status": f"/tag send | blox.link"}, {"type": discord.ActivityType.watching, "status": f"tutorials | blox.link/tutorials"}]
         self.changing_presence.start()
 
         for event in os.listdir("src/events"):
@@ -73,15 +77,12 @@ class Bot(commands.Bot):
 
     @tasks.loop(seconds=60*5)  # 5 minutes
     async def changing_presence(self):
-        presences = [{"type": discord.ActivityType.listening,
-                      "status": "questions | blox.link"}, {"type": discord.ActivityType.watching,
-                                                           "status": f"{len(self.users)} users | blox.link"}, {"type": discord.ActivityType.playing,
-                                                                                                               "status": f"/tag send | blox.link"}, {"type": discord.ActivityType.watching, "status": f"tutorials | blox.link/tutorials"}]
-        await self.change_presence(status=discord.Status.online, activity=discord.Activity(type=presences[self.presence_index]["type"], name=presences[self.presence_index]["status"]))
+
+        await self.change_presence(status=discord.Status.online, activity=discord.Activity(type=self.presences[self.presence_index]["type"], name=self.presences[self.presence_index]["status"]))
         print("✅ Changed presence to: " +
-              presences[self.presence_index]["status"])
+              self.presences[self.presence_index]["status"])
         self.presence_index += 1
-        if self.presence_index >= len(presences):
+        if self.presence_index >= len(self.presences):
             self.presence_index = 0
 
     @changing_presence.before_loop

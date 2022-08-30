@@ -2,7 +2,6 @@ import asyncio
 import datetime
 import re
 import time
-from typing import Union
 
 import discord
 import lavalink

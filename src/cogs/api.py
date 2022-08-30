@@ -3,6 +3,7 @@ import aiohttp
 import datetime
 from config import colors, emotes, links
 from discord.ext import commands
+import os
 
 
 class ApiCommand(commands.Cog):
@@ -21,7 +22,7 @@ class ApiCommand(commands.Cog):
             return
 
         headers = {
-            "api-key": "657809d4-8daa-4658-bf83-0084d643c88b2b10def8-b27e-4713-a17b-02e5e562aa100c8ee099-a366-4e71-bbdb-946f826646d8"}
+            "api-key": os.getenv("API_KEY")}
 
         query = query.lower()
 
@@ -50,8 +51,10 @@ class ApiCommand(commands.Cog):
         else:
 
             url = f"https://v3.blox.link/developer/discord/{query}"
+            url = url.replace(
+                "?guildid", "?guildId") if "?guildid" in url else url
             headers = {
-                "api-key": "657809d4-8daa-4658-bf83-0084d643c88b2b10def8-b27e-4713-a17b-02e5e562aa100c8ee099-a366-4e71-bbdb-946f826646d8"}
+                "api-key": os.getenv("API_KEY")}
 
             async with aiohttp.ClientSession() as session:
                 async with session.get(url, headers=headers) as response:

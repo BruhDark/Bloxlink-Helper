@@ -28,7 +28,7 @@ class Misc(commands.Cog):
             emoji = emotes.spotify
 
             Embed = discord.Embed(
-                description=f"{user.mention} | {emotes['spotify']}", timestamp=datetime.datetime.utcnow(), color=user.color)
+                description=f"{user.mention} | {emotes.spotify}", timestamp=datetime.datetime.utcnow(), color=user.color)
             Embed.set_author(
                 name=f"{user.name}#{user.discriminator}", icon_url=user.display_avatar.url)
 
@@ -58,6 +58,34 @@ class Misc(commands.Cog):
     async def error(self, ctx):
         """Error test"""
         raise Exception("Error test")
+
+    @commands.command()
+    async def blacklist(self, ctx: commands.Context, option: str, user: discord.User, reason: str = "Not specified"):
+
+        if option.lower() == "add":
+            if find_one("blacklist", {"user": user.id}):
+                await ctx.send(f"{emotes.error} This user is already blacklisted", color=colors.error)
+                return
+
+            insert_one("blacklist", {"user": user.id, "reason": reason})
+            await ctx.send(f"{emotes.success2} Added this user ({user.mention}) to the blacklist with reason: {reason}")
+
+        elif option.lower() == "remove":
+            if not find_one("blacklist", {"user": user.id}):
+                await ctx.send(f"{emotes.error} This user is not blacklisted", color=colors.error)
+                return
+
+            delete_one("blacklist", {"user": user.id})
+            await ctx.send(f"{emotes.success2} Removed this user ({user.mention}) from the blacklist.")
+
+        elif option.lower() == "show":
+
+            blacklists: list = return_all("blacklist")
+            parse_blacklists = [
+                f"User: {blacklist['user']}. Reason: {blacklist['reason']}" for blacklist in blacklists]
+            final_parse = "\n".join(parse_blacklists)
+
+            await ctx.send(content=final_parse)
 
 
 def setup(bot):

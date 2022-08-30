@@ -49,7 +49,7 @@ class Quote(commands.Cog):
                 server_id = int(found.group("server_id"))
                 channel_id = int(found.group("channel_id"))
 
-                if message.guild.id == server_id:
+                if message.guild.id != server_id:
                     return
 
                 msg = discord.utils.get(self.bot.cached_messages, id=msg_id)
