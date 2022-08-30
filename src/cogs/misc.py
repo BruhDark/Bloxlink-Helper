@@ -64,7 +64,7 @@ class Misc(commands.Cog):
 
         if option.lower() == "add":
             if find_one("blacklist", {"user": user.id}):
-                await ctx.send(f"{emotes.error} This user is already blacklisted", color=colors.error)
+                await ctx.send(f"{emotes.error} This user is already blacklisted")
                 return
 
             insert_one("blacklist", {"user": user.id, "reason": reason})
@@ -72,7 +72,7 @@ class Misc(commands.Cog):
 
         elif option.lower() == "remove":
             if not find_one("blacklist", {"user": user.id}):
-                await ctx.send(f"{emotes.error} This user is not blacklisted", color=colors.error)
+                await ctx.send(f"{emotes.error} This user is not blacklisted")
                 return
 
             delete_one("blacklist", {"user": user.id})

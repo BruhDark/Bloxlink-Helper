@@ -100,7 +100,7 @@ class ThreadButton(discord.ui.Button):
 
         await interaction.response.defer()
 
-        supportBannedRole = discord.utills.get(
+        supportBannedRole = discord.utils.get(
             interaction.guild.roles, name="support banned")
         if supportBannedRole in interaction.user.roles:
             await interaction.response.send_message(
