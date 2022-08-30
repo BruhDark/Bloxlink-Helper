@@ -67,7 +67,7 @@ class CloseThreadView(discord.ui.View):
 
         rateEmbed = discord.Embed(title="<:BloxlinkHappy:823633735446167552> Thanks for contacting us!",
                                   description="We appreciate you and want to know your satisfaction with the support given by our team.\nFeel free to rate us by clicking the :star: (star) and telling us your satisfaction level. Being the first one, 1 (I was not satisfied by the support given), and the last one 5 (I was very satified by the support given).", color=colors.info)
-        rateEmbed.timestamp = datetime.datetime.datetime.utcnow()
+        rateEmbed.timestamp = datetime.datetime.utcnow()
         rateEmbed.set_author(
             name=f"Hello, {user.name}!", icon_url=user.avatar.url)
         rateEmbed.add_field(name="Awaiting feedback...",
