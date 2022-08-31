@@ -1,5 +1,6 @@
 from discord.ext import commands
 import discord
+from resources.context import ApplicationCommandsContext, CommandsContext
 from resources.mongoFunctions import find_one
 
 
@@ -8,7 +9,10 @@ class NotStaff(commands.CheckFailure):
 
 
 def is_staff():
-    async def predicate(ctx):
+    async def predicate(ctx: CommandsContext or ApplicationCommandsContext):
+        if await ctx.bot.is_owner(ctx.author):
+            return True
+
         role = discord.utils.get(ctx.guild.roles, name="Helpers")
         permission = ctx.author.guild_permissions.manage_messages
 
