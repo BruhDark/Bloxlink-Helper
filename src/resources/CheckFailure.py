@@ -1,6 +1,6 @@
 from discord.ext import commands
 import discord
-from resources.mongoFunctions import database
+from resources.mongoFunctions import find_one
 
 
 class NotStaff(commands.CheckFailure):
@@ -29,9 +29,8 @@ class Blacklisted(commands.CheckFailure):
 def is_blacklisted():
     async def predicate(ctx):
 
-        collection = database["blacklist"]
         check = {"user": ctx.author.id}
-        find = await collection.find_one(check)
+        find = await find_one("blacklist", check)
 
         if find:
             reason = find["reason"]
