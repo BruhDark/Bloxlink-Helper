@@ -6,6 +6,7 @@ import aiohttp
 import discord
 import dotenv
 from discord.ext import commands, tasks
+from resources.context import CommandsContext, ApplicationCommandsContext
 
 from config import AUTHORIZED, colors, emotes
 from resources.mongoFunctions import database
@@ -53,6 +54,12 @@ class Bot(commands.Bot):
                 except Exception as e:
                     print(f"❌ Failed to load cog: {command}: {e}")
                     raise e
+
+    async def get_context(self, message: discord.Message, *, cls=CommandsContext):
+        return await super().get_context(message, cls=cls)
+
+    async def get_application_context(self, interaction: discord.Interaction, cls=ApplicationCommandsContext):
+        return await super().get_application_context(interaction, cls=cls)
 
     async def on_connect(self):
         await self.sync_commands()
