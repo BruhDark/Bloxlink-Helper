@@ -4,6 +4,7 @@ from typing import Union
 import discord
 from discord.ext import commands
 from config import colors, emotes, links
+from resources.context import CommandsContext
 from resources.mongoFunctions import find_one, insert_one, delete_one, return_all
 
 s = emotes.success2
@@ -60,32 +61,35 @@ class Misc(commands.Cog):
         raise Exception("Error test")
 
     @commands.command()
-    async def blacklist(self, ctx: commands.Context, option: str, user: discord.User, reason: str = "Not specified"):
+    async def blacklist(self, ctx: CommandsContext, option: str, user: discord.User, reason: str = "Not specified"):
 
         if option.lower() == "add":
-            if find_one("blacklist", {"user": user.id}):
-                await ctx.send(f"{emotes.error} This user is already blacklisted")
+            if await find_one("blacklist", {"user": user.id}):
+                await ctx.error(f"This user is already blacklisted")
                 return
 
-            insert_one("blacklist", {"user": user.id, "reason": reason})
-            await ctx.send(f"{emotes.success2} Added this user ({user.mention}) to the blacklist with reason: {reason}")
+            await insert_one("blacklist", {"user": user.id, "reason": reason})
+            await ctx.success(f"Added this user ({user.mention}) to the blacklist with reason: {reason}")
 
         elif option.lower() == "remove":
-            if not find_one("blacklist", {"user": user.id}):
-                await ctx.send(f"{emotes.error} This user is not blacklisted")
+            if not await find_one("blacklist", {"user": user.id}):
+                await ctx.error(f"This user is not blacklisted")
                 return
 
-            delete_one("blacklist", {"user": user.id})
-            await ctx.send(f"{emotes.success2} Removed this user ({user.mention}) from the blacklist.")
+            await delete_one("blacklist", {"user": user.id})
+            await ctx.success(f"Removed this user ({user.mention}) from the blacklist.")
 
         elif option.lower() == "show":
 
-            blacklists: list = return_all("blacklist")
+            blacklists: list = await return_all("blacklist")
             parse_blacklists = [
                 f"User: {blacklist['user']}. Reason: {blacklist['reason']}" for blacklist in blacklists]
             final_parse = "\n".join(parse_blacklists)
 
             await ctx.send(content=final_parse)
+
+        else:
+            await ctx.error(f"That option does not exist!")
 
 
 def setup(bot):
