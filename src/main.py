@@ -109,8 +109,8 @@ class Bot(commands.Bot):
         if last_message.author.id == self.user.id:
             return
 
-        faq = await find_tag("faq")
-        await channel.send(faq)
+        tag = await find_tag("faq")
+        await channel.send(tag["content"])
 
     @post_faq.before_loop
     async def before_post_faq(self):
