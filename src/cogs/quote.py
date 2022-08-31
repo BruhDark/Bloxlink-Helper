@@ -80,7 +80,7 @@ class Quote(commands.Cog):
                             text=f"Quoted by: {message.author}", icon_url=message.author.display_avatar.url)
 
                         view = ButtonDelete(message)
-                        message = await message.channel.send(embed=embed, view=view)
+                        message = await message.channel.send(embed=embed)
                         view.message = message
 
 

@@ -4,6 +4,7 @@ import datetime
 from config import colors, emotes, links
 from discord.ext import commands
 import os
+from resources.CheckFailure import is_blacklisted
 
 
 class ApiCommand(commands.Cog):
@@ -13,6 +14,7 @@ class ApiCommand(commands.Cog):
     @commands.command()
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.guild_only()
+    @is_blacklisted()
     async def api(self, ctx: discord.ApplicationContext, *, query: str):
         verified = discord.utils.get(ctx.guild.roles, name="Verified")
         if verified not in ctx.author.roles:

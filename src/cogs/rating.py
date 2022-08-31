@@ -6,6 +6,7 @@ from resources.mongoFunctions import return_all, find_one
 from config import colors, links
 import time
 from quickchart import QuickChart
+from resources.CheckFailure import is_blacklisted, is_staff
 
 
 class Rating(commands.Cog):
@@ -28,6 +29,8 @@ class Rating(commands.Cog):
         return stars
 
     @slash_command()
+    @is_staff()
+    @is_blacklisted()
     async def rating(self, ctx: ApplicationContext, date: Option(str, "Rating date", choices=["all time", "today", "monthly"]), user: Option(discord.Member, "A staff member to get rating of", required=False) = None):
 
         rating = await return_all("rating")

@@ -5,6 +5,8 @@ from config import badges, emotes, colors
 from discord.commands import Option, slash_command
 from discord.ext import commands
 
+from resources.CheckFailure import is_blacklisted
+
 
 class Whois(commands.Cog):
     def __init__(self, bot):
@@ -14,6 +16,7 @@ class Whois(commands.Cog):
 
     @slash_command()
     @commands.guild_only()
+    @is_blacklisted()
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def whois(self, ctx: commands.Context, member: Option(discord.Member, "Specify a user", required=False, default=None)):
         """Get information about an user."""
@@ -185,6 +188,7 @@ class Whois(commands.Cog):
 
     @commands.command(aliases=["w", "userinfo"])
     @commands.guild_only()
+    @is_blacklisted()
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def whois(self, ctx: commands.Context, *, member: str = None):
         """Get information about an user."""
@@ -194,17 +198,17 @@ class Whois(commands.Cog):
             noMember = False
         else:
             try:
-              converter = commands.MemberConverter()
-              user = await converter.convert(ctx, member)
-              noMember = False
+                converter = commands.MemberConverter()
+                user = await converter.convert(ctx, member)
+                noMember = False
 
             except Exception as e:
-              try:
-                id = int(member)
-              except:
-                raise e
-              user = await self.bot.fetch_user(id)
-              noMember = True
+                try:
+                    id = int(member)
+                except:
+                    raise e
+                user = await self.bot.fetch_user(id)
+                noMember = True
 
         if not noMember:
             roles = [role.mention for role in user.roles[1:]]

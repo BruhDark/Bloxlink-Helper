@@ -9,6 +9,7 @@ import psutil
 import os
 
 from config import emotes, colors, releasescolors, DESCRIPTION
+from resources.CheckFailure import is_blacklisted
 
 
 class Stats(commands.Cog):
@@ -16,6 +17,7 @@ class Stats(commands.Cog):
         self.bot = bot
 
     @slash_command()
+    @is_blacklisted()
     async def stats(self, ctx: discord.ApplicationContext):
         """View Bloxlink Helper stats"""
 
@@ -42,14 +44,6 @@ class Stats(commands.Cog):
 
         pycordV = discord.__version__
 
-        # Getting loadover15 minutes
-        load1, load5, load15 = psutil.getloadavg()
-
-        cpu_usage = round((load15/os.cpu_count()) * 100)
-
-        # Getting memory usage
-        memory = round(psutil.virtual_memory()[2])
-
         embed = discord.Embed(description="Bloxlink Staff's right hand. Managing tags with useful information and many other automations.", timestamp=datetime.datetime.utcnow(
         ), color=releasescolors.main)
 
@@ -64,12 +58,8 @@ class Stats(commands.Cog):
 
         embed.add_field(name=":snake: PyCord Version",
                         value=f"{pycordV}", inline=True)
-        embed.add_field(name="🖥️ CPU Usage (15 min)",
-                        value=f"{cpu_usage}%", inline=True)
-        embed.add_field(name="⚙️ Memory Usage",
-                        value=f"{memory}%", inline=True)
 
-        embed.set_footer(text="Made with ❤️ by Dark, Nub and Mich")
+        embed.set_footer(text="Made with ❤️ by the Bloxlink Team")
 
         await ctx.respond(embed=embed)
 

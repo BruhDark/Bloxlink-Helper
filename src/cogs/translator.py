@@ -8,6 +8,8 @@ from discord.commands import Option, slash_command
 from discord.ext import commands
 import googletrans
 
+from resources.CheckFailure import is_blacklisted
+
 langs = ["af", "am", "ar", "az", "be", "bg", "bn", "bs", "ca", "ceb", "co", "cs", "cy", "da", "de", "el", "en", "eo", "es", "et", "eu", "fa", "fi", "fr", "fy", "ga", "gd", "gl", "gu", "ha", "haw", "he", "hi", "hmn", "hr", "ht", "hu", "hy", "id", "ig", "is", "it", "iw", "ja", "jw", "ka", "kk", "km", "kn", "ko", "ku", "ky", "la", "lb", "lo",
          "lt", "lv", "mg", "mi", "mk", "ml", "mn", "mr", "ms", "mt", "my", "ne", "nl", "no", "ny", "or", "pa", "pl", "ps", "pt", "ro", "ru", "rw", "sd", "si", "sk", "sl", "sm", "sn", "so", "sq", "sr", "st", "su", "sv", "sw", "ta", "te", "tg", "th", "tk", "tl", "tr", "tt", "ug", "uk", "ur", "uz", "vi", "xh", "yi", "yo", "zh", "zh-CN", "zh-TW", "zu"]
 
@@ -21,6 +23,7 @@ class Translator(commands.Cog):
 
     @commands.command(aliases=["tr"], name="translate")
     @commands.guild_only()
+    @is_blacklisted()
     async def translate_text(self, ctx: commands.Context, target: str, *, query: str):
 
         if target.lower() not in langs:
