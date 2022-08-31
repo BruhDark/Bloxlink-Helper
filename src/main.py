@@ -9,7 +9,7 @@ from discord.ext import commands, tasks
 from resources.context import CommandsContext, ApplicationCommandsContext
 
 from config import AUTHORIZED, colors, emotes
-from resources.mongoFunctions import database
+from resources.mongoFunctions import database, find_tag
 
 try:
     dotenv.load_dotenv()
@@ -37,6 +37,7 @@ class Bot(commands.Bot):
                                                                 "status": f"{len(self.users)} users | blox.link"}, {"type": discord.ActivityType.playing,
                                                                                                                     "status": f"/tag send | blox.link"}, {"type": discord.ActivityType.watching, "status": f"tutorials | blox.link/tutorials"}]
         self.changing_presence.start()
+        self.post_faq.start()
 
         for event in os.listdir("src/events"):
             if event.endswith(".py"):
@@ -94,6 +95,24 @@ class Bot(commands.Bot):
 
     @changing_presence.before_loop
     async def before_changing_presence(self):
+        await self.wait_until_ready()
+
+    @tasks.loop(minutes=30)
+    async def post_faq(self):
+
+        guild = self.get_guild(372036754078826496)
+        channel = guild.get_channel(372181186816245770)
+        channel = await guild.fetch_channel(372181186816245770) if channel is None else channel
+        last_message = channel.last_message
+
+        if last_message.author == self.user.id:
+            return
+
+        faq = await find_tag("faq")
+        await channel.send(faq)
+
+    @post_faq.before_loop
+    async def before_post_faq(self):
         await self.wait_until_ready()
 
 
