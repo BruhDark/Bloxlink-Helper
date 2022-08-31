@@ -51,7 +51,7 @@ class Stats(commands.Cog):
             name=f"{self.bot.user.name}#{self.bot.user.discriminator}", icon_url=self.bot.user.avatar.url)
 
         embed.add_field(name=f"<:Bot:928765691778203719> Bot Version",
-                        value="<:CatPride:759852911651586068>", inline=True)
+                        value="<:CatPride:1014631162334945410>", inline=True)
         embed.add_field(name=":clock1: Uptime", value=uptime, inline=True)
         latency = str(round(self.bot.latency * 1000))
         embed.add_field(name=":ping_pong: Bot Latency", value=f"{latency}ms")
