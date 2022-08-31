@@ -104,8 +104,9 @@ class Bot(commands.Bot):
         channel = guild.get_channel(372181186816245770)
         channel = await guild.fetch_channel(372181186816245770) if channel is None else channel
         last_message = channel.last_message
+        last_message = await channel.fetch_message(channel.last_message_id) if last_message is None else last_message
 
-        if last_message.author == self.user.id:
+        if last_message.author.id == self.user.id:
             return
 
         faq = await find_tag("faq")
