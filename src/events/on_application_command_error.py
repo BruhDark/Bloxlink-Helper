@@ -8,42 +8,28 @@ import discord
 from config import colors, emotes
 from discord.ext import commands
 
+from resources.context import ApplicationCommandsContext
+
 
 class OnApplicationCmdError(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
     @commands.Cog.listener()
-    async def on_application_command_error(self, ctx: discord.ApplicationContext, error: Exception):
+    async def on_application_command_error(self, ctx: ApplicationCommandsContext, error: Exception):
 
         if isinstance(error, commands.CommandOnCooldown):
-
-            x = emotes.error
-            Embed = discord.Embed(
-                description=f"{x} This command is on cooldown! Try again in {round(error.retry_after)} seconds.", color=colors.error)
-            await ctx.respond(embed=Embed, ephemeral=True)
+            await ctx.error(f"This command is on cooldown! Try again in {round(error.retry_after)} seconds.", ephemeral=True)
 
         elif isinstance(error, commands.NoPrivateMessage):
-
-            x = emotes.error
-            Embed = discord.Embed(
-                description=f"{x} This command is only available in a guild!", color=colors.error)
-            await ctx.respond(embed=Embed, ephemeral=True)
+            await ctx.error(f"This command is only available in a guild!", ephemeral=True)
 
         elif isinstance(error, commands.CheckFailure):
-
-            x = emotes.error
-            Embed = discord.Embed(
-                description=f"{x} {error}", color=colors.error)
-            await ctx.respond(embed=Embed, ephemeral=True)
+            await ctx.error(error, ephemeral=True)
 
         else:
-            x = emotes.error
 
-            Embed = discord.Embed(
-                description=f"{x} Something went wrong\n\n```py\n{error}```", color=colors.error)
-
-            await ctx.respond(embed=Embed)
+            await ctx.error(f"Something went wrong\n\n```py\n{error}```")
 
             async with aiohttp.ClientSession() as session:
                 url = os.getenv("WEBHOOK_URL")

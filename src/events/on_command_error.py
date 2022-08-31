@@ -9,28 +9,24 @@ import discord
 from config import colors, emotes
 from discord.ext import commands
 
+from resources.context import CommandsContext
+
 
 class OnCmdError(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
     @commands.Cog.listener()
-    async def on_command_error(self, ctx: commands.Context, error: Exception):
+    async def on_command_error(self, ctx: CommandsContext, error: Exception):
 
         tb = error
 
         if isinstance(error, commands.CommandOnCooldown):
-
-            x = emotes.error
-            Embed = discord.Embed(
-                description=f"{x} This command is on cooldown! Try again in {round(error.retry_after)} seconds.", color=colors.error)
-            await ctx.send(embed=Embed)
+            await ctx.error(f"This command is on cooldown! Try again in {round(error.retry_after)} seconds.")
 
         elif isinstance(error, commands.MemberNotFound):
 
-            Embed = discord.Embed(
-                description=f"{emotes.error} Couldn't find this member.", color=colors.error)
-            await ctx.send(embed=Embed)
+            await ctx.error("Couldn't find this member.")
 
         elif isinstance(error, commands.MissingRequiredArgument):
             pass
@@ -39,28 +35,16 @@ class OnCmdError(commands.Cog):
             pass
 
         elif isinstance(error, commands.NoPrivateMessage):
-            x = emotes.error
-            Embed = discord.Embed(
-                description=f"{x} This command is only available in a guild!", color=colors.error)
-            await ctx.send(embed=Embed)
+            await ctx.error("This command is only available in a guild!")
 
         elif isinstance(error, commands.CheckFailure):
-            x = emotes.error
-            Embed = discord.Embed(
-                description=f"{x} {error}", color=colors.error)
-            await ctx.send(embed=Embed)
+            await ctx.error(error)
 
         elif isinstance(error, commands.DisabledCommand):
-            Embed = discord.Embed(
-                description=f"{emotes.error} This command is disabled", color=colors.error)
-            await ctx.send(embed=Embed)
+            await ctx.error("This command is disabled!")
 
         else:
-            x = emotes.error
-
-            Embed = discord.Embed(
-                description=f"{x} Something went wrong\n\n```py\n{tb}```", color=colors.error)
-            await ctx.send(embed=Embed)
+            await ctx.error(f"Something went wrong\n\n```py\n{tb}```")
 
             async with aiohttp.ClientSession() as session:
                 url = os.getenv("WEBHOOK_URL")
