@@ -1,5 +1,7 @@
 from resources.CheckFailure import is_staff
 from discord.commands import Option
+from resources.context import ApplicationCommandsContext
+from resources.mongoFunctions import delete_one, return_all
 from supportsystem.modal import FAQCreateModal, FAQEditModal
 from supportsystem.faqview import FAQView
 from supportsystem.threadviews import CloseThreadView, CreateThreadView
@@ -26,16 +28,33 @@ class SupportSystem(commands.Cog):
     @faq.command()
     @is_staff()
     async def create(self, ctx: discord.ApplicationContext, category: Option(str, "The category the FAQ will be created in", choices=["verification", "api", "binds", "premium", "other"])):
-        """Create a FAQ."""
+        """Create a FAQ question"""
         modal = FAQCreateModal(category)
         await ctx.send_modal(modal)
 
     @faq.command()
     @is_staff()
     async def edit(self, ctx, category: Option(str, "The category the FAQ will be edited in", choices=["verification", "api", "binds", "premium", "other"])):
-        """Edit a FAQ."""
+        """Edit a FAQ question"""
         modal = FAQEditModal(category)
         await ctx.send_modal(modal)
+
+    @faq.command()
+    @is_staff()
+    async def delete(self, ctx: ApplicationCommandsContext, category: Option(str, "The category the FAQ is in", choices=["verification", "api", "binds", "premium", "other"]), faq_id: Option(str, "The FAQ number in the category")):
+        """Delete a FAQ question"""
+
+        faqs = await return_all(f"faq-{category}")
+        faqs = [{"index": f"{faqn+1}", "question": f"{faq['q']}"}
+                for faqn, faq in enumerate(faqs)]
+
+        get_faq = [faq['question']
+                   for faq in faqs if faq['index'] == faq_id][0]
+        check = {
+            "q": get_faq}
+
+        await delete_one(f"faq-{category}", check)
+        await ctx.success(f"Successfully deleted FAQ #**{faq_id}** from **{category}** category")
 
     @discord.slash_command()
     @commands.is_owner()

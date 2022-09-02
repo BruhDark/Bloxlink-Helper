@@ -2,7 +2,7 @@ import discord
 from discord.ui import InputText, Modal
 import datetime
 from config import emotes, links, colors
-from resources.mongoFunctions import find_one, insert_one, update_one
+from resources.mongoFunctions import find_one, insert_one, return_all, return_all_tags, update_one
 
 
 class FAQCreateModal(Modal):
@@ -53,19 +53,35 @@ class FAQCreateModal(Modal):
 
 class FAQEditModal(Modal):
     def __init__(self, category, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs, title="Edit FAQ")
+        super().__init__(*args, **kwargs, title="Edit a FAQ question")
         self.category = category
 
         self.add_item(InputText(
-            label="Question", placeholder="The question you will edit (case sensitive)", style=discord.InputTextStyle.short))
+            label="Question ID", placeholder=f"The question number in this category ({self.category})", style=discord.InputTextStyle.short))
         self.add_item(InputText(
-            label="Answer", placeholder="Type the answer here", style=discord.InputTextStyle.long))
+            label="Question", placeholder="The new question", style=discord.InputTextStyle.long, required=False, value=None))
+        self.add_item(InputText(
+            label="Answer", placeholder="The new answer", style=discord.InputTextStyle.long, required=False, value=None))
+        self.add_item(InputText(label="Image URL",
+                      placeholder="The new image URL", style=discord.InputTextStyle.short, required=False, value=None))
 
     async def callback(self, interaction: discord.Interaction):
-        question = self.children[0].value
-        answer = self.children[1].value.replace("\\n", "\n")
 
-        check = {"q": question}
+        await interaction.response.defer()
+
+        questionid = self.children[0].value
+        question = self.children[1].value
+        answer = self.children[2].value.replace("\\n", "\n")
+        image_url = self.children[3].value
+
+        faqs = await return_all(f"faq-{self.category}")
+        faqs = [{"index": f"{faqn+1}", "question": f"{faq['q']}"}
+                for faqn, faq in enumerate(faqs)]
+
+        get_faq = [faq['question']
+                   for faq in faqs if faq['index'] == questionid][0]
+        check = {
+            "q": get_faq}
 
         find = await find_one(f"faq-{self.category}", check)
 
@@ -73,19 +89,27 @@ class FAQEditModal(Modal):
             error = emotes.error
             embed = discord.Embed(
                 description=f"{error} No FAQ with that ID exists!", color=colors.error)
-            await interaction.response.send_message(embed=embed)
+            await interaction.followup.send(embed=embed)
             return
 
         else:
-            update = {"a": answer}
-            await update_one(f"faq-{self.category}", check, update)
 
             embed = discord.Embed(
-                title=f":paperclips: Question: {find['q']}", description=f":page_with_curl: Answer:\n{answer}", color=colors.success, timestamp=datetime.datetime.utcnow())
-            embed.set_footer(
-                icon_url=links.other, text=f"Item ID: {id}")
-            embed.set_author(
-                icon_url=links.success, name=f"Successfully edited FAQ: {find['q']}")
+                title=f":paperclips: Question: {question or find['q']}", description=f":page_with_curl: Answer:\n{answer}", color=colors.success, timestamp=datetime.datetime.utcnow())
 
-            await interaction.response.send_message(embed=embed)
+            update = {}
+            if question:
+                update["q"] = question
+            if answer:
+                update["a"] = answer
+            if image_url:
+                update["image"] = image_url
+                embed.set_image(url=image_url)
+
+            await update_one(f"faq-{self.category}", check, update)
+
+            embed.set_author(
+                icon_url=links.success, name=f"Successfully edited FAQ number {questionid} from {self.category} category")
+
+            await interaction.followup.send(embed=embed)
             return
