@@ -102,7 +102,7 @@ class Bot(commands.Bot):
     async def post_faq(self):
 
         guild = self.get_guild(372036754078826496)  # Bloxlink HQ
-        guild = self.get_guild(881968885279117342)  # Helper HQ
+        # guild = self.get_guild(881968885279117342)  # Helper HQ
         channel = discord.utils.get(guild.channels, name="support")
         channel = await guild.fetch_channel(372181186816245770) if channel is None else channel
         last_message = channel.last_message
