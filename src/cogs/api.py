@@ -75,6 +75,30 @@ class ApiCommand(commands.Cog):
 
                     await ctx.send(embed=embed)
 
+    @commands.user_command(name="Send API request")
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def api_user(self, ctx: discord.ApplicationContext, member: discord.Member):
+
+        headers = {
+            "api-key": os.getenv("API_KEY")}
+        url = f"https://v3.blox.link/developer/discord/{member.id}"
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers) as resp:
+                data = await resp.json()
+                headers = resp.headers
+                try:
+                    quota = headers["quota-remaining"]
+                except:
+                    quota = "?"
+
+                embed = discord.Embed(timestamp=datetime.datetime.utcnow(
+                ), description=f"Sent request to {url}.\n\n**Response**\n```json\n{data}```", color=colors.info)
+                embed.set_author(icon_url=links.success,
+                                 name="Successfully sent request")
+                embed.set_footer(text=f"{quota} requests remaining")
+
+        await ctx.respond(embed=embed, ephemeral=True)
+
 
 def setup(bot):
     bot.add_cog(ApiCommand(bot))

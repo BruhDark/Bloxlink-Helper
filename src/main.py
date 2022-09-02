@@ -89,9 +89,9 @@ class Bot(commands.Bot):
 
         await self.change_presence(status=discord.Status.online, activity=discord.Activity(type=presences[self.presence_index]["type"], name=presences[self.presence_index]["status"]))
         print("✅ Changed presence to: " +
-              self.presences[self.presence_index]["status"])
+              presences[self.presence_index]["status"])
         self.presence_index += 1
-        if self.presence_index >= len(self.presences):
+        if self.presence_index >= len(presences):
             self.presence_index = 0
 
     @changing_presence.before_loop
@@ -101,8 +101,9 @@ class Bot(commands.Bot):
     @tasks.loop(minutes=30)
     async def post_faq(self):
 
-        guild = self.get_guild(372036754078826496)
-        channel = guild.get_channel(372181186816245770)
+        guild = self.get_guild(372036754078826496)  # Bloxlink HQ
+        guild = self.get_guild(881968885279117342)  # Helper HQ
+        channel = discord.utils.get(guild.channels, name="support")
         channel = await guild.fetch_channel(372181186816245770) if channel is None else channel
         last_message = channel.last_message
         last_message = await channel.fetch_message(channel.last_message_id) if last_message is None else last_message
@@ -111,7 +112,10 @@ class Bot(commands.Bot):
             return
 
         tag = await find_tag("faq")
-        await channel.send(tag["content"])
+        view = discord.ui.View()
+        view.add_item(discord.ui.Button(
+            label="This is an automatic message", disabled=True))
+        await channel.send(content=tag["content"], view=view)
 
     @post_faq.before_loop
     async def before_post_faq(self):
