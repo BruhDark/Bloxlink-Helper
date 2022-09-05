@@ -117,8 +117,8 @@ class Bot(commands.Bot):
             view.add_item(discord.ui.Button(
                 label="This is an automatic message", disabled=True))
             await channel.send(content=tag["content"], view=view)
-      except Exception as e:
-        print("Failed to post:" + e)
+         except Exception as e:
+            print("Failed to post:" + e)
 
     @post_faq.before_loop
     async def before_post_faq(self):
