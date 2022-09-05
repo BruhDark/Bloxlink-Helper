@@ -6,6 +6,7 @@ from config import colors, links
 import datetime
 import asyncio
 from supportsystem.rateview import RatingView
+from resources.CheckFailure import is_staff
 
 
 class CloseThreadView(discord.ui.View):
@@ -70,12 +71,13 @@ class CloseThreadView(discord.ui.View):
         rateEmbed.timestamp = datetime.datetime.utcnow()
         rateEmbed.set_author(
             name=f"Hello, {user.name}!", icon_url=user.avatar.url)
-        rateEmbed.add_field(name="Awaiting feedback...",
-                            value="​")
         rateEmbed.set_footer(
             text="Thanks for choosing Bloxlink! We hope you have a great day!", icon_url=links.other)
 
-        await user.send(embed=rateEmbed, view=rateView)
+        helpers_role = discord.utils.get(
+            interaction.guild.roles, name="Helpers")
+        if helpers_role in interaction.user.roles:
+            await user.send(embed=rateEmbed, view=rateView)
 
         await message.edit(embed=embedT)
 
