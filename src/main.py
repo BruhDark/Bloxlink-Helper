@@ -100,22 +100,25 @@ class Bot(commands.Bot):
 
     @tasks.loop(minutes=30)
     async def post_faq(self):
+        try:
 
-        guild = self.get_guild(372036754078826496)  # Bloxlink HQ
-        # guild = self.get_guild(881968885279117342)  # Helper HQ
-        channel = discord.utils.get(guild.channels, name="support")
-        channel = await guild.fetch_channel(372181186816245770) if channel is None else channel
-        last_message = channel.last_message
-        last_message = await channel.fetch_message(channel.last_message_id) if last_message is None else last_message
+            guild = self.get_guild(372036754078826496)  # Bloxlink HQ
+            # guild = self.get_guild(881968885279117342)  # Helper HQ
+            channel = discord.utils.get(guild.channels, name="support")
+            channel = await guild.fetch_channel(372181186816245770) if channel is None else channel
+            last_message = channel.last_message
+            last_message = await channel.fetch_message(channel.last_message_id) if last_message is None else last_message
 
-        if last_message.author.id == self.user.id:
-            return
+            if last_message.author.id == self.user.id:
+                return
 
-        tag = await find_tag("faq")
-        view = discord.ui.View()
-        view.add_item(discord.ui.Button(
-            label="This is an automatic message", disabled=True))
-        await channel.send(content=tag["content"], view=view)
+            tag = await find_tag("faq")
+            view = discord.ui.View()
+            view.add_item(discord.ui.Button(
+                label="This is an automatic message", disabled=True))
+            await channel.send(content=tag["content"], view=view)
+      except Exception as e:
+        print("Failed to post:" + e)
 
     @post_faq.before_loop
     async def before_post_faq(self):
