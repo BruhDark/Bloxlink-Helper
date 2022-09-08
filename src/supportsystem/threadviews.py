@@ -37,23 +37,12 @@ class CloseThreadView(discord.ui.View):
 
         object = await find_one("support-users", {"thread": thread.id})
         user = object["user"]
-        topic = thread.name.split(" - ")[1]
 
         await delete_one("support-users", {"thread": thread.id})
         await interaction.response.edit_message(view=self)
         await interaction.followup.send("<:padlock:987837727741464666> This thread has been marked as closed.")
 
         await thread.archive(locked=True)
-
-        embedT = discord.Embed(
-            color=colors.error, timestamp=datetime.datetime.utcnow(), title="Support Thread Closed")
-        embedT.add_field(
-            name="<:user:988229844301131776> Created By", value=f"<@{user}>")
-        embedT.add_field(name="<:help:988166431109681214> Topic", value=topic)
-        embedT.add_field(
-            name="<:thread:988229846188564500> Thread", value=thread.mention)
-        embedT.add_field(name="<:user:988229844301131776> Closed By",
-                         value=f"{interaction.user.mention} ({interaction.user.id})")
 
         Lchannel = discord.utils.get(
             interaction.guild.channels, name="support-threads")
@@ -77,7 +66,7 @@ class CloseThreadView(discord.ui.View):
 
         await user.send(embed=rateEmbed, view=rateView)
 
-        await message.edit(embed=embedT)
+        await message.delete()
 
     @discord.ui.button(style=ButtonStyle.green, emoji="<:notification:990034677836427295>", label="Ping Helpers", disabled=True, custom_id="PingHelpersButton")
     async def callback(self, button: Button, interaction: discord.Interaction):
@@ -88,6 +77,8 @@ class CloseThreadView(discord.ui.View):
         await interaction.channel.send(f"<:notification:990034677836427295> {Hrole.mention} {THrole.mention}", allowed_mentions=discord.AllowedMentions(roles=True))
         button.disabled = True
         await interaction.response.edit_message(view=self)
+        await interaction.channel.send(f"<:notification:990034677836427295> {Hrole.mention} {THrole.mention}", allowed_mentions=discord.AllowedMentions(roles=True))
+        await self.enableButton()
 
 
 class ThreadButton(discord.ui.Button):
@@ -98,7 +89,7 @@ class ThreadButton(discord.ui.Button):
 
     async def callback(self, interaction: discord.Interaction):
 
-        await interaction.response.defer()
+        await interaction.response.defer(ephemeral=True)
 
         supportBannedRole = discord.utils.get(
             interaction.guild.roles, name="support banned")
