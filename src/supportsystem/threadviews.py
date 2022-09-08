@@ -70,6 +70,10 @@ class CloseThreadView(discord.ui.View):
 
     @discord.ui.button(style=ButtonStyle.green, emoji="<:notification:990034677836427295>", label="Ping Helpers", disabled=True, custom_id="PingHelpersButton")
     async def callback(self, button: Button, interaction: discord.Interaction):
+        user = find_one("support-users", {"thread": interaction.channel.id})
+        if interaction.user.id != user["user"]:
+            await interaction.response.send_message("<:BloxlinkDead:823633973967716363> You are not the thread author!", ephemeral=True)
+            return
 
         Hrole = interaction.guild.get_role(412791520316358656)
         THrole = interaction.guild.get_role(818919735193632858)
