@@ -73,11 +73,11 @@ class CloseThreadView(discord.ui.View):
 
         Hrole = interaction.guild.get_role(412791520316358656)
         THrole = interaction.guild.get_role(818919735193632858)
-
-        await interaction.channel.send(f"<:notification:990034677836427295> {Hrole.mention} {THrole.mention}", allowed_mentions=discord.AllowedMentions(roles=True))
         button.disabled = True
+
         await interaction.response.edit_message(view=self)
         await interaction.channel.send(f"<:notification:990034677836427295> {Hrole.mention} {THrole.mention}", allowed_mentions=discord.AllowedMentions(roles=True))
+
         await self.enableButton()
 
 
