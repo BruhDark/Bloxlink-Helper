@@ -85,26 +85,63 @@ class Rating(commands.Cog):
 
             return parsed_rating
 
-    async def parse_rating_message(self, rating: list):
+    async def parse_rating_message(self, rating: list, detailed: bool = True):
         parsed_messages = []
 
         rating.sort(key=lambda rate: rate["rating"], reverse=True)
 
-        for rate in rating:
-            if rate["rating"] <= 3:
-                print(rate)
-                parsed_messages.append(
-                    f"<t:{rate['date']}:D> {await self.return_stars(int(rate['rating']))}\n<:reply:1015305389249671178> **Feedback:** {rate['feedback']}")
-            else:
-                parsed_messages.append(
-                    f"<t:{rate['date']}:D> {await self.return_stars(int(rate['rating']))}")
+        if detailed:
+
+            for rate in rating:
+                if rate["rating"] <= 3:
+                    print(rate)
+                    parsed_messages.append(
+                        f"<t:{rate['date']}:D> {await self.return_stars(int(rate['rating']))}\n<:reply:1015305389249671178> **Feedback:** {rate['feedback']}")
+                else:
+                    parsed_messages.append(
+                        f"<t:{rate['date']}:D> {await self.return_stars(int(rate['rating']))}")
+
+        else:
+            for rate in rating:
+                pass
 
         return parsed_messages
 
     async def get_ranking(self, rating: list):
-        first = "None"
-        second = "None"
-        third = "None"
+        first_rating = 0
+        first_user = None
+        second_rating = 0
+        second_user = None
+        third_rating = 0
+        third_user = None
+
+        users = {}
+        for rate in rating:
+            try:
+                users[str(rate["user"])] += int(rate["rating"])
+                print("A")
+
+            except:
+                users[str(rate["user"])] = int(rate["rating"])
+                print("B")
+
+        print(users)
+
+        for value, index in enumerate(users):
+            if int(value) > int(first_rating):
+                first_rating = value
+                first_user = int(index)
+
+            if int(value) > int(second_rating) and int(value) < int(first_rating):
+                second_rating = value
+                second_user = int(index)
+
+            if int(value) > int(third_rating) and int(value) < int(second_rating):
+                third_rating = value
+                third_user = int(index)
+
+        message = f"🥇 <@{first_user}> (`{first_user}`): {first_rating} Stars\n🥈 <@{second_user}> (`{second_user}`): {second_rating} Stars\n🥉 <@{third_user}> (`{third_user}`): {third_rating} Stars"
+        return message
 
     async def parse_embeds(self, rating: list):
         embeds = []
@@ -140,7 +177,6 @@ class Rating(commands.Cog):
         await ctx.defer()
 
         rating = await return_all("rating")
-        embed = discord.Embed(color=colors.info)
 
         if detailed:
             if not discord.utils.get(ctx.guild.roles, name="Community Manager") in ctx.author.roles or not await self.bot.is_owner(ctx.author):
@@ -159,7 +195,6 @@ class Rating(commands.Cog):
                     nrating = await self.parse_rating_message(rating)
                     embeds = await self.parse_embeds(nrating)
                     for embed in embeds:
-                        embed.description = "\n".join(nrating)
                         embed.set_author(
                             name=f"{user.name}#{user.discriminator}'s Rating Stats", icon_url=user.display_avatar.url)
                         embed.timestamp = datetime.datetime.utcnow()
@@ -167,18 +202,20 @@ class Rating(commands.Cog):
                             text=f"{await self.return_average(rating)}/5 Average Rating Stars")
 
                     paginator = CustomPaginator(pages=embeds)
-                    await paginator.respond(ctx.interaction)
+                    await paginator.respond(ctx.interaction, ephemeral=True)
 
                 else:
                     nrating = await self.parse_rating_message(rating)
+                    message = await self.parse_embeds(nrating)
+                    for embed in message:
+                        embed.set_author(
+                            name=f"All Team Rating Stats", icon_url=ctx.guild.icon.url)
+                        embed.timestamp = datetime.datetime.utcnow()
+                        embed.set_footer(
+                            text=f"{await self.return_average(rating)}/5 Average Rating Stars")
 
-                    embed.description = "\n".join(nrating)
-                    embed.set_author(
-                        name=f"All Team Rating Stats", icon_url=ctx.guild.icon.url)
-                    embed.timestamp = datetime.datetime.utcnow()
-                    embed.set_footer(
-                        text=f"{await self.return_average(rating)}/5 Average Rating Stars")
-                    await ctx.respond(embed=embed)
+                    paginator = CustomPaginator(pages=embeds)
+                    await paginator.respond(ctx.interaction, ephemeral=True)
 
             elif date == "today":
                 if user:
@@ -250,7 +287,16 @@ class Rating(commands.Cog):
                     await ctx.respond(embed=embed)
 
         else:
-            pass
+            if date == "all time":
+                if user:
+                    pass
+
+                else:
+                    ranking = await self.get_ranking(rating)
+                    await ctx.respond(content=ranking)
+
+            else:
+                pass
 
 
 def setup(bot):
