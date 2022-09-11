@@ -118,7 +118,8 @@ class Bot(commands.Bot):
                 label="This is an automatic message", disabled=True))
             await channel.send(content=tag["content"], view=view)
         except Exception as e:
-            print("Failed to post:" + e)
+            print("Failed to post:")
+            print(e)
 
     @post_faq.before_loop
     async def before_post_faq(self):
@@ -126,4 +127,4 @@ class Bot(commands.Bot):
 
 
 bot = Bot()
-bot.run(os.getenv("LOCAL_TOKEN"))
+bot.run(os.getenv("TOKEN"))
