@@ -5,10 +5,38 @@ from discord.ext import commands
 from resources.context import ApplicationCommandsContext
 from resources.mongoFunctions import return_all, find_one
 from config import colors, links
-import time
-from quickchart import QuickChart
 from resources.CheckFailure import is_blacklisted, is_staff
 from resources.paginator import CustomPaginator
+import pandas as pd
+import os
+
+
+class ExportStats(discord.ui.View):
+    def __init__(self, rating: list):
+        super().__init__()
+        self.rating = rating
+
+    @discord.ui.button(label="Export as CSV file", emoji="<:box:987447660510334976>", style=discord.ButtonStyle.blurple)
+    async def export_callback(self, button: discord.Button, interaction: discord.Interaction):
+
+        users = [rate['user'] for rate in self.rating]
+        dates = [rate['date'] for rate in self.rating]
+        number = [rate['rating'] for rate in self.rating]
+        feedback = []
+        for rate in self.rating:
+            try:
+                feedback.append(rate["feedback"])
+            except:
+                feedback.append("None")
+
+        dict = {"user": users, "date": dates,
+                "rating": number, "feedback": feedback}
+
+        df = pd.DataFrame(dict)
+        df.to_csv("stats.csv")
+
+        await interaction.response.send_message(file=discord.File("stats.csv", "stats.csv"), ephemeral=True)
+        os.remove("stats.csv")
 
 
 class Rating(commands.Cog):
@@ -93,13 +121,13 @@ class Rating(commands.Cog):
         if detailed:
 
             for rate in rating:
-                if rate["rating"] <= 3:
+                try:
                     print(rate)
                     parsed_messages.append(
-                        f"<t:{rate['date']}:D> {await self.return_stars(int(rate['rating']))}\n<:reply:1015305389249671178> **Feedback:** {rate['feedback']}")
-                else:
+                        f"<t:{rate['date']}:D> {await self.return_stars(int(rate['rating']))} -> <@{rate['user']}>\n<:reply:1015305389249671178> **Feedback:** {rate['feedback']}")
+                except:
                     parsed_messages.append(
-                        f"<t:{rate['date']}:D> {await self.return_stars(int(rate['rating']))}")
+                        f"<t:{rate['date']}:D> {await self.return_stars(int(rate['rating']))} -> <@{rate['user']}>")
 
         else:
             for rate in rating:
@@ -127,21 +155,25 @@ class Rating(commands.Cog):
 
         print(users)
 
-        for value, index in enumerate(users):
+        for index, (key, value) in enumerate(users.items()):
             if int(value) > int(first_rating):
                 first_rating = value
-                first_user = int(index)
+                first_user = int(key)
 
             if int(value) > int(second_rating) and int(value) < int(first_rating):
                 second_rating = value
-                second_user = int(index)
+                second_user = int(key)
 
             if int(value) > int(third_rating) and int(value) < int(second_rating):
                 third_rating = value
-                third_user = int(index)
+                third_user = int(key)
 
-        message = f"🥇 <@{first_user}> (`{first_user}`): {first_rating} Stars\n🥈 <@{second_user}> (`{second_user}`): {second_rating} Stars\n🥉 <@{third_user}> (`{third_user}`): {third_rating} Stars"
-        return message
+        first = f"🥇 <@{first_user}> (`{first_user}`): {first_rating} Stars" if first_user is not None else "🥇 No one yet"
+        second = f"🥈 <@{second_user}> (`{second_user}`): {second_rating} Stars" if second_user is not None else "🥈 No one yet"
+        third = f"🥉 <@{third_user}> (`{third_user}`): {third_rating} Stars" if third_user is not None else "🥉 No one yet"
+
+        ranking = f"{first}\n{second}\n{third}"
+        return ranking
 
     async def parse_embeds(self, rating: list):
         embeds = []
@@ -174,9 +206,11 @@ class Rating(commands.Cog):
     @is_blacklisted()
     async def rating(self, ctx: ApplicationCommandsContext, date: Option(str, "Rating date", choices=["all time", "today", "month"]), user: Option(discord.Member, "A staff member to get rating of", required=False) = None, detailed: bool = False):
 
-        await ctx.defer()
+        await ctx.defer(ephemeral=True) if detailed else await ctx.defer()
 
         rating = await return_all("rating")
+        embed = discord.Embed(
+            color=colors.info, timestamp=discord.utils.utcnow())
 
         if detailed:
             if not discord.utils.get(ctx.guild.roles, name="Community Manager") in ctx.author.roles or not await self.bot.is_owner(ctx.author):
@@ -201,7 +235,9 @@ class Rating(commands.Cog):
                         embed.set_footer(
                             text=f"{await self.return_average(rating)}/5 Average Rating Stars")
 
-                    paginator = CustomPaginator(pages=embeds)
+                    paginator = CustomPaginator(
+                        pages=message, disable_on_timeout=True, timeout=120, show_disabled=False, custom_view=ExportStats(rating))
+
                     await paginator.respond(ctx.interaction, ephemeral=True)
 
                 else:
@@ -214,7 +250,9 @@ class Rating(commands.Cog):
                         embed.set_footer(
                             text=f"{await self.return_average(rating)}/5 Average Rating Stars")
 
-                    paginator = CustomPaginator(pages=embeds)
+                    paginator = CustomPaginator(
+                        pages=message, disable_on_timeout=True, timeout=120, show_disabled=False, custom_view=ExportStats(rating))
+
                     await paginator.respond(ctx.interaction, ephemeral=True)
 
             elif date == "today":
@@ -234,7 +272,9 @@ class Rating(commands.Cog):
                     embed.timestamp = datetime.datetime.utcnow()
                     embed.set_footer(
                         text=f"{await self.return_average(rating)}/5 Average Rating Stars")
-                    await ctx.respond(embed=embed)
+
+                    view = ExportStats(rating)
+                    await ctx.respond(embed=embed, view=view, ephemeral=True)
 
                 else:
                     rating = await self.check_today(rating)
@@ -250,7 +290,9 @@ class Rating(commands.Cog):
                     embed.timestamp = datetime.datetime.utcnow()
                     embed.set_footer(
                         text=f"{await self.return_average(rating)}/5 Average Rating Stars")
-                    await ctx.respond(embed=embed)
+
+                    view = ExportStats(rating)
+                    await ctx.respond(embed=embed, view=view, ephemeral=True)
 
             elif date == "month":
                 if user:
@@ -268,7 +310,7 @@ class Rating(commands.Cog):
                     embed.timestamp = datetime.datetime.utcnow()
                     embed.set_footer(
                         text=f"{await self.return_average(rating)}/5 Average Rating Stars")
-                    await ctx.respond(embed=embed)
+                    await ctx.respond(embed=embed, ephemeral=True)
 
                 else:
                     rating = await self.check_month(rating)
@@ -284,19 +326,100 @@ class Rating(commands.Cog):
                     embed.timestamp = datetime.datetime.utcnow()
                     embed.set_footer(
                         text=f"{await self.return_average(rating)}/5 Average Rating Stars")
-                    await ctx.respond(embed=embed)
+                    await ctx.respond(embed=embed, ephemeral=True)
 
         else:
+            embed = discord.Embed(
+                color=colors.info, timestamp=datetime.datetime.utcnow())
             if date == "all time":
                 if user:
-                    pass
+                    nrating = [
+                        rate for rate in rating if rate["user"] == user.id]
+
+                    if len(nrating) == 0:
+                        await ctx.error("This user has not received any rating yet!")
+                        return
+
+                    message = self.parse_rating_message(nrating)
+                    embed.description = f":star: Average Stars: {await self.return_average(rating)}/5."
+                    embed.set_author(
+                        name=f"{user.name}#{user.discriminator}'s Average Stats", icon_url=user.display_avatar.url)
+                    await ctx.respond(embed=embed)
 
                 else:
-                    ranking = await self.get_ranking(rating)
-                    await ctx.respond(content=ranking)
+                    if len(rating) == 0:
+                        await ctx.error("No rating received yet!")
+                        return
 
-            else:
-                pass
+                    ranking = await self.get_ranking(rating)
+
+                    embed.description = ranking
+                    embed.set_footer(
+                        text=f"{await self.return_average(rating)}/5 Average Stars")
+                    embed.set_author(
+                        name=f"All Team Rating Ranking", icon_url=ctx.guild.icon.url)
+
+                    await ctx.respond(embed=embed)
+
+            elif date == "month":
+                if user:
+                    nrating = await self.check_month(rating, user)
+
+                    if len(nrating) == 0:
+                        await ctx.error("This user has not received any rating yet!")
+                        return
+
+                    message = await self.get_ranking(nrating)
+                    embed.description = f":star: Average Stars: {await self.return_average(rating)}/5."
+                    embed.set_author(
+                        name=f"{user.name}#{user.discriminator}'s This Month Rating Stats", icon_url=user.display_avatar.url)
+                    await ctx.respond(embed=embed)
+
+                else:
+                    rating = await self.check_month(rating)
+                    if len(rating) == 0:
+                        await ctx.error("No rating received yet!")
+                        return
+
+                    ranking = await self.get_ranking(rating)
+
+                    embed.description = ranking
+                    embed.set_footer(
+                        text=f"{await self.return_average(rating)}/5 Average Stars")
+                    embed.set_author(
+                        name=f"All Team Month Rating Ranking", icon_url=ctx.guild.icon.url)
+
+                    await ctx.respond(embed=embed)
+
+            elif date == "today":
+                if user:
+                    nrating = await self.check_today(rating, user)
+
+                    if len(nrating) == 0:
+                        await ctx.error("This user has not received any rating yet!")
+                        return
+
+                    message = self.get_ranking(nrating)
+                    embed.description = f":star: Average Stars: {await self.return_average(rating)}/5."
+                    embed.set_author(
+                        name=f"{user.name}#{user.discriminator}'s Today Average Stats", icon_url=user.display_avatar.url)
+                    await ctx.respond(embed=embed)
+
+                else:
+                    rating = await self.check_today(rating)
+                    if len(rating) == 0:
+                        await ctx.error("No rating received yet!")
+                        return
+
+                    ranking = await self.get_ranking(rating)
+
+                    embed.description = ranking
+                    embed.set_footer(
+                        text=f"{await self.return_average(rating)}/5 Average Stars")
+                    embed.set_author(
+                        name=f"All Team Today's Ranking", icon_url=ctx.guild.icon.url)
+
+                    await ctx.respond(embed=embed)
 
 
 def setup(bot):

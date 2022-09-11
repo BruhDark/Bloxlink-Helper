@@ -62,21 +62,21 @@ class CloseThreadView(discord.ui.View):
         message = interaction.client.get_message(object["log"])
         message = await Lchannel.fetch_message(object["log"]) if message is None else message
 
-        rateView = RatingView()
-
-        user = await interaction.client.get_or_fetch_user(user)
-
-        rateEmbed = discord.Embed(title="<:BloxlinkHappy:823633735446167552> Thanks for contacting us!",
-                                  description="We appreciate you and want to know your satisfaction with the support given by our team.\nFeel free to rate us by clicking the :star: (star) and telling us your satisfaction level. Being the first one, 1 (I was not satisfied by the support given), and the last one 5 (I was very satified by the support given).", color=colors.info)
-        rateEmbed.timestamp = datetime.datetime.utcnow()
-        rateEmbed.set_author(
-            name=f"Hello, {user.name}!", icon_url=user.avatar.url)
-        rateEmbed.set_footer(
-            text="Thanks for choosing Bloxlink! We hope you have a great day!", icon_url=links.other)
-
         helpers_role = discord.utils.get(
             interaction.guild.roles, name="Helpers")
         if helpers_role in interaction.user.roles:
+            rateView = RatingView()
+
+            user = await interaction.client.get_or_fetch_user(user)
+
+            rateEmbed = discord.Embed(title="<:BloxlinkHappy:823633735446167552> Thanks for contacting us!",
+                                      description="We appreciate you and want to know your satisfaction with the support given by our team.\nFeel free to rate us by clicking the :star: (star) and telling us your satisfaction level. Being the first one, 1 (I was not satisfied by the support given), and the last one 5 (I was very satified by the support given).", color=colors.info)
+            rateEmbed.timestamp = datetime.datetime.utcnow()
+            rateEmbed.set_author(
+                name=f"Hello, {user.name}!", icon_url=user.avatar.url)
+            rateEmbed.set_footer(
+                text="Thanks for choosing Bloxlink! We hope you have a great day!", icon_url=links.other)
+
             await user.send(embed=rateEmbed, view=rateView)
 
         await message.edit(embed=embedT)
