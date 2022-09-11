@@ -236,7 +236,7 @@ class Rating(commands.Cog):
                             text=f"{await self.return_average(rating)}/5 Average Rating Stars")
 
                     paginator = CustomPaginator(
-                        pages=message, disable_on_timeout=True, timeout=120, show_disabled=False, custom_view=ExportStats(rating))
+                        pages=embeds, disable_on_timeout=True, timeout=120, show_disabled=False, custom_view=ExportStats(rating))
 
                     await paginator.respond(ctx.interaction, ephemeral=True)
 
