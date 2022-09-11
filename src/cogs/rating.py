@@ -213,7 +213,7 @@ class Rating(commands.Cog):
             color=colors.info, timestamp=discord.utils.utcnow())
 
         if detailed:
-            if not discord.utils.get(ctx.guild.roles, name="Community Manager") in ctx.author.roles or not await self.bot.is_owner(ctx.author):
+            if not discord.utils.get(ctx.guild.roles, id=595733840849534982) in ctx.author.roles and not await self.bot.is_owner(ctx.author):
                 await ctx.error("Only Community Managers are able to view detailed stats.")
                 return
 
