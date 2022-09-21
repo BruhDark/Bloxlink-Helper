@@ -61,7 +61,8 @@ class Misc(commands.Cog):
         raise Exception("Error test")
 
     @commands.command()
-    async def blacklist(self, ctx: CommandsContext, option: str, user: discord.User, reason: str = "Not specified"):
+    @commands.is_owner()
+    async def blacklist(self, ctx: CommandsContext, option: str, user: discord.User, *, reason: str = "Not specified"):
 
         if option.lower() == "add":
             if await find_one("blacklist", {"user": user.id}):
