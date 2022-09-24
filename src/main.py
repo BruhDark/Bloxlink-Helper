@@ -7,6 +7,9 @@ import discord
 import dotenv
 from discord.ext import commands, tasks
 from resources.context import CommandsContext, ApplicationCommandsContext
+import aiocron
+import cronitor
+import asyncio
 
 from config import AUTHORIZED, colors, emotes
 from resources.mongoFunctions import database, find_tag
@@ -15,6 +18,13 @@ try:
     dotenv.load_dotenv()
 except:
     pass
+
+cronitor.api_key = os.getenv("CRONITOR_KEY")
+
+cronitor.Monitor.put(
+    key='post-faq',
+    type='job',
+)
 
 
 class Bot(commands.Bot):
@@ -32,8 +42,6 @@ class Bot(commands.Bot):
         self.database = database
         self.presence_index = 0
         self.ready = False
-        self.changing_presence.start()
-        self.post_faq.start()
 
         for event in os.listdir("src/events"):
             if event.endswith(".py"):
@@ -98,8 +106,10 @@ class Bot(commands.Bot):
     async def before_changing_presence(self):
         await self.wait_until_ready()
 
-    @tasks.loop(minutes=30)
+    @cronitor.job("post-faq")
+    @aiocron.crontab("0,30 * * * *")
     async def post_faq(self):
+        await self.wait_until_ready()
         try:
 
             guild = self.get_guild(372036754078826496)  # Bloxlink HQ
@@ -121,10 +131,7 @@ class Bot(commands.Bot):
             print("Failed to post:")
             print(e)
 
-    @post_faq.before_loop
-    async def before_post_faq(self):
-        await self.wait_until_ready()
-
 
 bot = Bot()
 bot.run(os.getenv("TOKEN"))
+asyncio.get_event_loop().run_forever()
