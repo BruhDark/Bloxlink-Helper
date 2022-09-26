@@ -39,7 +39,7 @@ class Tags(commands.Cog):
 
             query = {"name": name}
 
-            await delete_one(query)
+            await delete_one("tags", query)
             success = emotes.success
 
             embed = discord.Embed(
