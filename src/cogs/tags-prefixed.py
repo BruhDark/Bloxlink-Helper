@@ -72,9 +72,14 @@ class TagsPrefixed(commands.Cog):
     @is_staff()
     @is_blacklisted()
     async def say(self, ctx: discord.ApplicationContext, *, text: str):
+
+        message = ctx.message.reference.message_id if ctx.message.reference is not None else None
+        message = get(self.bot.cached_messages,
+                      id=message) if message is not None else None
+
         try:
             await ctx.message.delete()
-            await ctx.send(text)
+            await message.reply(text) if message is not None else await ctx.send(text)
 
         except Exception as e:
             x = emotes.error
