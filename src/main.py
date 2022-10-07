@@ -34,6 +34,7 @@ class Bot(commands.Bot):
         self.ready = False
         self.changing_presence.start()
         self.post_faq.start()
+        self.last_message_sent = None
 
         for event in os.listdir("src/events"):
             if event.endswith(".py"):
@@ -113,10 +114,19 @@ class Bot(commands.Bot):
                 return
 
             tag = await find_tag("faq")
+
             view = discord.ui.View()
             view.add_item(discord.ui.Button(
                 label="This is an automatic message", disabled=True))
-            await channel.send(content=tag["content"], view=view)
+
+            try:
+                await self.last_message_sent.delete()
+            except:
+                pass
+            message = await channel.send(content=tag["content"], view=view)
+
+            self.last_message_sent = message
+
         except Exception as e:
             print("Failed to post:")
             print(e)
