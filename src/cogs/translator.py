@@ -40,8 +40,11 @@ class Translator(commands.Cog):
 
         embed = discord.Embed(timestamp=datetime.datetime.utcnow(
         ), color=colors.info, description=f"{emotes.error} Processing text from `{detectedSourceLanguage}` (detected) to `{target}`\n\n**Result:** \n`{translatedText}`")
-        embed.add_field(
-            name="<:help:988166431109681214> Pronunciation", value=pronounciation)
+
+        if pronounciation:
+            embed.add_field(
+                name="<:help:988166431109681214> Pronunciation", value=pronounciation)
+
         embed.set_footer(
             text=f"{ctx.author}", icon_url=ctx.author.display_avatar.url)
 
