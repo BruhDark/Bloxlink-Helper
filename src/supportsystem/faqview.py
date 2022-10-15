@@ -7,6 +7,7 @@ from config import colors, links
 from discord import ButtonStyle, SelectOption
 from discord.ui import Button, View, button
 from resources.mongoFunctions import return_all
+from supportsystem.threadviews import CreateThreadView, ThreadButton
 
 
 class NumberButton(discord.ui.Button):
@@ -128,6 +129,11 @@ class FAQView(View):
             embed.description = "\n".join(qs)
 
             view = await format_buttons(questions)
+
+        premiumRole = discord.utils.get(
+            interaction.guild.roles, id=372175493040177152)
+        if premiumRole in interaction.user.roles:
+            view.add_item(ThreadButton())
 
         await interaction.followup.send(embed=embed, view=view, ephemeral=True)
 

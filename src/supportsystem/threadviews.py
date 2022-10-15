@@ -41,7 +41,7 @@ class CloseThreadView(discord.ui.View):
 
         await delete_one("support-users", {"thread": thread.id})
         await interaction.response.edit_message(view=self)
-        await interaction.followup.send("<:padlock:987837727741464666> This thread has been marked as closed.")
+        await interaction.followup.send("<:padlock:987837727741464666> This support thread has been marked as solved.")
 
         await thread.archive(locked=True)
 
@@ -52,7 +52,9 @@ class CloseThreadView(discord.ui.View):
         message = await Lchannel.fetch_message(object["log"]) if message is None else message
 
         helpers_role = discord.utils.get(
-            interaction.guild.roles, name="Helpers")
+            interaction.guild.roles, name="Helpers"
+        )
+
         if helpers_role in interaction.user.roles:
             rateView = RatingView()
 
