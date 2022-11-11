@@ -20,9 +20,18 @@ class Misc(commands.Cog):
         """Get the spotify status of a user"""
 
         user: discord.Member = user or ctx.author
-        if not isinstance(user.activity, discord.Spotify):
+        activity = None
+        activity = user.activity if isinstance(user.activity, discord.Spotify) else None
+        
+        if activity is None:
+          for act in user.activities:
+             if isinstance(act, discord.Spotify):
+                    activity = act
+                    break
+
+        if activity is None:
             embed = discord.Embed(
-                description=f"{x} {user.mention} is not listening to Spotify or a CustomActivity is blocking me from accessing it.", color=colors.error)
+                description=f"{x} {user.mention} is not listening to Spotify.", color=colors.error)
             return await ctx.send(embed=embed)
 
         else:
@@ -33,26 +42,26 @@ class Misc(commands.Cog):
             Embed.set_author(
                 name=f"{user.name}#{user.discriminator}", icon_url=user.display_avatar.url)
 
-            Embed.set_thumbnail(url=user.activity.album_cover_url)
+            Embed.set_thumbnail(url=activity.album_cover_url)
 
-            artists = user.activity.artists
-            duration = user.activity.duration
+            artists = activity.artists
+            duration = activity.duration
             durationd = str(duration).split(".")[0]
 
             Embed.add_field(
-                name="Song", value=user.activity.title, inline=False)
+                name="Song", value=activity.title, inline=False)
             Embed.add_field(name="Duration",
                             value=durationd, inline=True)
             Embed.add_field(name="Artist(s)", value=", ".join(
                 artists), inline=False)
             Embed.add_field(
-                name="Album", value=user.activity.album, inline=True)
+                name="Album", value=activity.album, inline=True)
 
             Embed.set_footer(text=f"ID: {user.id}")
 
             View = discord.ui.View()
             View.add_item(discord.ui.Button(emoji=emoji, label='Listen on Spotify',
-                                            url=user.activity.track_url, style=discord.ButtonStyle.url))
+                                            url=activity.track_url, style=discord.ButtonStyle.url))
             return await ctx.send(embed=Embed, view=View)
 
     @commands.command()
