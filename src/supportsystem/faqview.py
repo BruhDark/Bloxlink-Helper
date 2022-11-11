@@ -1,6 +1,4 @@
-import asyncio
 from datetime import datetime
-import time
 
 import discord
 from config import colors, links
@@ -8,7 +6,7 @@ from discord import ButtonStyle, SelectOption
 from discord.ui import Button, View, button
 from resources.mongoFunctions import return_all
 from resources.mongoFunctions import find_one, insert_one
-from threadviews import CloseThreadView
+from supportsystem.threadviews import CloseThreadView
 
 
 class ThreadButtonFAQ(discord.ui.Button):
