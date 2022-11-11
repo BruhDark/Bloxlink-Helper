@@ -7,7 +7,70 @@ from config import colors, links
 from discord import ButtonStyle, SelectOption
 from discord.ui import Button, View, button
 from resources.mongoFunctions import return_all
-from supportsystem.threadviews import CreateThreadView, ThreadButton
+from resources.mongoFunctions import find_one, insert_one
+from threadviews import CloseThreadView
+
+
+class ThreadButtonFAQ(discord.ui.Button):
+    def __init__(self, topic: str):
+        super().__init__(style=ButtonStyle.blurple, label="Get Support",
+                         emoji="<:lifesaver:986648046592983150>", custom_id="PersistentThreadButton")
+        self.topic = topic
+
+    async def callback(self, interaction: discord.Interaction):
+
+        await interaction.response.defer(ephemeral=True)
+
+        supportBannedRole = discord.utils.get(
+            interaction.guild.roles, name="support banned")
+        if supportBannedRole in interaction.user.roles:
+            await interaction.response.send_message(
+                "<:BloxlinkDead:823633973967716363> You are support banned.", ephemeral=True)
+            return
+
+        userThread = await find_one("support-users", {"user": interaction.user.id})
+
+        if userThread is not None:
+            thread = interaction.channel.get_thread(userThread["thread"])
+            await interaction.followup.send(f"<:BloxlinkDead:823633973967716363> You are already in a support thread. Please head to {thread.mention} to join the thread.", ephemeral=True)
+            return
+
+        channel = interaction.guild.get_channel(1017439501452324864)
+
+        try:
+            thread = await channel.create_thread(name=f"{interaction.user.name} - {self.topic}", reason="Support Thread", type=discord.ChannelType.private_thread)
+        except:
+            thread = await channel.create_thread(name=f"{interaction.user.name} - {self.topic}", reason="Support Thread", type=discord.ChannelType.public_thread)
+
+        await interaction.followup.send(f"<:BloxlinkSilly:823634273604468787> You have created a support thread. Please head to {thread.mention} to join the thread.", ephemeral=True)
+
+        embedT = discord.Embed(
+            color=colors.info, timestamp=datetime.datetime.utcnow(), title="Support Thread")
+        embedT.add_field(
+            name="<:user:988229844301131776> Created By", value=interaction.user.mention)
+        embedT.add_field(
+            name="<:help:988166431109681214> Topic", value=self.topic)
+        embedT.add_field(
+            name="<:thread:988229846188564500> Thread", value=thread.mention)
+
+        Lchannel = discord.utils.get(
+            interaction.guild.channels, name="support-threads")
+        log = await Lchannel.send(embed=embedT)
+
+        object = await insert_one("support-users", {"user": interaction.user.id, "thread": thread.id, "log": log.id})
+
+        embed = discord.Embed(color=colors.info, timestamp=datetime.datetime.utcnow(), title="Support Thread",
+                              description=f":wave: Welcome to your support thread!\n\n<:BloxlinkSilly:823634273604468787> Our Helpers will assist you in a few minutes. While you wait, please provide as much detail as possible! Consider providing screenshots or/and anything that helps the team to solve your issue faster.\n\n<:time:987836664355373096> Our team is taking too long? If 10 minutes have passed, you can click the **Ping Helpers** button, this will notify our team you are here!")
+        embed.set_author(name=f"{interaction.user.name}#{interaction.user.discriminator} | ID: {object.inserted_id}",
+                         icon_url=interaction.user.display_avatar.url)
+        embed.set_footer(
+            text=f"To close this thread, press the padlock below.")
+
+        ThreadView = CloseThreadView()
+        message = await thread.send(content=interaction.user.mention, embed=embed, view=ThreadView)
+        ThreadView.message = message
+        await message.pin(reason="Support Thread Message")
+        await ThreadView.enableButton()
 
 
 class NumberButton(discord.ui.Button):
@@ -133,7 +196,7 @@ class FAQView(View):
         premiumRole = discord.utils.get(
             interaction.guild.roles, id=372175493040177152)
         if premiumRole in interaction.user.roles:
-            view.add_item(ThreadButton())
+            view.add_item(ThreadButtonFAQ())
 
         await interaction.followup.send(embed=embed, view=view, ephemeral=True)
 
