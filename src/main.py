@@ -117,7 +117,7 @@ class Bot(commands.Bot):
 
             view = discord.ui.View()
             view.add_item(discord.ui.Button(
-                label="This is an automatic message", disabled=True))
+                label="This is an automated message", disabled=True))
 
             try:
                 await self.last_message_sent.delete()
