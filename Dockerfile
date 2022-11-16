@@ -5,4 +5,4 @@ RUN pip install -r requirements.txt
 
 COPY src/ src/
 
-CMD echo java -jar Lavalink.jar; python -u src/main.py
+CMD python -u src/main.py

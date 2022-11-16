@@ -7,3 +7,13 @@ services:
     env_file:
       - stack.env
     container_name: helper-bot
+    depends_on:
+      - "lavalink"
+
+  lavalink:
+    image: "fredboat/lavalink:master"
+    container_name: lavalink
+    hostname: lavalink
+    restart: on-failure
+    volumes:
+      - ~/helper-conf/lavalink.yml:/opt/Lavalink/application.yml

@@ -1,6 +1,6 @@
 server: # REST and WS server
-  port: 9443
-  address: 168.119.115.192
+  port: 9643
+  address: 0.0.0.0
 lavalink:
   server:
     password: "youshallnotpass"

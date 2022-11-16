@@ -347,7 +347,7 @@ class Music(commands.Cog):
     async def connect_nodes(self):
         await self.client.wait_until_ready()
         lavaclient = lavalink.Client(self.client.user.id)
-        lavaclient.add_node('168.119.115.192:9443', 9643,
+        lavaclient.add_node('lavalink', 9643,
                             'youshallnotpass', 'us', 'music-node')
         lavaclient.add_event_hooks(self)
         self.client.lavalink = lavaclient
