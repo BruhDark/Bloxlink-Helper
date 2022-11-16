@@ -16,4 +16,4 @@ services:
     hostname: lavalink
     restart: on-failure
     volumes:
-      - ~/helper-conf/lavalink.yml:/opt/Lavalink/application.yml
+      - /root/helper-conf/lavalink.yml:/opt/Lavalink/application.yml
