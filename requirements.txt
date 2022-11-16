@@ -1,4 +1,4 @@
-py-cord==2.1.1
+git+https://github.com/Pycord-Development/pycord
 datetime==4.3
 motor==3.0.0
 tornado==6.1
@@ -14,3 +14,5 @@ pandas>=1.3.4
 numpy>=1.21.4
 aiocron==1.8
 cronitor==4.6.0
+git+https://github.com/freyacodes/Lavalink/
+spotipy==2.20.0

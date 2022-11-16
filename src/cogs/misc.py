@@ -15,17 +15,17 @@ class Misc(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.command()
+    @commands.command(description="See what's someone listening to")
     async def spotify(self, ctx, user: discord.Member = None):
-        """Get the spotify status of a user"""
 
         user: discord.Member = user or ctx.author
         activity = None
-        activity = user.activity if isinstance(user.activity, discord.Spotify) else None
-        
+        activity = user.activity if isinstance(
+            user.activity, discord.Spotify) else None
+
         if activity is None:
-          for act in user.activities:
-             if isinstance(act, discord.Spotify):
+            for act in user.activities:
+                if isinstance(act, discord.Spotify):
                     activity = act
                     break
 
@@ -64,12 +64,12 @@ class Misc(commands.Cog):
                                             url=activity.track_url, style=discord.ButtonStyle.url))
             return await ctx.send(embed=Embed, view=View)
 
-    @commands.command()
+    @commands.command(description="Raise an intentional error")
     async def error(self, ctx):
         """Error test"""
         raise Exception("Error test")
 
-    @commands.command()
+    @commands.command(description="Blacklist a user")
     @commands.is_owner()
     async def blacklist(self, ctx: CommandsContext, option: str, user: discord.User, *, reason: str = "Not specified"):
 

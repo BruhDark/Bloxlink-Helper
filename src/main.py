@@ -44,13 +44,13 @@ class Bot(commands.Bot):
                 except Exception as e:
                     print(f"❌ Failed to load event: {event}: {e}")
 
-        for command in os.listdir("src/cogs"):
-            if command.endswith(".py"):
+        for cog in os.listdir("src/cogs"):
+            if cog.endswith(".py"):
                 try:
-                    self.load_extension(f"cogs.{command[:-3]}", store=False)
-                    print(f"✅ Loaded cog: {command}")
+                    self.load_extension(f"cogs.{cog[:-3]}", store=False)
+                    print(f"✅ Loaded cog: {cog}")
                 except Exception as e:
-                    print(f"❌ Failed to load cog: {command}: {e}")
+                    print(f"❌ Failed to load cog: {cog}: {e}")
                     raise e
 
     async def get_context(self, message: discord.Message, *, cls=CommandsContext):

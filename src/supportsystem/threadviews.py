@@ -41,7 +41,7 @@ class CloseThreadView(discord.ui.View):
 
         await delete_one("support-users", {"thread": thread.id})
         await interaction.response.edit_message(view=self)
-        await interaction.followup.send("<:padlock:987837727741464666> This support thread has been marked as solved.")
+        await interaction.followup.send(f"<:padlock:987837727741464666> This support thread has been marked as solved by {interaction.user.mention}")
 
         await thread.archive(locked=True)
 

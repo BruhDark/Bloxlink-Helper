@@ -11,7 +11,7 @@ class ApiCommand(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command()
+    @commands.command(description="Send a request to the Bloxlink API")
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.guild_only()
     @is_blacklisted()

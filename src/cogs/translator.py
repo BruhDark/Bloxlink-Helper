@@ -1,8 +1,6 @@
 import datetime
-import json
 
 import discord
-import aiohttp
 from config import colors, emotes
 from discord.commands import Option, slash_command
 from discord.ext import commands

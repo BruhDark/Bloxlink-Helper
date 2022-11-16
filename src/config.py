@@ -18,6 +18,7 @@ class Emotes:
         self.partialoutage = "<:PartialOutage:882404755949895730>"
         self.majoroutage = "<:MajorOutage:882404641286000681>"
         self.maintenance = "<:UnderMaintenance:881969909247148052>"
+        self.reply = "<:reply:1015305389249671178>"
 
         self.dnd = "<:DoNotDisturb:928716110822518834>"
         self.idle = "<:Idle:929049988573581352>"
