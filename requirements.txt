@@ -14,5 +14,5 @@ pandas>=1.3.4
 numpy>=1.21.4
 aiocron==1.8
 cronitor==4.6.0
-git+https://github.com/freyacodes/Lavalink/
+git+https://github.com/freyacodes/Lavalink
 spotipy==2.20.0
