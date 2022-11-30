@@ -43,7 +43,7 @@ class ThreadButtonFAQ(discord.ui.Button):
         await interaction.followup.send(f"<:BloxlinkSilly:823634273604468787> You have created a support thread. Please head to {thread.mention} to join the thread.", ephemeral=True)
 
         embedT = discord.Embed(
-            color=colors.info, timestamp=datetime.datetime.utcnow(), title="Support Thread")
+            color=colors.info, timestamp=datetime.utcnow(), title="Support Thread")
         embedT.add_field(
             name="<:user:988229844301131776> Created By", value=interaction.user.mention)
         embedT.add_field(
@@ -57,7 +57,7 @@ class ThreadButtonFAQ(discord.ui.Button):
 
         object = await insert_one("support-users", {"user": interaction.user.id, "thread": thread.id, "log": log.id})
 
-        embed = discord.Embed(color=colors.info, timestamp=datetime.datetime.utcnow(), title="Support Thread",
+        embed = discord.Embed(color=colors.info, timestamp=datetime.utcnow(), title="Support Thread",
                               description=f":wave: Welcome to your support thread!\n\n<:BloxlinkSilly:823634273604468787> Our Helpers will assist you in a few minutes. While you wait, please provide as much detail as possible! Consider providing screenshots or/and anything that helps the team to solve your issue faster.\n\n<:time:987836664355373096> Our team is taking too long? If 10 minutes have passed, you can click the **Ping Helpers** button, this will notify our team you are here!")
         embed.set_author(name=f"{interaction.user.name}#{interaction.user.discriminator} | ID: {object.inserted_id}",
                          icon_url=interaction.user.display_avatar.url)
