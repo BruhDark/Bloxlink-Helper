@@ -273,6 +273,10 @@ class Buttons(discord.ui.View):
     async def button_remove_song(self, button: discord.ui.Button, interaction: discord.Interaction):
         player = self.controller(interaction)
         queue = player.queue
+
+        if len(queue) == 0:
+            return await interaction.response.send_message(f"{emotes.error} There are no songs in the queue to remove!", ephemeral=True)
+
         songlist = queue[:25]
 
         options = []
@@ -283,7 +287,7 @@ class Buttons(discord.ui.View):
 
         view = discord.ui.View()
         view.add_item(SongRemove(options))
-        await interaction.response.send_message(view=view)
+        await interaction.response.send_message(view=view, ephemeral=True)
 
     @discord.ui.button(emoji="<:shuffle:1005261849199128576>", label="Shuffle", style=discord.ButtonStyle.gray, row=2)
     async def button_shuffle(self, button: discord.ui.Button, interaction: discord.Interaction):
@@ -587,12 +591,13 @@ class Music(commands.Cog):
     @slash_command(description="Add a song to the queue. Must be on a tier.")
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def play(self, ctx: discord.ApplicationContext, search: Option(str, description="Music query or URL", required=True)):
+
         astronautTier = discord.utils.get(
             ctx.guild.roles, id=1054956990926950402)
         starTier = discord.utils.get(ctx.guild.roles, id=1054958659198791684)
         cometTier = discord.utils.get(ctx.guild.roles, id=1054959782190137501)
 
-        if astronautTier and starTier and cometTier not in ctx.author.roles:
+        if not astronautTier and starTier and cometTier in ctx.author.roles:
             return await ctx.respond(f"{emotes.error} Only subscribers can add songs! Click `Server Subscriptions` at the top of the channel list to subscribe.")
 
         player = self.client.lavalink.player_manager.create(ctx.guild.id)
