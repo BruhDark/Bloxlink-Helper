@@ -11,7 +11,7 @@ import spotipy
 from spotipy import SpotifyClientCredentials
 from discord import slash_command, Option
 from discord.ext import commands
-
+from resources.select import SongRemove
 
 import dotenv
 from typing import Union
@@ -268,6 +268,22 @@ class Buttons(discord.ui.View):
         await interaction.response.send_message(f"{emotes.bloxlink} {interaction.user.mention} stopped the player!", allowed_mentions=discord.AllowedMentions(users=False))
 
         await cleanup(player)
+
+    @discord.ui.button(label="Remove Song", style=discord.ButtonStyle.gray, row=2)
+    async def button_remove_song(self, button: discord.ui.Button, interaction: discord.Interaction):
+        player = self.controller(interaction)
+        queue = player.queue
+        songlist = queue[:25]
+
+        options = []
+
+        for index, song in enumerate(songlist):
+            options.append(discord.SelectOption(
+                label=song.title, description=f"By {song.autor}", value=str(index)))
+
+        view = discord.ui.View()
+        view.add_item(SongRemove(options))
+        await interaction.response.send_message(view=view)
 
     @discord.ui.button(emoji="<:shuffle:1005261849199128576>", label="Shuffle", style=discord.ButtonStyle.gray, row=2)
     async def button_shuffle(self, button: discord.ui.Button, interaction: discord.Interaction):
@@ -567,6 +583,123 @@ class Music(commands.Cog):
             mplayer = await ctx.respond(embed=embed, view=bview)
             bview.message = await mplayer.original_message()
             self.client.active_players.append(bview.message.id)
+
+    @slash_command(description="Add a song to the queue. Must be on a tier.")
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def play(self, ctx: discord.ApplicationContext, search: Option(str, description="Music query or URL", required=True)):
+        astronautTier = discord.utils.get(
+            ctx.guild.roles, id=1054956990926950402)
+        starTier = discord.utils.get(ctx.guild.roles, id=1054958659198791684)
+        cometTier = discord.utils.get(ctx.guild.roles, id=1054959782190137501)
+
+        if astronautTier and starTier and cometTier not in ctx.author.roles:
+            return await ctx.respond(f"{emotes.error} Only subscribers can add songs! Click `Server Subscriptions` at the top of the channel list to subscribe.")
+
+        player = self.client.lavalink.player_manager.create(ctx.guild.id)
+        if search:
+            if len(search) > 256:
+                return await ctx.respond(f"{emotes.error} Search query has a maximum of 256 characters!", ephemeral=True)
+            elif player.is_playing:
+                if len(player.queue) >= 250:
+                    return await ctx.respond(f"{emotes.error} The queue is full!", ephemeral=True)
+            search = f'ytsearch:{search}' if not RURL.match(search) else search
+            results = await player.node.get_tracks(search)
+            tracks = results.tracks
+            total = len(player.queue)
+            match results.load_type:
+                case lavalink.LoadType.PLAYLIST:
+                    await ctx.defer()
+                    count = 0
+                    for track in tracks:
+                        if total + count < 250:
+                            player.add(track=track, requester=ctx.author.id)
+                            count += 1
+
+                    if len(self.client.active_players) == 0:
+                        await ctx.interaction.followup.send(embed=confirmation(f"Added {count} songs to the queue"))
+                        bview = Buttons(self.client, ctx.interaction)
+                        embed = create_embed(
+                            guild=ctx.guild, track=player.current, position=player.position)
+                        mplayer = await ctx.interaction.followup.send(embed=embed, view=bview)
+                        bview.message = mplayer
+                        self.client.active_players.append(mplayer.id)
+
+                    else:
+                        await ctx.respond(embed=confirmation(f"Added {count} songs to the queue"), delete_after=30)
+
+                    if not player.is_playing:
+                        await player.play()
+                case lavalink.LoadType.TRACK:
+                    song = tracks[0]
+                    if len(self.client.active_players) == 0:
+                        await ctx.respond(embed=confirmation(f"Adding {song.title} to the queue"))
+                        bview = Buttons(self.client, ctx.interaction)
+                        embed = create_embed(
+                            guild=ctx.guild, track=player.current, position=player.position)
+                        mplayer = await ctx.interaction.followup.send(embed=embed, view=bview)
+                        bview.message = mplayer
+                        self.client.active_players.append(mplayer.id)
+                    else:
+                        await ctx.respond(embed=confirmation(f"Adding {song.title} to the queue"), delete_after=30)
+
+                    player.add(track=song, requester=ctx.author.id)
+                    if not player.is_playing:
+                        await player.play()
+                case lavalink.LoadType.SEARCH:
+                    view = discord.ui.View(timeout=30)
+                    view.add_item(SongSelect(
+                        self.client, tracks[:5], ctx.author))
+
+                    if len(self.client.active_players) == 0:
+                        message = await ctx.respond(view=view)
+
+                    else:
+                        message = await ctx.respond(view=view, ephemeral=True)
+                    await view.wait()
+
+                    # returns True if a song wasn't picked
+                    if not view.children[0].disabled:
+
+                        await message.edit_original_message(content=f"{emotes.error} No song selected! Prompt cancelled.", view=None)
+                case _:
+                    if 'open.spotify.com' or 'spotify:' in search:
+                        if len(self.client.active_players) == 0:
+                            await ctx.defer()
+                        else:
+                            await ctx.defer(ephemeral=True)
+
+                        spotifysongs = self.get_spotify_tracks(query=search)
+                        if not spotifysongs:
+                            return await ctx.respond("Couldn't find any music!", ephemeral=True)
+                        s_results = await asyncio.wait_for(asyncio.gather(*[player.node.get_tracks(
+                            f'ytsearch:{song}') for song in spotifysongs]), timeout=30)
+                        count = 0
+
+                        for track in s_results:
+                            if total + count < 250:
+                                player.add(
+                                    track=track.tracks[0], requester=ctx.author.id)
+                                count += 1
+
+                        if len(self.client.active_players) == 0:
+                            await ctx.respond(embed=confirmation(f"Added {count} spotify song(s) to the queue"))
+                            bview = Buttons(self.client, ctx.interaction)
+                            embed = create_embed(
+                                guild=ctx.guild, track=player.current, position=player.position)
+                            mplayer = await ctx.interaction.followup.send(embed=embed, view=bview)
+                            bview.message = mplayer
+                            self.client.active_players.append(
+                                mplayer.id)
+
+                        else:
+                            await ctx.respond(embed=confirmation(f"Added {count} spotify song(s) to the queue"), delete_after=30)
+
+                        if not player.is_playing:
+                            await player.play()
+                    else:
+                        return await ctx.respond(f"{emotes.error} Couldn't find any music!", ephemeral=True)
+        else:
+            return await ctx.respond(f"{emotes.error} No match found!", ephemeral=True)
 
 
 def setup(bot):
