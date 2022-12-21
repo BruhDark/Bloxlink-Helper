@@ -279,7 +279,7 @@ class Buttons(discord.ui.View):
 
         for index, song in enumerate(songlist):
             options.append(discord.SelectOption(
-                label=song.title, description=f"By {song.autor}", value=str(index)))
+                label=song.title, description=f"By {song.author}", value=str(index)))
 
         view = discord.ui.View()
         view.add_item(SongRemove(options))
@@ -536,7 +536,7 @@ class Music(commands.Cog):
                     # returns True if a song wasn't picked
                     if not view.children[0].disabled:
 
-                        await message.edit_original_message(content=f"{emotes.error} No song selected! Prompt cancelled.", view=None)
+                        await message.edit_original_response(content=f"{emotes.error} No song selected! Prompt cancelled.", view=None)
                 case _:
                     if 'open.spotify.com' or 'spotify:' in search:
                         if len(self.client.active_players) == 0:
@@ -660,7 +660,7 @@ class Music(commands.Cog):
                     # returns True if a song wasn't picked
                     if not view.children[0].disabled:
 
-                        await message.edit_original_message(content=f"{emotes.error} No song selected! Prompt cancelled.", view=None)
+                        await message.edit_original_response(content=f"{emotes.error} No song selected! Prompt cancelled.", view=None)
                 case _:
                     if 'open.spotify.com' or 'spotify:' in search:
                         if len(self.client.active_players) == 0:
