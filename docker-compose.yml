@@ -4,6 +4,7 @@ services:
   helper-bot:
     build: .
     restart: on-failure
+    pull_policy: build
     env_file:
       - stack.env
     container_name: helper-bot
