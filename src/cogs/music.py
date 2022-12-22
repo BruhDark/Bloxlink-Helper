@@ -11,7 +11,7 @@ import spotipy
 from spotipy import SpotifyClientCredentials
 from discord import slash_command, Option
 from discord.ext import commands
-from resources.select import SongRemove
+from resources.select import RemoveSongButton
 
 import dotenv
 from typing import Union
@@ -269,26 +269,6 @@ class Buttons(discord.ui.View):
 
         await cleanup(player)
 
-    @discord.ui.button(label="Remove Song", style=discord.ButtonStyle.gray, row=2)
-    async def button_remove_song(self, button: discord.ui.Button, interaction: discord.Interaction):
-        player = self.controller(interaction)
-        queue = player.queue
-
-        if len(queue) == 0:
-            return await interaction.response.send_message(f"{emotes.error} There are no songs in the queue to remove!", ephemeral=True)
-
-        songlist = queue[:25]
-
-        options = []
-
-        for index, song in enumerate(songlist):
-            options.append(discord.SelectOption(
-                label=song.title, description=f"By {song.author}", value=str(index)))
-
-        view = discord.ui.View()
-        view.add_item(SongRemove(options))
-        await interaction.response.send_message(view=view, ephemeral=True)
-
     @discord.ui.button(emoji="<:shuffle:1005261849199128576>", label="Shuffle", style=discord.ButtonStyle.gray, row=2)
     async def button_shuffle(self, button: discord.ui.Button, interaction: discord.Interaction):
         player = self.controller(interaction)
@@ -329,6 +309,7 @@ class Buttons(discord.ui.View):
         embed.set_footer(text=f"10 of {len(queue)} songs - {totallength}")
         view = Queue(self.client, queue, totallength)
         ex = view.children[1:] if len(queue) > 10 else view.children[1:2]
+        view.add_item(RemoveSongButton())
         view.disable_all_items(exclusions=ex)
         await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
 

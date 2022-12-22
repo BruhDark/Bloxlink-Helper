@@ -3,6 +3,32 @@ import lavalink
 from config import emotes
 
 
+class RemoveSongButton(discord.ui.Button):
+    def __init__(self):
+        super().__init__(emoji="<:delete:1055494235111034890>",
+                         label="Remove Song", style=discord.ButtonStyle.gray, row=2)
+
+    async def callback(self, interaction: discord.Interaction):
+        player = interaction.client.lavalink.player_manager.get(
+            interaction.guild.id)
+        queue = player.queue
+
+        if len(queue) == 0:
+            return await interaction.response.send_message(f"{emotes.error} There are no songs in the queue to remove!", ephemeral=True)
+
+        songlist = queue[:25]
+
+        options = []
+
+        for index, song in enumerate(songlist):
+            options.append(discord.SelectOption(
+                label=song.title, description=f"By {song.author}", value=str(index)))
+
+        view = discord.ui.View()
+        view.add_item(SongRemove(options))
+        await interaction.response.send_message(view=view, ephemeral=True)
+
+
 class SongRemove(discord.ui.Select):
     def __init__(self, options: list):
         super().__init__(placeholder="Select a song to remove...")
