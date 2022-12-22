@@ -592,12 +592,10 @@ class Music(commands.Cog):
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def play(self, ctx: discord.ApplicationContext, search: Option(str, description="Music query or URL", required=True)):
 
-        astronautTier = discord.utils.get(
-            ctx.guild.roles, id=1054956990926950402)
-        starTier = discord.utils.get(ctx.guild.roles, id=1054958659198791684)
-        cometTier = discord.utils.get(ctx.guild.roles, id=1054959782190137501)
+        roles = [ctx.guild.get_role(1054956990926950402), ctx.guild.get_role(
+            1054958659198791684), ctx.guild.get_role(1054959782190137501)]
 
-        if not astronautTier and starTier and cometTier in ctx.author.roles:
+        if all(role not in ctx.author.roles for role in roles):
             return await ctx.respond(f"{emotes.error} Only subscribers can add songs! Click `Server Subscriptions` at the top of the channel list to subscribe.")
 
         player = self.client.lavalink.player_manager.create(ctx.guild.id)
