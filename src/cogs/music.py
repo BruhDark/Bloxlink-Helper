@@ -117,11 +117,18 @@ class SongSelect(discord.ui.Select):
         titlesn = " ,".join(titles)
 
         if len(self.client.active_players) == 0:
-            await interaction.response.edit_message(embed=confirmation(f"Added **{titlesn}** to the queue!"), view=None)
+            bview = Buttons(self.client, interaction)
+            embed = create_embed(
+                guild=interaction.guild, track=player.current, position=player.position)
+            mplayer: discord.WebhookMessage = await interaction.response.send_message(embed=embed, view=bview)
+            bview.message = mplayer
+            self.client.active_players.append(mplayer.id)
+
+            await interaction.followup.send(embed=confirmation(f"Added **{titlesn}** to the queue!"), view=None)
         else:
             await interaction.response.edit_message(embed=confirmation(f"Added **{titlesn}** to the queue!"), view=None)
 
-            await interaction.followup.send(content=f"{emotes.bloxlink} **{titlesn}** was added to the queue by {interaction.user.mention}", delete_after=60, allowed_mentions=discord.AllowedMentions(users=False))
+            await interaction.channel.send(content=f"{emotes.bloxlink} **{titlesn}** was added to the queue by {interaction.user.mention}", delete_after=60, allowed_mentions=discord.AllowedMentions(users=False))
 
         player: lavalink.DefaultPlayer = self.client.lavalink.player_manager.get(
             interaction.guild.id)
@@ -133,13 +140,6 @@ class SongSelect(discord.ui.Select):
         if not player.is_playing:
             await player.play()
 
-        if len(self.client.active_players) == 0:
-            bview = Buttons(self.client, interaction)
-            embed = create_embed(
-                guild=interaction.guild, track=player.current, position=player.position)
-            mplayer: discord.WebhookMessage = await interaction.followup.send(embed=embed, view=bview)
-            bview.message = mplayer
-            self.client.active_players.append(mplayer.id)
         self.disabled = True
 
 
@@ -390,6 +390,7 @@ class Music(commands.Cog):
         for player in players:
             message: discord.Message = self.client.get_message(player)
             await message.edit(embed=create_embed(guild=message.guild, track=event.track, position=event.track.position))
+            await message.channel.send(content=f"{emotes.bloxlink} Now playing: **{event.track.title} by {event.track.author}**")
 
     @lavalink.listener(lavalink.events.TrackStuckEvent)
     async def track_stuck(self, event: lavalink.TrackStuckEvent):
@@ -570,11 +571,12 @@ class Music(commands.Cog):
             mplayer = await ctx.respond(embed=embed, view=bview, ephemeral=True)
             bview.message = await mplayer.original_message()
 
-    @slash_command(description="Add a song or view the current song. Must be on a tier.")
+    @slash_command(description="Add a song or view the current-playing song. Must be on a tier.")
     @commands.cooldown(1, 5, commands.BucketType.user)
-    async def play(self, ctx: discord.ApplicationContext, search: Option(str, description="Music query or URL", required=True)):
+    async def play(self, ctx: discord.ApplicationContext, search: Option(str, description="Music query or URL. Don't provide this option if you want to view the currently-playing song.", required=False, default=None)):
 
-        roles = [ctx.guild.get_role(1054956990926950402), ctx.guild.get_role(
+        # First role ID = 1054956990926950402 , 1000539386980618312 is Tester role in helper HQ
+        roles = [ctx.guild.get_role(1000539386980618312), ctx.guild.get_role(
             1054958659198791684), ctx.guild.get_role(1054959782190137501)]
 
         if all(role not in ctx.author.roles for role in roles):
