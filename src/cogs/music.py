@@ -102,7 +102,7 @@ class SongSelect(discord.ui.Select):
                 label=f"{track.title}", description=f"By {track.author}", emoji="<:playlist:1005265606821548163>", value=track.identifier))
             self.keys[f'{track.identifier}'] = track
         super().__init__(placeholder="Select a song",
-                         min_values=1, max_values=5, options=options)
+                         min_values=1, max_values=5, options=options, select_type=discord.ComponentType.string_select)
 
     async def callback(self, interaction: discord.Interaction):
         if interaction.user != self.requester:
