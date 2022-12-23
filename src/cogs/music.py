@@ -27,6 +27,10 @@ sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id=os.getenv(
     "SPOTIFY_CLIENT_ID"), client_secret=os.getenv("SPOTIFY_CLIENT_SECRET")))
 
 
+async def on_timeout(self: discord.ui.View):
+    await self.message.edit(f"{emotes.error} No song selected! Timed out.", delete_after=20)
+
+
 def create_embed(guild: discord.Guild, track: lavalink.AudioTrack, position: int):
     pos = datetime.timedelta(seconds=position / 1000)
     dur = datetime.timedelta(seconds=int(track.duration / 1000))
@@ -125,6 +129,8 @@ class SongSelect(discord.ui.Select):
         if not player.is_playing:
             await player.play()
 
+        self.disabled = True
+
         if len(self.client.active_players) == 0:
             bview = Buttons(self.client, interaction)
             embed = create_embed(
@@ -139,8 +145,6 @@ class SongSelect(discord.ui.Select):
             await interaction.response.edit_message(embed=confirmation(f"Added **{titlesn}** to the queue!"), view=None)
 
             await interaction.channel.send(content=f"{emotes.bloxlink} **{titlesn}** was added to the queue by {interaction.user.mention}", delete_after=60, allowed_mentions=discord.AllowedMentions(users=False))
-
-        self.disabled = True
 
 
 class Queue(discord.ui.View):
@@ -511,6 +515,7 @@ class Music(commands.Cog):
                         await player.play()
                 case lavalink.LoadType.SEARCH:
                     view = discord.ui.View(timeout=30)
+                    view.on_timeout = on_timeout
                     view.add_item(SongSelect(
                         self.client, tracks[:5], ctx.author))
 
@@ -519,12 +524,7 @@ class Music(commands.Cog):
 
                     else:
                         message = await ctx.respond(view=view, ephemeral=True)
-                    await view.wait()
 
-                    # returns True if a song wasn't picked
-                    if not view.children[0].disabled:
-
-                        await message.edit_original_response(content=f"{emotes.error} No song selected! Prompt cancelled.", view=None)
                 case _:
                     if 'open.spotify.com' or 'spotify:' in search:
                         if len(self.client.active_players) == 0:
@@ -634,6 +634,7 @@ class Music(commands.Cog):
                         await player.play()
                 case lavalink.LoadType.SEARCH:
                     view = discord.ui.View(timeout=30)
+                    view.on_timeout = on_timeout
                     view.add_item(SongSelect(
                         self.client, tracks[:5], ctx.author))
 
@@ -642,12 +643,7 @@ class Music(commands.Cog):
 
                     else:
                         message = await ctx.respond(view=view, ephemeral=True)
-                    await view.wait()
 
-                    # returns True if a song wasn't picked
-                    if not view.children[0].disabled:
-
-                        await message.edit_original_response(content=f"{emotes.error} No song selected! Prompt cancelled.", view=None)
                 case _:
                     if 'open.spotify.com' or 'spotify:' in search:
                         if len(self.client.active_players) == 0:
