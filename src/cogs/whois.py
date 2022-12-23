@@ -244,10 +244,10 @@ class Whois(commands.Cog):
             color = colors.info
 
         nickname = f"**Nickname:** {user.display_name}" if not noMember and user.name != user.display_name else ""
-        amember = f"**This user is not a member of this server.**\n{nickname}" if noMember else nickname
+        nickname = f"**This user is not a member of this server.**\n{nickname}" if noMember else nickname
 
         Embed = discord.Embed(color=color, timestamp=datetime.datetime.utcnow(
-        ), description=f"{user.mention}\n{nickname}\n{amember}")
+        ), description=f"{user.mention}\n{nickname}")
 
         Embed.set_author(
             name=f"{user.name}#{user.discriminator}", icon_url=user.display_avatar.url)
