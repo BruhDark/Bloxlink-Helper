@@ -567,11 +567,10 @@ class Music(commands.Cog):
             bview = Buttons(self.client, ctx.interaction)
             embed = create_embed(
                 guild=ctx.guild, track=player.current, position=player.position)
-            mplayer = await ctx.respond(embed=embed, view=bview)
+            mplayer = await ctx.respond(embed=embed, view=bview, ephemeral=True)
             bview.message = await mplayer.original_message()
-            self.client.active_players.append(bview.message.id)
 
-    @slash_command(description="Add a song to the queue. Must be on a tier.")
+    @slash_command(description="Add a song or view the current song. Must be on a tier.")
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def play(self, ctx: discord.ApplicationContext, search: Option(str, description="Music query or URL", required=True)):
 
@@ -685,7 +684,12 @@ class Music(commands.Cog):
                     else:
                         return await ctx.respond(f"{emotes.error} Couldn't find any music!", ephemeral=True)
         else:
-            return await ctx.respond(f"{emotes.error} No match found!", ephemeral=True)
+            if not player.is_playing:
+                return await ctx.respond(f"{emotes.error} No music playing!", ephemeral=True)
+            embed = create_embed(
+                guild=ctx.guild, track=player.current, position=player.position)
+            mplayer = await ctx.respond(embed=embed, ephemeral=True)
+            bview.message = await mplayer.original_message()
 
 
 def setup(bot):
