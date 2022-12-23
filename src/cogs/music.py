@@ -120,8 +120,8 @@ class SongSelect(discord.ui.Select):
             bview = Buttons(self.client, interaction)
             embed = create_embed(
                 guild=interaction.guild, track=player.current, position=player.position)
-            mplayer: discord.WebhookMessage = await interaction.response.send_message(embed=embed, view=bview)
-            bview.message = mplayer
+            mplayer = await interaction.response.send_message(embed=embed, view=bview)
+            bview.message = mplayer.original_message()
             self.client.active_players.append(mplayer.id)
 
             await interaction.followup.send(embed=confirmation(f"Added **{titlesn}** to the queue!"), view=None)
