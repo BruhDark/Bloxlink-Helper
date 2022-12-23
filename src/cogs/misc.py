@@ -15,7 +15,7 @@ class Misc(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.command(description="See what's someone listening to")
+    @commands.command(description="See what's someone listening to", aliases=["sp"])
     async def spotify(self, ctx, user: discord.Member = None):
 
         user: discord.Member = user or ctx.author
