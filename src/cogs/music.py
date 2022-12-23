@@ -27,8 +27,12 @@ sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id=os.getenv(
     "SPOTIFY_CLIENT_ID"), client_secret=os.getenv("SPOTIFY_CLIENT_SECRET")))
 
 
-async def on_timeout(self: discord.ui.View):
-    await self.message.edit(f"{emotes.error} No song selected! Timed out.", delete_after=20)
+class SongSelectView(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=30)
+
+    async def on_timeout(self):
+        await self.message.edit(content=f"{emotes.error} You took too long to select a song!", view=None, delete_after=15)
 
 
 def create_embed(guild: discord.Guild, track: lavalink.AudioTrack, position: int):
@@ -514,16 +518,15 @@ class Music(commands.Cog):
                     if not player.is_playing:
                         await player.play()
                 case lavalink.LoadType.SEARCH:
-                    view = discord.ui.View(timeout=30)
-                    view.on_timeout = on_timeout
+                    view = SongSelectView()
                     view.add_item(SongSelect(
                         self.client, tracks[:5], ctx.author))
 
                     if len(self.client.active_players) == 0:
-                        message = await ctx.respond(view=view)
+                        await ctx.respond(view=view)
 
                     else:
-                        message = await ctx.respond(view=view, ephemeral=True)
+                        await ctx.respond(view=view, ephemeral=True)
 
                 case _:
                     if 'open.spotify.com' or 'spotify:' in search:
@@ -633,16 +636,15 @@ class Music(commands.Cog):
                     if not player.is_playing:
                         await player.play()
                 case lavalink.LoadType.SEARCH:
-                    view = discord.ui.View(timeout=30)
-                    view.on_timeout = on_timeout
+                    view = SongSelectView()
                     view.add_item(SongSelect(
                         self.client, tracks[:5], ctx.author))
 
                     if len(self.client.active_players) == 0:
-                        message = await ctx.respond(view=view)
+                        await ctx.respond(view=view)
 
                     else:
-                        message = await ctx.respond(view=view, ephemeral=True)
+                        await ctx.respond(view=view, ephemeral=True)
 
                 case _:
                     if 'open.spotify.com' or 'spotify:' in search:
