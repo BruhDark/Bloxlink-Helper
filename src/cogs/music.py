@@ -310,6 +310,7 @@ class Buttons(discord.ui.View):
         view = Queue(self.client, queue, totallength)
         ex = view.children[1:] if len(queue) > 10 else view.children[1:2]
         view.add_item(RemoveSongButton())
+        ex.append(view.children[2:])
         view.disable_all_items(exclusions=ex)
         await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
 
@@ -577,7 +578,7 @@ class Music(commands.Cog):
             1054958659198791684), ctx.guild.get_role(1054959782190137501)]
 
         if all(role not in ctx.author.roles for role in roles):
-            return await ctx.respond(f"{emotes.error} Only subscribers can add songs! Click `Server Subscriptions` at the top of the channel list to subscribe.")
+            return await ctx.respond(f"{emotes.error} Only subscribers can add songs! Click `Server Subscriptions` at the top of the channel list to subscribe.", ephemeral=True)
 
         player = self.client.lavalink.player_manager.create(ctx.guild.id)
         if search:
