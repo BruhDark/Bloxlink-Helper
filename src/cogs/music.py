@@ -115,13 +115,19 @@ class SongSelect(discord.ui.Select):
             titles.append(info["title"])
 
         titlesn = " ,".join(titles)
+        player: lavalink.DefaultPlayer = self.client.lavalink.player_manager.get(
+            interaction.guild.id)
+
+        for track in selection:
+            song = self.keys[f"{track}"]
+            player.add(track=song, requester=self.requester.id)
 
         if len(self.client.active_players) == 0:
             bview = Buttons(self.client, interaction)
             embed = create_embed(
                 guild=interaction.guild, track=player.current, position=player.position)
             mplayer = await interaction.response.send_message(embed=embed, view=bview)
-            bview.message = mplayer.original_message()
+            bview.message = mplayer.original_message
             self.client.active_players.append(mplayer.id)
 
             await interaction.followup.send(embed=confirmation(f"Added **{titlesn}** to the queue!"), view=None)
@@ -129,13 +135,6 @@ class SongSelect(discord.ui.Select):
             await interaction.response.edit_message(embed=confirmation(f"Added **{titlesn}** to the queue!"), view=None)
 
             await interaction.channel.send(content=f"{emotes.bloxlink} **{titlesn}** was added to the queue by {interaction.user.mention}", delete_after=60, allowed_mentions=discord.AllowedMentions(users=False))
-
-        player: lavalink.DefaultPlayer = self.client.lavalink.player_manager.get(
-            interaction.guild.id)
-
-        for track in selection:
-            song = self.keys[f"{track}"]
-            player.add(track=song, requester=self.requester.id)
 
         if not player.is_playing:
             await player.play()
