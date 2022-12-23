@@ -308,9 +308,10 @@ class Buttons(discord.ui.View):
                               color=discord.Color.light_gray())
         embed.set_footer(text=f"10 of {len(queue)} songs - {totallength}")
         view = Queue(self.client, queue, totallength)
-        ex = view.children[1:] if len(queue) > 10 else view.children[1:2]
         view.add_item(RemoveSongButton())
-        ex.append(view.children[2:])
+
+        ex = view.children[1:] if len(queue) > 10 else view.children[2:]
+
         view.disable_all_items(exclusions=ex)
         await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
 
