@@ -140,7 +140,7 @@ class SongSelect(discord.ui.Select):
             bview.message = message
             self.client.active_players.append(message.id)
 
-            await interaction.followup.send(embed=confirmation(f"Added **{titlesn}** to the queue!"), view=None)
+            await interaction.followup.send(embed=confirmation(f"Added **{titlesn}** to the queue!"), ephemeral=True)
         else:
             await interaction.response.edit_message(embed=confirmation(f"Added **{titlesn}** to the queue!"), view=None)
 
@@ -687,7 +687,6 @@ class Music(commands.Cog):
             embed = create_embed(
                 guild=ctx.guild, track=player.current, position=player.position)
             mplayer = await ctx.respond(embed=embed, ephemeral=True)
-            bview.message = await mplayer.original_message()
 
 
 def setup(bot):
