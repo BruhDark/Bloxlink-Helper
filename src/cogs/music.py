@@ -129,8 +129,8 @@ class SongSelect(discord.ui.Select):
             bview = Buttons(self.client, interaction)
             embed = create_embed(
                 guild=interaction.guild, track=player.current, position=player.position)
-            mplayer = await interaction.response.edit_message(embed=embed, view=bview)
-            message = mplayer.original_message()
+            await interaction.response.edit_message(embed=embed, view=bview)
+            message = await interaction.original_message()
             bview.message = message
             self.client.active_players.append(message.id)
 
