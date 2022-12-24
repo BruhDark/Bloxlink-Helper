@@ -579,7 +579,7 @@ class Music(commands.Cog):
     async def play(self, ctx: discord.ApplicationContext, search: Option(str, description="Music query or URL. Don't provide this option if you want to view the currently-playing song.", required=False, default=None)):
 
         # First role ID = 1054956990926950402 , 1000539386980618312 is Tester role in helper HQ
-        roles = [ctx.guild.get_role(1000539386980618312), ctx.guild.get_role(
+        roles = [ctx.guild.get_role(1054956990926950402), ctx.guild.get_role(
             1054958659198791684), ctx.guild.get_role(1054959782190137501)]
 
         if all(role not in ctx.author.roles for role in roles):
@@ -606,13 +606,8 @@ class Music(commands.Cog):
                             count += 1
 
                     if len(self.client.active_players) == 0:
-                        await ctx.interaction.followup.send(embed=confirmation(f"Added {count} songs to the queue"))
-                        bview = Buttons(self.client, ctx.interaction)
-                        embed = create_embed(
-                            guild=ctx.guild, track=player.current, position=player.position)
-                        mplayer = await ctx.interaction.followup.send(embed=embed, view=bview)
-                        bview.message = mplayer
-                        self.client.active_players.append(mplayer.id)
+
+                        await ctx.respond(embed=confirmation(f"Added {count} songs to the queue"), delete_after=30)
 
                     else:
                         await ctx.respond(embed=confirmation(f"Added {count} songs to the queue"), delete_after=30)
@@ -622,13 +617,8 @@ class Music(commands.Cog):
                 case lavalink.LoadType.TRACK:
                     song = tracks[0]
                     if len(self.client.active_players) == 0:
-                        await ctx.respond(embed=confirmation(f"Adding {song.title} to the queue"))
-                        bview = Buttons(self.client, ctx.interaction)
-                        embed = create_embed(
-                            guild=ctx.guild, track=player.current, position=player.position)
-                        mplayer = await ctx.interaction.followup.send(embed=embed, view=bview)
-                        bview.message = mplayer
-                        self.client.active_players.append(mplayer.id)
+                        await ctx.respond(embed=confirmation(f"Adding {song.title} to the queue"), delete_after=30)
+
                     else:
                         await ctx.respond(embed=confirmation(f"Adding {song.title} to the queue"), delete_after=30)
 
@@ -667,14 +657,7 @@ class Music(commands.Cog):
                                 count += 1
 
                         if len(self.client.active_players) == 0:
-                            await ctx.respond(embed=confirmation(f"Added {count} spotify song(s) to the queue"))
-                            bview = Buttons(self.client, ctx.interaction)
-                            embed = create_embed(
-                                guild=ctx.guild, track=player.current, position=player.position)
-                            mplayer = await ctx.interaction.followup.send(embed=embed, view=bview)
-                            bview.message = mplayer
-                            self.client.active_players.append(
-                                mplayer.id)
+                            await ctx.respond(embed=confirmation(f"Added {count} spotify song(s) to the queue"), delete_after=30)
 
                         else:
                             await ctx.respond(embed=confirmation(f"Added {count} spotify song(s) to the queue"), delete_after=30)
