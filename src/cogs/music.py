@@ -28,12 +28,12 @@ sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id=os.getenv(
 
 
 class SongSelectView(discord.ui.View):
-    def __init__(self):
+    def __init__(self, select):
         super().__init__(timeout=30)
+        self.add_item(select)
 
     async def on_timeout(self):
-        pass
-        # await self.message.edit(content=f"{emotes.error} You took too long to select a song!", view=None, delete_after=20)
+        await self.message.edit(content=f"{emotes.error} You took too long to select a song!", view=None, delete_after=20)
 
 
 def create_embed(guild: discord.Guild, track: lavalink.AudioTrack, position: int):
@@ -517,8 +517,7 @@ class Music(commands.Cog):
                     if not player.is_playing:
                         await player.play()
                 case lavalink.LoadType.SEARCH:
-                    view = SongSelectView()
-                    view.add_item(SongSelect(
+                    view = SongSelectView(SongSelect(
                         self.client, tracks[:5], ctx.author))
 
                     if len(self.client.active_players) == 0:
@@ -584,7 +583,11 @@ class Music(commands.Cog):
         if all(role not in ctx.author.roles for role in roles):
             return await ctx.respond(f"{emotes.error} Only subscribers can add songs! Click `Server Subscriptions` at the top of the channel list to subscribe.", ephemeral=True)
 
-        player = self.client.lavalink.player_manager.create(ctx.guild.id)
+        player: lavalink.DefaultPlayer = self.client.lavalink.player_manager.create(
+            ctx.guild.id)
+        if len(player.queue) == 0:
+            return await ctx.respond(f"{emotes.error} No queue started! Please wait for a staff member start a queue.")
+
         if search:
             if len(search) > 256:
                 return await ctx.respond(f"{emotes.error} Search query has a maximum of 256 characters!", ephemeral=True)
@@ -625,8 +628,7 @@ class Music(commands.Cog):
                     if not player.is_playing:
                         await player.play()
                 case lavalink.LoadType.SEARCH:
-                    view = SongSelectView()
-                    view.add_item(SongSelect(
+                    view = SongSelectView(SongSelect(
                         self.client, tracks[:5], ctx.author))
 
                     if len(self.client.active_players) == 0:
