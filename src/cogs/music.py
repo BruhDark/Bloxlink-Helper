@@ -32,7 +32,8 @@ class SongSelectView(discord.ui.View):
         super().__init__(timeout=30)
 
     async def on_timeout(self):
-        await self.message.edit(content=f"{emotes.error} You took too long to select a song!", view=None, delete_after=15)
+        if isinstance(self.children[0], discord.ui.Select):
+            await self.message.edit(content=f"{emotes.error} You took too long to select a song!", view=None, delete_after=20)
 
 
 def create_embed(guild: discord.Guild, track: lavalink.AudioTrack, position: int):
