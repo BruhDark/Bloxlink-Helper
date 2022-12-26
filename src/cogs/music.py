@@ -149,7 +149,7 @@ class SongSelect(discord.ui.Select):
             self.success = True
 
         else:
-            await interaction.response.edit_message(embed=confirmation(f"Added **{titlesn}** to the queue!"), view=None, ephemeral=True)
+            await interaction.response.edit_message(embed=confirmation(f"Added **{titlesn}** to the queue!"), view=None)
 
             await interaction.channel.send(content=f"{emotes.bloxlink} **{titlesn}** was added to the queue by {interaction.user.mention}", delete_after=60, allowed_mentions=discord.AllowedMentions(users=False))
             self.success = True
@@ -330,9 +330,12 @@ class Buttons(discord.ui.View):
     @discord.ui.button(emoji="<:lyrics:1007803511028863066>", label="Lyrics", style=discord.ButtonStyle.gray, row=2)
     async def button_lyrics(self, button: discord.ui.Button, interaction: discord.Interaction):
         player: lavalink.DefaultPlayer = self.controller(interaction)
+
         if not player.current:
             await interaction.response.send_message(f"{emotes.error} No song is playing.", ephemeral=True)
             return
+
+        await interaction.response.defer()
 
         title = player.current.title
 
@@ -345,10 +348,10 @@ class Buttons(discord.ui.View):
                     embed = discord.Embed(
                         title=f"{player.current.title} | By {resp['author']}", description=resp["lyrics"], color=colors.info, url=resp["links"]["genius"])
 
-                    await interaction.response.send_message(embed=embed, ephemeral=True)
+                    await interaction.followup.send(embed=embed, ephemeral=True)
 
                 except:
-                    await interaction.response.send_message(f"{emotes.error}  Couldn't find matching lyrics!", ephemeral=True)
+                    await interaction.followup.send(f"{emotes.error}  Couldn't find matching lyrics!", ephemeral=True)
 
 
 class Music(commands.Cog):
