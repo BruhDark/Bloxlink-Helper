@@ -133,8 +133,6 @@ class SongSelect(discord.ui.Select):
         if not player.is_playing:
             await player.play()
 
-        self.disabled = True
-
         if len(self.client.active_players) == 0:
             bview = Buttons(self.client, interaction)
             embed = create_embed(
@@ -144,7 +142,7 @@ class SongSelect(discord.ui.Select):
             bview.message = message
             self.client.active_players.append(message.id)
 
-            await interaction.response.send_message(embed=confirmation(f"Added **{titlesn}** to the queue!"), ephemeral=True)
+            await interaction.followup.send(embed=confirmation(f"Added **{titlesn}** to the queue!"), ephemeral=True)
         else:
             await interaction.response.edit_message(embed=confirmation(f"Added **{titlesn}** to the queue!"), view=None, ephemeral=True)
 
