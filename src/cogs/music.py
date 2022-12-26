@@ -29,10 +29,11 @@ sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id=os.getenv(
 
 class SongSelectView(discord.ui.View):
     def __init__(self):
-        super().__init__(timeout=60)
+        super().__init__(timeout=30)
 
     async def on_timeout(self):
-        await self.message.edit(content=f"{emotes.error} You took too long to select a song!", view=None, delete_after=20)
+        pass
+        # await self.message.edit(content=f"{emotes.error} You took too long to select a song!", view=None, delete_after=20)
 
 
 def create_embed(guild: discord.Guild, track: lavalink.AudioTrack, position: int):
@@ -138,7 +139,7 @@ class SongSelect(discord.ui.Select):
             embed = create_embed(
                 guild=interaction.guild, track=player.current, position=player.position)
             await interaction.response.edit_message(embed=embed, view=bview)
-            message = await interaction.original_message()
+            message = await interaction.original_response()
             bview.message = message
             self.client.active_players.append(message.id)
 
