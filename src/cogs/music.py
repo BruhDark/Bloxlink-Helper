@@ -29,11 +29,10 @@ sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id=os.getenv(
 
 class SongSelectView(discord.ui.View):
     def __init__(self):
-        super().__init__(timeout=30)
+        super().__init__(timeout=60)
 
     async def on_timeout(self):
-        if isinstance(self.children[0], discord.ui.Select):
-            await self.message.edit(content=f"{emotes.error} You took too long to select a song!", view=None, delete_after=20)
+        await self.message.edit(content=f"{emotes.error} You took too long to select a song!", view=None, delete_after=20)
 
 
 def create_embed(guild: discord.Guild, track: lavalink.AudioTrack, position: int):
@@ -145,9 +144,9 @@ class SongSelect(discord.ui.Select):
             bview.message = message
             self.client.active_players.append(message.id)
 
-            await interaction.followup.send(embed=confirmation(f"Added **{titlesn}** to the queue!"), ephemeral=True)
+            await interaction.response.send_message(embed=confirmation(f"Added **{titlesn}** to the queue!"), ephemeral=True)
         else:
-            await interaction.response.edit_message(embed=confirmation(f"Added **{titlesn}** to the queue!"), view=None)
+            await interaction.response.edit_message(embed=confirmation(f"Added **{titlesn}** to the queue!"), view=None, ephemeral=True)
 
             await interaction.channel.send(content=f"{emotes.bloxlink} **{titlesn}** was added to the queue by {interaction.user.mention}", delete_after=60, allowed_mentions=discord.AllowedMentions(users=False))
 
