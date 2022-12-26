@@ -31,9 +31,11 @@ class SongSelectView(discord.ui.View):
     def __init__(self, select):
         super().__init__(timeout=30)
         self.add_item(select)
+        self.select = select
 
     async def on_timeout(self):
-        await self.message.edit(content=f"{emotes.error} You took too long to select a song!", view=None, delete_after=20)
+        if not self.select.success:
+            await self.message.edit(content=f"{emotes.error} You took too long to select a song!", view=None, delete_after=20)
 
 
 def create_embed(guild: discord.Guild, track: lavalink.AudioTrack, position: int):
@@ -144,10 +146,13 @@ class SongSelect(discord.ui.Select):
             self.client.active_players.append(message.id)
 
             await interaction.followup.send(embed=confirmation(f"Added **{titlesn}** to the queue!"), ephemeral=True)
+            self.success = True
+
         else:
             await interaction.response.edit_message(embed=confirmation(f"Added **{titlesn}** to the queue!"), view=None, ephemeral=True)
 
             await interaction.channel.send(content=f"{emotes.bloxlink} **{titlesn}** was added to the queue by {interaction.user.mention}", delete_after=60, allowed_mentions=discord.AllowedMentions(users=False))
+            self.success = True
 
 
 class Queue(discord.ui.View):
