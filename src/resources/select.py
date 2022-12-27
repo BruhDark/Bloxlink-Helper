@@ -60,7 +60,7 @@ class SongRemoveFromLast(discord.ui.Button):
     async def callback(self, interaction: discord.Interaction):
         player = interaction.client.lavalink.player_manager.get(
             interaction.guild.id)
-        queue = player.queue
+        queue = player.queue.copy()
 
         if len(queue) == 0:
             return await interaction.response.send_message(f"{emotes.error} There are no songs in the queue to remove!", ephemeral=True)
