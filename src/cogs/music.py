@@ -464,6 +464,7 @@ class Music(commands.Cog):
                 if player.is_playing:
                     await cleanup(player)
                 await voice.disconnect(force=True)
+                self.client.active_players = []
 
     @slash_command(description="Play some music")
     @commands.cooldown(1, 5, commands.BucketType.user)
