@@ -55,7 +55,7 @@ class SongRemove(discord.ui.Select):
 
 class SongRemoveFromLast(discord.ui.Button):
     def __init__(self):
-        super().__init__(label="Oldest to newest", emoji="<:repeat:1005256716050518216>")
+        super().__init__(label="Newest to oldest", emoji="<:repeat:1005256716050518216>")
 
     async def callback(self, interaction: discord.Interaction):
         player = interaction.client.lavalink.player_manager.get(
@@ -76,4 +76,4 @@ class SongRemoveFromLast(discord.ui.Button):
 
         view = discord.ui.View(timeout=None)
         view.add_item(SongRemove(options, True))
-        await interaction.response.edit_message(view=view)
+        await interaction.response.edit_message(content=f"{emotes.bloxlink} Showing from newest additions to oldest", view=view)
