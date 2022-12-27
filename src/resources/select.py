@@ -38,12 +38,13 @@ class SongRemove(discord.ui.Select):
 
     async def callback(self, interaction: discord.Interaction):
         index = int(self.values[0])
-        queue = player.queue
-        if self.reversed:
-            queue.reverse()
 
         player: lavalink.DefaultPlayer = interaction.client.lavalink.player_manager.get(
             interaction.guild.id)
+        queue = player.queue
+
+        if self.reversed:
+            queue.reverse()
 
         try:
             item = queue.pop(index)
