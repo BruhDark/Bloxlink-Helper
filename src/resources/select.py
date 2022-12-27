@@ -31,18 +31,22 @@ class RemoveSongButton(discord.ui.Button):
 
 
 class SongRemove(discord.ui.Select):
-    def __init__(self, options: list):
+    def __init__(self, options: list, reversed: bool = False):
         super().__init__(placeholder="Select a song to remove")
         self.options = options
+        self.reversed = reversed
 
     async def callback(self, interaction: discord.Interaction):
         index = int(self.values[0])
+        queue = player.queue
+        if self.reversed:
+            queue.reverse()
 
         player: lavalink.DefaultPlayer = interaction.client.lavalink.player_manager.get(
             interaction.guild.id)
 
         try:
-            item = player.queue.pop(index)
+            item = queue.pop(index)
             await interaction.response.edit_message(content=f"{emotes.success} Successfully removed `{item.title}`", view=None)
 
         except:
@@ -61,8 +65,8 @@ class SongRemoveFromLast(discord.ui.Button):
         if len(queue) == 0:
             return await interaction.response.send_message(f"{emotes.error} There are no songs in the queue to remove!", ephemeral=True)
 
-        songlist = queue[-25:]
-        songlist.reverse()
+        queue.reverse()
+        songlist = queue[:25]
 
         options = []
 
@@ -71,5 +75,5 @@ class SongRemoveFromLast(discord.ui.Button):
                 label=song.title, description=f"By {song.author}", value=str(index), emoji="<:playlist:1005265606821548163>"))
 
         view = discord.ui.View(timeout=None)
-        view.add_item(SongRemove(options))
+        view.add_item(SongRemove(options, True))
         await interaction.response.edit_message(view=view)
