@@ -407,7 +407,7 @@ class Music(commands.Cog):
         for player in players:
             message: discord.Message = self.client.get_message(player)
             await message.edit(embed=create_embed(guild=message.guild, track=event.track, position=event.track.position))
-            await message.channel.send(content=f"{emotes.bloxlink} Now playing: **{event.track.title}** by {event.track.author}")
+            await message.channel.send(content=f"{emotes.bloxlink} Now playing: **{event.track.title}** by {event.track.author}", delete_after=60)
 
     @lavalink.listener(lavalink.events.TrackStuckEvent)
     async def track_stuck(self, event: lavalink.TrackStuckEvent):
