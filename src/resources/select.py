@@ -41,15 +41,12 @@ class SongRemove(discord.ui.Select):
 
         player: lavalink.DefaultPlayer = interaction.client.lavalink.player_manager.get(
             interaction.guild.id)
-        queue = player.queue
 
         if self.reversed:
-            queue.reverse()
-            print("Reversed")
-            print(queue)
+            index = -index
 
         try:
-            item = queue.pop(index)
+            item = player.queue.pop(index)
             await interaction.response.edit_message(content=f"{emotes.success} Successfully removed `{item.title}`", view=None)
 
         except:
