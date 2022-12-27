@@ -62,6 +62,7 @@ class SongRemoveFromLast(discord.ui.Button):
             return await interaction.response.send_message(f"{emotes.error} There are no songs in the queue to remove!", ephemeral=True)
 
         songlist = queue[-25:]
+        songlist.reverse()
 
         options = []
 
