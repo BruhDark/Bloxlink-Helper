@@ -595,8 +595,8 @@ class Music(commands.Cog):
 
         player: lavalink.DefaultPlayer = self.client.lavalink.player_manager.create(
             ctx.guild.id)
-        if len(player.queue) == 0:
-            return await ctx.respond(f"{emotes.error} No queue started! Please wait for a staff member start a queue.")
+        if len(player.queue) == 0 and not player.is_playing:
+            return await ctx.respond(f"{emotes.error} No queue started! Please wait for a staff member start a queue.", ephemeral=True)
 
         if search:
             if len(search) > 256:

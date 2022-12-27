@@ -22,16 +22,17 @@ class RemoveSongButton(discord.ui.Button):
 
         for index, song in enumerate(songlist):
             options.append(discord.SelectOption(
-                label=song.title, description=f"By {song.author}", value=str(index)))
+                label=song.title, description=f"By {song.author}", value=str(index), emoji="<:playlist:1005265606821548163>"))
 
         view = discord.ui.View()
         view.add_item(SongRemove(options))
+        view.add_item(SongRemoveFromLast())
         await interaction.response.send_message(view=view, ephemeral=True)
 
 
 class SongRemove(discord.ui.Select):
     def __init__(self, options: list):
-        super().__init__(placeholder="Select a song to remove...")
+        super().__init__(placeholder="Select a song to remove")
         self.options = options
 
     async def callback(self, interaction: discord.Interaction):
@@ -39,7 +40,6 @@ class SongRemove(discord.ui.Select):
 
         player: lavalink.DefaultPlayer = interaction.client.lavalink.player_manager.get(
             interaction.guild.id)
-        queue = player.queue
 
         try:
             item = player.queue.pop(index)
@@ -47,3 +47,28 @@ class SongRemove(discord.ui.Select):
 
         except:
             await interaction.response.edit_message(content=f"{emotes.error} Something went wrong while removing the song. Try again.", view=None)
+
+
+class SongRemoveFromLast(discord.ui.Button):
+    def __init__(self):
+        super().__init__(label="Oldest to newest", emoji="<:repeat:1005256716050518216>")
+
+    async def callback(self, interaction: discord.Interaction):
+        player = interaction.client.lavalink.player_manager.get(
+            interaction.guild.id)
+        queue = player.queue
+
+        if len(queue) == 0:
+            return await interaction.response.send_message(f"{emotes.error} There are no songs in the queue to remove!", ephemeral=True)
+
+        songlist = queue[-25:]
+
+        options = []
+
+        for index, song in enumerate(songlist):
+            options.append(discord.SelectOption(
+                label=song.title, description=f"By {song.author}", value=str(index), emoji="<:playlist:1005265606821548163>"))
+
+        view = discord.ui.View()
+        view.add_item(SongRemove(options))
+        await interaction.response.edit_message(view=view, ephemeral=True)
