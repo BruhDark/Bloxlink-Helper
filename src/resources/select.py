@@ -24,7 +24,7 @@ class RemoveSongButton(discord.ui.Button):
             options.append(discord.SelectOption(
                 label=song.title, description=f"By {song.author}", value=str(index), emoji="<:playlist:1005265606821548163>"))
 
-        view = discord.ui.View()
+        view = discord.ui.View(timeout=None)
         view.add_item(SongRemove(options))
         view.add_item(SongRemoveFromLast())
         await interaction.response.send_message(view=view, ephemeral=True)
@@ -69,6 +69,6 @@ class SongRemoveFromLast(discord.ui.Button):
             options.append(discord.SelectOption(
                 label=song.title, description=f"By {song.author}", value=str(index), emoji="<:playlist:1005265606821548163>"))
 
-        view = discord.ui.View()
+        view = discord.ui.View(timeout=None)
         view.add_item(SongRemove(options))
-        await interaction.response.edit_message(view=view, ephemeral=True)
+        await interaction.response.edit_message(view=view)
