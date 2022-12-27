@@ -45,6 +45,8 @@ class SongRemove(discord.ui.Select):
 
         if self.reversed:
             queue.reverse()
+            print("Reversed")
+            print(queue)
 
         try:
             item = queue.pop(index)
