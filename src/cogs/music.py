@@ -47,7 +47,7 @@ def create_embed(guild: discord.Guild, track: lavalink.AudioTrack, position: int
 
     requester: discord.Member = guild.get_member(track.requester)
     embed = discord.Embed(
-        title=f"<a:music:1005254786486124625> Currently Playing", description=f"**{track.title}** by {track.author}", color=colors.main)
+        title=f"<a:music:1005254786486124625> Now Playing", description=f"**{track.title}** by {track.author}", color=colors.main)
     embed.add_field(name="Ends", value=f"<t:{endsat}:R>", inline=True)
     embed.add_field(name="Video URL",
                     value=f"[Click here]({track.uri})", inline=False)
@@ -202,12 +202,14 @@ class Queue(discord.ui.View):
 class Buttons(discord.ui.View):
 
     def __init__(self, client, interaction):
-        super().__init__(timeout=60*10)
+        super().__init__(timeout=None)
         self.client = client
         self.check_buttons(interaction)
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
-        return interaction.user.voice.channel == interaction.guild.me.voice.channel
+        if not interaction.user.voice.channel == interaction.guild.me.voice.channel and interaction.user.guild_permissions.manage_messages:
+            return await interaction.response.send_message(f"{emotes.error} You are not allowed to manage the player.")
+        return True
 
     async def on_timeout(self) -> None:
         self.disable_all_items()
@@ -405,7 +407,7 @@ class Music(commands.Cog):
         for player in players:
             message: discord.Message = self.client.get_message(player)
             await message.edit(embed=create_embed(guild=message.guild, track=event.track, position=event.track.position))
-            await message.channel.send(content=f"{emotes.bloxlink} Now playing: **{event.track.title} by {event.track.author}**")
+            await message.channel.send(content=f"{emotes.bloxlink} Now playing: **{event.track.title}** by {event.track.author}")
 
     @lavalink.listener(lavalink.events.TrackStuckEvent)
     async def track_stuck(self, event: lavalink.TrackStuckEvent):
@@ -586,10 +588,10 @@ class Music(commands.Cog):
 
         # First role ID = 1054956990926950402 , 1000539386980618312 is Tester role in helper HQ
         roles = [ctx.guild.get_role(1054956990926950402), ctx.guild.get_role(
-            1054958659198791684), ctx.guild.get_role(1054959782190137501)]
+            1054958659198791684), ctx.guild.get_role(1054959782190137501), ctx.guild.get_role(1000539386980618312)]  # Last is test role
 
         if all(role not in ctx.author.roles for role in roles):
-            return await ctx.respond(f"{emotes.error} Only subscribers can add songs! Click `Server Subscriptions` at the top of the channel list to subscribe.", ephemeral=True)
+            return await ctx.respond(f"{emotes.error} Only subscribers can use this command! Click `Server Subscriptions` at the top of the channel list to subscribe.", ephemeral=True)
 
         player: lavalink.DefaultPlayer = self.client.lavalink.player_manager.create(
             ctx.guild.id)
