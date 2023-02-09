@@ -207,7 +207,7 @@ class Buttons(discord.ui.View):
         self.check_buttons(interaction)
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
-        if not interaction.user.voice.channel == interaction.guild.me.voice.channel and interaction.user.guild_permissions.manage_messages:
+        if not interaction.user.voice.channel == interaction.guild.me.voice.channel:
             return await interaction.response.send_message(f"{emotes.error} You are not allowed to manage the player.")
         return True
 
@@ -583,16 +583,9 @@ class Music(commands.Cog):
             mplayer = await ctx.respond(embed=embed, view=bview, ephemeral=True)
             bview.message = await mplayer.original_message()
 
-    @slash_command(description="Add a song or view the current-playing song. Must be on a tier.")
+    @slash_command(description="Add a song or view the current-playing song.")
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def play(self, ctx: discord.ApplicationContext, search: Option(str, description="Music query or URL. Don't provide this option if you want to view the currently-playing song.", required=False, default=None)):
-
-        # First role ID = 1054956990926950402 , 1000539386980618312 is Tester role in helper HQ
-        roles = [ctx.guild.get_role(1054956990926950402), ctx.guild.get_role(
-            1054958659198791684), ctx.guild.get_role(1054959782190137501), ctx.guild.get_role(1000539386980618312)]  # Last is test role
-
-        if all(role not in ctx.author.roles for role in roles):
-            return await ctx.respond(f"{emotes.error} Only subscribers can use this command! Click `Server Subscriptions` at the top of the channel list to subscribe.", ephemeral=True)
 
         player: lavalink.DefaultPlayer = self.client.lavalink.player_manager.create(
             ctx.guild.id)
