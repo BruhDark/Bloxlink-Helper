@@ -191,4 +191,4 @@ class CreateThreadView(discord.ui.View):
         self.remove_item(select)
         self.add_item(ThreadButton(select.values[0].capitalize()))
 
-        await interaction.response.send_message(content=f"{select.values[0].capitalize()} is your motive for this new thread. Is this correct? If not, please select the correct thread motive.", view=self, ephemeral=True)
+        await interaction.response.send_message(content=f"`{select.values[0].capitalize()}` is your motive for this new thread. Is this correct? If not, please select the correct thread motive.", view=self, ephemeral=True)
