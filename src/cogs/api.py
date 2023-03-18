@@ -15,7 +15,7 @@ class ApiCommand(commands.Cog):
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.guild_only()
     @is_blacklisted()
-    async def api(self, ctx: discord.ApplicationContext, *, query: str):
+    async def api(self, ctx: commands.Context, *, query: str):
         verified = discord.utils.get(ctx.guild.roles, name="Verified")
         if verified not in ctx.author.roles:
             embed = discord.Embed(
@@ -73,7 +73,7 @@ class ApiCommand(commands.Cog):
                                      name="Successfully sent request")
                     embed.set_footer(text=f"{quota} requests remaining")
 
-                    await ctx.send(embed=embed)
+                    await ctx.reply(embed=embed)
 
     @commands.user_command(name="Send API request")
     @commands.cooldown(1, 10, commands.BucketType.user)
