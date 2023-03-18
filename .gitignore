@@ -129,3 +129,4 @@ dmypy.json
 .editorconfig
 .tmp
 src/.env
+src/resources/images.py
