@@ -73,7 +73,7 @@ class ApiCommand(commands.Cog):
                                      name="Successfully sent request")
                     embed.set_footer(text=f"{quota} requests remaining")
 
-                    await ctx.reply(embed=embed)
+                    await ctx.reply(embed=embed, mention_author=False)
 
     @commands.user_command(name="Send API request")
     @commands.cooldown(1, 10, commands.BucketType.user)
