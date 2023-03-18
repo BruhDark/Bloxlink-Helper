@@ -4,9 +4,23 @@ from discord import ButtonStyle
 import time
 from resources.mongoFunctions import insert_one
 
+RATE_OPTIONS = [
+    discord.SelectOption(label="⭐⭐⭐⭐⭐", value="5",
+                         description="The support provided was the best."),
+    discord.SelectOption(label="⭐⭐⭐⭐", value="4",
+                         description="The support provided was good."),
+    discord.SelectOption(label="⭐⭐⭐", value="3",
+                         description="The support provided was a bit good."),
+    discord.SelectOption(label="⭐⭐", value="2",
+                         description="The support provided was bad."),
+    discord.SelectOption(label="⭐", value="1",
+                         description="The support provided was the worst.")
+]
+
 
 class RatingView(discord.ui.View):
-    def __init__(self):
+    def __init__(self, staff: discord.Member):
+        self.staff = staff
         super().__init__()
 
     async def on_timeout(self) -> None:
@@ -14,120 +28,101 @@ class RatingView(discord.ui.View):
         await self.message.edit(view=self)
         await self.message.reply("Your feedback prompt timed out!")
 
-    @discord.ui.button(style=ButtonStyle.gray, label=" ", emoji="⭐", custom_id="1star")
-    async def one_star(self, button: discord.Button, interaction: discord.Interaction):
-        date = round(time.time())
+    @discord.ui.string_select(placeholder="Select a rating", options=RATE_OPTIONS)
+    async def select_callback(self, select: discord.ui.Select, interaction: discord.Interaction):
+        if select.values[0] == "1":
+            date = round(time.time())
+            self.disable_all_items()
+            await interaction.response.edit_message(view=self)
 
-        button.style = ButtonStyle.blurple
-        self.disable_all_items()
-        await interaction.response.edit_message(view=self)
+            await interaction.followup.send("Could you tell us why this option? Say 'Cancel' to cancel this prompt.")
+            try:
+                message = await interaction.client.wait_for(
+                    "message", check=lambda message: interaction.user.id == message.author.id and message.guild is None, timeout=60.0)
+            except asyncio.TimeoutError:
+                message = "None provided"
+                await interaction.followup.send("Your prompt timed out.")
 
-        await interaction.followup.send("Could you tell us why this option? Say 'Cancel' to cancel this prompt.")
-        try:
-            message = await interaction.client.wait_for(
-                "message", check=lambda message: interaction.user.id == message.author.id and message.guild is None, timeout=60.0)
-        except asyncio.TimeoutError:
-            message = "None provided"
-            await interaction.followup.send("Your prompt timed out.")
+            if message.content.lower() == "cancel":
+                message = "None provided"
+                await interaction.followup.send("You cancelled this prompt.")
 
-        if message.content.lower() == "cancel":
-            message = "None provided"
-            await interaction.followup.send("You cancelled this prompt.")
+            await interaction.followup.send("Thank you for your feedback! You help us improve.")
 
-        await interaction.followup.send("Thank you for your feedback! You help us improve.")
+            feedback = message.content
+            await insert_one("rating", {"user": self.staff.id, "rating": 1, "date": date, "feedback": feedback})
 
-        feedback = message.content
-        await insert_one("rating", {"user": interaction.user.id, "rating": 1, "date": date, "feedback": feedback})
+            self.stop()
 
-        self.stop()
+        elif select.values[0] == "2":
+            date = round(time.time())
 
-    @discord.ui.button(style=ButtonStyle.gray, label=" ", emoji="⭐", custom_id="2stars")
-    async def two_stars(self, button: discord.Button, interaction: discord.Interaction):
-        date = round(time.time())
+            self.disable_all_items()
 
-        for children in self.children:
-            if children.custom_id == "3stars":
-                break
-            children.style = ButtonStyle.blurple
+            await interaction.response.edit_message(view=self)
 
-        self.disable_all_items()
+            await interaction.followup.send("Could you tell us why this option? Say 'Cancel' to cancel this prompt.")
+            try:
+                message = await interaction.client.wait_for(
+                    "message", check=lambda message: interaction.user.id == message.author.id and message.guild is None, timeout=60.0)
+            except asyncio.TimeoutError:
+                message = "None provided"
+                await interaction.followup.send("Your prompt timed out.")
 
-        await interaction.response.edit_message(view=self)
+            if message.content.lower() == "cancel":
+                message = "None provided"
+                await interaction.followup.send("You cancelled this prompt.")
 
-        await interaction.followup.send("Could you tell us why this option? Say 'Cancel' to cancel this prompt.")
-        try:
-            message = await interaction.client.wait_for(
-                "message", check=lambda message: interaction.user.id == message.author.id and message.guild is None, timeout=60.0)
-        except asyncio.TimeoutError:
-            message = "None provided"
-            await interaction.followup.send("Your prompt timed out.")
+            await interaction.followup.send("Thank you for your feedback! You help us improve.")
 
-        if message.content.lower() == "cancel":
-            message = "None provided"
-            await interaction.followup.send("You cancelled this prompt.")
+            feedback = message.content
+            await insert_one("rating", {"user": self.staff.id, "rating": 2, "date": date, "feedback": feedback})
 
-        await interaction.followup.send("Thank you for your feedback! You help us improve.")
+            self.stop()
 
-        feedback = message.content
-        await insert_one("rating", {"user": interaction.user.id, "rating": 2, "date": date, "feedback": feedback})
+        elif select.values[0] == "3":
+            date = round(time.time())
+            self.disable_all_items()
 
-        self.stop()
+            await interaction.response.edit_message(view=self)
 
-    @discord.ui.button(style=ButtonStyle.gray, label=" ", emoji="⭐", custom_id="3stars")
-    async def three_stars(self, button: discord.Button, interaction: discord.Interaction):
-        date = round(time.time())
+            await interaction.followup.send("Could you tell us why this option? Say 'Cancel' to cancel this prompt.")
+            try:
+                message = await interaction.client.wait_for(
+                    "message", check=lambda message: interaction.user.id == message.author.id and message.guild is None, timeout=60.0)
+            except asyncio.TimeoutError:
+                message = "None provided"
+                await interaction.followup.send("Your prompt timed out.")
 
-        for children in self.children:
-            if children.custom_id == "4stars":
-                break
-            children.style = ButtonStyle.blurple
-        self.disable_all_items()
+            if message.content.lower() == "cancel":
+                message = "None provided"
+                await interaction.followup.send("You cancelled this prompt.")
 
-        await interaction.response.edit_message(view=self)
+            await interaction.followup.send("Thank you for your feedback! You help us improve.")
 
-        await interaction.followup.send("Could you tell us why this option? Say 'Cancel' to cancel this prompt.")
-        try:
-            message = await interaction.client.wait_for(
-                "message", check=lambda message: interaction.user.id == message.author.id and message.guild is None, timeout=60.0)
-        except asyncio.TimeoutError:
-            message = "None provided"
-            await interaction.followup.send("Your prompt timed out.")
+            feedback = message.content
+            await insert_one("rating", {"user": self.staff.id, "rating": 3, "date": date, "feedback": feedback})
 
-        if message.content.lower() == "cancel":
-            message = "None provided"
-            await interaction.followup.send("You cancelled this prompt.")
+            self.stop()
 
-        await interaction.followup.send("Thank you for your feedback! You help us improve.")
+        elif select.values[0] == "4":
+            date = round(time.time())
+            await insert_one("rating", {"user": self.staff.id, "rating": 4, "date": date})
+            self.disable_all_items()
 
-        feedback = message.content
-        await insert_one("rating", {"user": interaction.user.id, "rating": 3, "date": date, "feedback": feedback})
+            await interaction.response.edit_message(view=self)
+            await interaction.followup.send("Thank you so much for your rating!")
+            self.stop()
 
-        self.stop()
+        elif select.values[0] == "5":
+            date = round(time.time())
+            await insert_one("rating", {"user": self.staff.id, "rating": 5, "date": date})
 
-    @discord.ui.button(style=ButtonStyle.gray, label=" ", emoji="⭐", custom_id="4stars")
-    async def four_stars(self, button: discord.Button, interaction: discord.Interaction):
-        date = round(time.time())
-        await insert_one("rating", {"user": interaction.user.id, "rating": 4, "date": date})
+            self.disable_all_items()
 
-        for children in self.children:
-            if children.custom_id == "5stars":
-                break
-            children.style = ButtonStyle.blurple
-        self.disable_all_items()
+            await interaction.response.edit_message(view=self)
+            await interaction.followup.send("Thank you so much for your rating!")
+            self.stop()
 
-        await interaction.response.edit_message(view=self)
-        await interaction.followup.send("Thank you so much for your rating!")
-        self.stop()
-
-    @discord.ui.button(style=ButtonStyle.gray, label=" ", emoji="⭐", custom_id="5stars")
-    async def five_stars(self, button: discord.Button, interaction: discord.Interaction):
-        date = round(time.time())
-        await insert_one("rating", {"user": interaction.user.id, "rating": 5, "date": date})
-
-        for children in self.children:
-            children.style = ButtonStyle.blurple
-        self.disable_all_items()
-
-        await interaction.response.edit_message(view=self)
-        await interaction.followup.send("Thank you so much for your rating!")
-        self.stop()
+        else:
+            interaction.response.send_message(content="Something went wrong.")
