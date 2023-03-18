@@ -64,10 +64,10 @@ class SupportSystem(commands.Cog):
         embed = discord.Embed(color=colors.info, title=f"{emotes.info} Frequently Asked Questions",
                               description=f"Welcome to our Frequently Asked Questions channel. You can find useful information for commonly asked questions.")
 
-        embed.add_field(name=f"{emotes.box} Resources",
+        embed.add_field(inline=False, name=f"{emotes.box} Resources",
                         value="[Invite Bloxlink](https://blox.link/invite)\n[Dashboard](https://blox.link/dashboard)\n[Commands](https://blox.link/commands)\n[Pricing](https://blox.link/pricing)\n[Work with us](https://blox.link/jobs)\n[Developer Portal](https://blox.link/dashboard/developer)\n")
 
-        embed.add_field(name=f"{emotes.question} How do I see the Frequently Asked Questions?",
+        embed.add_field(inline=False, name=f"{emotes.question} How do I see the Frequently Asked Questions?",
                         value="Click the **Open FAQ** button to open the FAQs. Select the category you think your question fits in. Found your question? Click the respective button number!")
 
         await channel.send(embed=embed, view=FAQView())
@@ -98,7 +98,8 @@ class SupportSystem(commands.Cog):
         embed = discord.Embed(color=colors.info, title=f"{emotes.success} Thank you for supporting us!",
                               description="We appreciate your support towards us. You can know access our priority support system which opens a private thread with our staff team, so you can get a faster and experienced answer!")
 
-        embed.add_field(name=f"{emotes.question} How do I open a thread?", )
+        embed.add_field(name=f"{emotes.question} How do I open a thread?",
+                        value="Select your motive on the select menu. Make sure it is the right motive so our staff team is able to answer faster. Confirm it is the correct motive and then your private thread will be opened.")
         await channel.send(embed=embed, view=CreateThreadView())
         await ctx.respond("Done")
 
