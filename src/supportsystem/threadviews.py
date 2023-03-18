@@ -188,7 +188,6 @@ class CreateThreadView(discord.ui.View):
                                                                                                           label="Premium/Pro", value="premium", emoji="<:thunderbolt:987447657104560229>"),
                                                                                                       SelectOption(label="Other", value="other", emoji="<:confused:987447655384875018>")])
     async def select_callback(self,  select: discord.ui.Select, interaction: discord.Interaction):
-        self.remove_item(select)
-        self.add_item(ThreadButton(select.values[0].capitalize()))
-
-        await interaction.response.send_message(content=f"`{select.values[0].capitalize()}` is your motive for this new thread. Is this correct? If not, please select the correct thread motive.", view=self, ephemeral=True)
+        view = discord.ui.View()
+        view.add_item(ThreadButton(select.values[0].capitalize()))
+        await interaction.response.send_message(content=f"`{select.values[0].capitalize()}` is your motive for this new thread. Is this correct? If not, please select the correct thread motive.", view=view, ephemeral=True)
