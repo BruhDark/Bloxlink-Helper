@@ -44,8 +44,6 @@ class CloseThreadView(discord.ui.View):
         await interaction.response.edit_message(view=self)
         await interaction.followup.send(f"<:padlock:987837727741464666> This support thread has been marked as solved by {interaction.user.mention}")
 
-        await thread.archive(locked=True)
-
         Lchannel = discord.utils.get(
             interaction.guild.channels, name="support-threads")
 
@@ -71,14 +69,15 @@ class CloseThreadView(discord.ui.View):
 
             try:
                 await user.send(embed=rateEmbed, view=rateView)
+                await thread.archive(locked=True)
             except:
-                await interaction.channel.send(content=f"{user.mention} I was unable to DM you.", embed=rateEmbed, view=rateView)
+                await interaction.channel.send(content=f"{user.mention} I was unable to DM you.", embed=rateEmbed, view=RatingView(interaction.user, thread))
 
         else:
             history = interaction.channel.history()
             async for message in history:
                 if staff_role in message.author:
-                    rateView = RatingView(message.author)
+                    staff = message.author
                     break
 
             user = await interaction.client.get_or_fetch_user(user)
@@ -92,9 +91,10 @@ class CloseThreadView(discord.ui.View):
                 text="Thank you for choosing Bloxlink! We hope you have a great day!", icon_url=links.other)
 
             try:
-                await user.send(embed=rateEmbed, view=rateView)
+                await user.send(embed=rateEmbed, view=RatingView(staff))
+                await thread.archive(locked=True)
             except:
-                await interaction.channel.send(content=f"{user.mention} I was unable to DM you.", embed=rateEmbed, view=rateView)
+                await interaction.channel.send(content=f"{user.mention} I was unable to DM you.", embed=rateEmbed, view=RatingView(staff, thread))
 
         await message.delete()
 
