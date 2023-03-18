@@ -2,11 +2,12 @@ import discord
 from discord import ButtonStyle
 from discord import Button
 from resources.mongoFunctions import insert_one, find_one, delete_one
-from config import colors, links
+from config import colors, links, emotes
 import datetime
 import asyncio
 from supportsystem.rateview import RatingView
 from resources.CheckFailure import is_staff
+from discord import SelectOption
 
 
 class CloseThreadView(discord.ui.View):
@@ -51,24 +52,49 @@ class CloseThreadView(discord.ui.View):
         message = interaction.client.get_message(object["log"])
         message = await Lchannel.fetch_message(object["log"]) if message is None else message
 
-        helpers_role = discord.utils.get(
-            interaction.guild.roles, name="Helpers"
+        staff_role = discord.utils.get(
+            interaction.guild.roles, name="Staff"
         )
 
-        if helpers_role in interaction.user.roles:
-            rateView = RatingView()
+        if staff_role in interaction.user.roles:
+            rateView = RatingView(interaction.user)
 
             user = await interaction.client.get_or_fetch_user(user)
 
             rateEmbed = discord.Embed(title="<:BloxlinkHappy:823633735446167552> Thanks for contacting us!",
-                                      description="We appreciate you and want to know your satisfaction with the support given by our team.\nFeel free to rate us by clicking the :star: (star) and telling us your satisfaction level. Being the first one, 1 (I was not satisfied by the support given), and the last one 5 (I was very satified by the support given).", color=colors.info)
+                                      description="We appreciate you and want to know your satisfaction level of the support provided by our team.\nFeel free to rate us by clicking the :star: (star) and telling us your satisfaction level. Being the first one, 1 (I was not satisfied by the support given), and the last one 5 (I was very satified by the support given).", color=colors.info)
             rateEmbed.timestamp = datetime.datetime.utcnow()
             rateEmbed.set_author(
-                name=f"Hello, {user.name}!", icon_url=user.avatar.url)
+                name=f"Hello, {user.name}!", icon_url=user.display_avatar.url)
             rateEmbed.set_footer(
-                text="Thanks for choosing Bloxlink! We hope you have a great day!", icon_url=links.other)
+                text="Thank you for choosing Bloxlink! We hope you have a great day!", icon_url=links.other)
 
-            await user.send(embed=rateEmbed, view=rateView)
+            try:
+                await user.send(embed=rateEmbed, view=rateView)
+            except:
+                await interaction.channel.send(content=f"{user.mention} I was unable to DM you.", embed=rateEmbed, view=rateView)
+
+        else:
+            history = interaction.channel.history()
+            async for message in history:
+                if staff_role in message.author:
+                    rateView = RatingView(message.author)
+                    break
+
+            user = await interaction.client.get_or_fetch_user(user)
+
+            rateEmbed = discord.Embed(title="<:BloxlinkHappy:823633735446167552> Thank you for contacting us!",
+                                      description="We appreciate you and want to know your satisfaction level of the support provided by our team.\nFeel free to rate us by clicking the :star: (star) and telling us your satisfaction level. Being the first one, 1 (I was not satisfied by the support given), and the last one 5 (I was very satified by the support given).", color=colors.info)
+            rateEmbed.timestamp = datetime.datetime.utcnow()
+            rateEmbed.set_author(
+                name=f"Hello, {user.name}!", icon_url=user.display_avatar.url)
+            rateEmbed.set_footer(
+                text="Thank you for choosing Bloxlink! We hope you have a great day!", icon_url=links.other)
+
+            try:
+                await user.send(embed=rateEmbed, view=rateView)
+            except:
+                await interaction.channel.send(content=f"{user.mention} I was unable to DM you.", embed=rateEmbed, view=rateView)
 
         await message.delete()
 
@@ -90,9 +116,9 @@ class CloseThreadView(discord.ui.View):
 
 
 class ThreadButton(discord.ui.Button):
-    def __init__(self, topic: str):
-        super().__init__(style=ButtonStyle.blurple, label="Get Support",
-                         emoji="<:lifesaver:986648046592983150>", custom_id="PersistentThreadButton")
+    def __init__(self, topic: str, disabled: bool = False):
+        super().__init__(style=ButtonStyle.green, label="Yes, it is correct",
+                         emoji=emotes.bloxlink, custom_id="PersistentThreadButton", disabled=disabled)
         self.topic = topic
 
     async def callback(self, interaction: discord.Interaction):
@@ -103,7 +129,7 @@ class ThreadButton(discord.ui.Button):
             interaction.guild.roles, name="support banned")
         if supportBannedRole in interaction.user.roles:
             await interaction.response.send_message(
-                "<:BloxlinkDead:823633973967716363> You are support banned.", ephemeral=True)
+                "<:BloxlinkDead:823633973967716363> You are support banned. Contact our staff team for more information.", ephemeral=True)
             return
 
         userThread = await find_one("support-users", {"user": interaction.user.id})
@@ -152,4 +178,19 @@ class ThreadButton(discord.ui.Button):
 class CreateThreadView(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
-        self.add_item(ThreadButton("Premium Support"))
+
+    @discord.ui.string_select(placeholder="Select a motive", custom_id="ThreadMotiveSelect", options=[SelectOption(label="Verification", value="verification", emoji="<:link:986648044525199390>",
+                                                                                                                   description="Link/Remove a Roblox account, nickname templates"),
+                                                                                                      SelectOption(label="Binds", value="binds", emoji="<:box:987447660510334976>",
+                                                                                                                   description="Add/Remove group/role/badge binds"),
+                                                                                                      SelectOption(label="Bloxlink API", value="api", emoji="<:api:987447659025547284>",
+                                                                                                                   description="How to use the API, how to get an API key"),
+                                                                                                      SelectOption(label="Premium/Pro", value="premium", emoji="<:thunderbolt:987447657104560229>",
+                                                                                                                   description="How to get Premium/Pro, what are the perks, how to activate a server"),
+                                                                                                      SelectOption(label="Other", value="other", emoji="<:confused:987447655384875018>",
+                                                                                                                   description="None of the above categories match your question?")])
+    async def select_callback(self,  select: discord.ui.Select, interaction: discord.Interaction):
+        self.remove_item(select)
+        self.add_item(ThreadButton(select.values[0].capitalize()))
+
+        await interaction.response.send_message(content=f"{select.values[0].capitalize()} is your motive for this new thread. Is this correct? If not, please select the correct thread motive.", view=self)

@@ -5,7 +5,7 @@ from resources.mongoFunctions import delete_one, return_all
 from supportsystem.modal import FAQCreateModal, FAQEditModal
 from supportsystem.faqview import FAQView
 from supportsystem.threadviews import CloseThreadView, CreateThreadView
-from config import colors
+from config import colors, emotes, badges
 from discord.ext import commands
 import discord
 
@@ -61,8 +61,14 @@ class SupportSystem(commands.Cog):
     async def send_faq(self, ctx, channel: discord.TextChannel):
         """Owner only command to send the FAQs to a channel."""
 
-        embed = discord.Embed(color=colors.info, title=":wave: Welcome to Bloxlink's FAQ!",
-                              description="Welcome! You have come to the right place if you are looking for help with Bloxlink.\n\n<:lifesaver:986648046592983150> **How do I use this FAQ system?**\n\nSelect the category from the dropdown you think your question fits in, a new message will pop up with questions related to the category selected. Found your question? Click the respective button number to get your answer.")
+        embed = discord.Embed(color=colors.info, title=f"{emotes.info} Frequently Asked Questions",
+                              description=f"Welcome to our Frequently Asked Questions channel. You can find useful information for commonly asked questions.")
+
+        embed.add_field(name=f"{emotes.box} Resources",
+                        value="[Invite Bloxlink](https://blox.link/invite)\n[Dashboard](https://blox.link/dashboard)\n[Commands](https://blox.link/commands)\n[Pricing](https://blox.link/pricing)\n[Work with us](https://blox.link/jobs)\n[Developer Portal](https://blox.link/dashboard/developer)\n")
+
+        embed.add_field(name=f"{emotes.question} How do I see the Frequently Asked Questions?",
+                        value="Click the **Open FAQ** button to open the FAQs. Select the category you think your question fits in. Found your question? Click the respective button number!")
 
         await channel.send(embed=embed, view=FAQView())
         await ctx.respond("Done")
@@ -73,8 +79,14 @@ class SupportSystem(commands.Cog):
         """Owner only command to update the support system message."""
 
         message = await channel.fetch_message(int(message))
-        embed = discord.Embed(color=colors.info, title=":wave: Welcome to Bloxlink's support system!",
-                              description="Hello! You have come to the right place if you are looking for help with Bloxlink.\n\n<:lifesaver:986648046592983150> **How do I use the FAQ system?**\n\nClick the **Open FAQ** button to open the FAQs. Select the category you think your question fits in. Found your question? Click the respective button number!")
+        embed = discord.Embed(color=colors.info, title=f"{emotes.info} Frequently Asked Questions",
+                              description=f"Welcome to our Frequently Asked Questions channel. You can find useful information for commonly asked questions.")
+
+        embed.add_field(name=f"{emotes.box} Resources",
+                        value="[Invite Bloxlink](https://blox.link/invite)\n[Dashboard](https://blox.link/dashboard)\n[Commands](https://blox.link/commands)\n[Pricing](https://blox.link/pricing)\n[Work with us](https://blox.link/jobs)\n[Developer Portal](https://blox.link/dashboard/developer)\n")
+
+        embed.add_field(name=f"{emotes.question} How do I see the Frequently Asked Questions?",
+                        value="Click the **Open FAQ** button to open the FAQs. Select the category you think your question fits in. Found your question? Click the respective button number!")
 
         await message.edit(embed=embed, view=FAQView())
         await ctx.respond("Done")
@@ -83,8 +95,10 @@ class SupportSystem(commands.Cog):
     @commands.is_owner()
     async def send_get_support(self, ctx: discord.ApplicationContext, channel: discord.TextChannel):
         """Owner only command to send the get support message."""
-        embed = discord.Embed(color=colors.info, title=":wave: Welcome to Bloxlink's premium support system!",
-                              description="Thanks for purchasing premium! You now have access to priority support, our team is ready to asssist you in just a few minutes.\n\n<:lifesaver:986648046592983150> **How do I open a thread?**\n\nClick the **Get Support** button, a thread will get privately created for you to get on instant contact with our staff team.")
+        embed = discord.Embed(color=colors.info, title=f"{emotes.success} Thank you for supporting us!",
+                              description="We appreciate your support towards us. You can know access our priority support system which opens a private thread with our staff team, so you can get a faster and experienced answer!")
+
+        embed.add_field(name=f"{emotes.question} How do I open a thread?", )
         await channel.send(embed=embed, view=CreateThreadView())
         await ctx.respond("Done")
 

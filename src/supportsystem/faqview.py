@@ -193,8 +193,9 @@ class FAQView(View):
 
         premiumRole = discord.utils.get(
             interaction.guild.roles, id=372175493040177152)
+
         if premiumRole in interaction.user.roles:
-            view.add_item(ThreadButtonFAQ("Premium Support"))
+            view.add_item(ThreadButtonFAQ(select.values[0].capitalize()))
 
         await interaction.followup.send(embed=embed, view=view, ephemeral=True)
 
