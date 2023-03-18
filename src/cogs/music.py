@@ -207,7 +207,7 @@ class Buttons(discord.ui.View):
         self.check_buttons(interaction)
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
-        if not interaction.user.voice.channel == interaction.guild.me.voice.channel and interaction.user.guild_permissions.manage_messages:
+        if not interaction.user.voice.channel == interaction.guild.me.voice.channel:
             return await interaction.response.send_message(f"{emotes.error} You are not allowed to manage the player.")
         return True
 
@@ -582,109 +582,6 @@ class Music(commands.Cog):
                 guild=ctx.guild, track=player.current, position=player.position)
             mplayer = await ctx.respond(embed=embed, view=bview, ephemeral=True)
             bview.message = await mplayer.original_message()
-
-    @slash_command(description="Add a song or view the current-playing song. Must be on a tier.")
-    @commands.cooldown(1, 5, commands.BucketType.user)
-    async def play(self, ctx: discord.ApplicationContext, search: Option(str, description="Music query or URL. Don't provide this option if you want to view the currently-playing song.", required=False, default=None)):
-
-        # First role ID = 1054956990926950402 , 1000539386980618312 is Tester role in helper HQ
-        roles = [ctx.guild.get_role(1054956990926950402), ctx.guild.get_role(
-            1054958659198791684), ctx.guild.get_role(1054959782190137501), ctx.guild.get_role(1000539386980618312)]  # Last is test role
-
-        if all(role not in ctx.author.roles for role in roles):
-            return await ctx.respond(f"{emotes.error} Only subscribers can use this command! Click `Server Subscriptions` at the top of the channel list to subscribe.", ephemeral=True)
-
-        player: lavalink.DefaultPlayer = self.client.lavalink.player_manager.create(
-            ctx.guild.id)
-        if len(player.queue) == 0 and not player.is_playing:
-            return await ctx.respond(f"{emotes.error} No queue started! Please wait for a staff member start a queue.", ephemeral=True)
-
-        if search:
-            if len(search) > 256:
-                return await ctx.respond(f"{emotes.error} Search query has a maximum of 256 characters!", ephemeral=True)
-            elif player.is_playing:
-                if len(player.queue) >= 250:
-                    return await ctx.respond(f"{emotes.error} The queue is full!", ephemeral=True)
-            search = f'ytsearch:{search}' if not RURL.match(search) else search
-            results = await player.node.get_tracks(search)
-            tracks = results.tracks
-            total = len(player.queue)
-            match results.load_type:
-                case lavalink.LoadType.PLAYLIST:
-                    await ctx.defer()
-                    count = 0
-                    for track in tracks:
-                        if total + count < 250:
-                            player.add(track=track, requester=ctx.author.id)
-                            count += 1
-
-                    if len(self.client.active_players) == 0:
-
-                        await ctx.respond(embed=confirmation(f"Added {count} songs to the queue"), delete_after=30)
-
-                    else:
-                        await ctx.respond(embed=confirmation(f"Added {count} songs to the queue"), delete_after=30)
-
-                    if not player.is_playing:
-                        await player.play()
-                case lavalink.LoadType.TRACK:
-                    song = tracks[0]
-                    if len(self.client.active_players) == 0:
-                        await ctx.respond(embed=confirmation(f"Adding {song.title} to the queue"), delete_after=30)
-
-                    else:
-                        await ctx.respond(embed=confirmation(f"Adding {song.title} to the queue"), delete_after=30)
-
-                    player.add(track=song, requester=ctx.author.id)
-                    if not player.is_playing:
-                        await player.play()
-                case lavalink.LoadType.SEARCH:
-                    view = SongSelectView(SongSelect(
-                        self.client, tracks[:5], ctx.author))
-
-                    if len(self.client.active_players) == 0:
-                        await ctx.respond(view=view)
-
-                    else:
-                        await ctx.respond(view=view, ephemeral=True)
-
-                case _:
-                    if 'open.spotify.com' or 'spotify:' in search:
-                        if len(self.client.active_players) == 0:
-                            await ctx.defer()
-                        else:
-                            await ctx.defer(ephemeral=True)
-
-                        spotifysongs = self.get_spotify_tracks(query=search)
-                        if not spotifysongs:
-                            return await ctx.respond("Couldn't find any music!", ephemeral=True)
-                        s_results = await asyncio.wait_for(asyncio.gather(*[player.node.get_tracks(
-                            f'ytsearch:{song}') for song in spotifysongs]), timeout=30)
-                        count = 0
-
-                        for track in s_results:
-                            if total + count < 250:
-                                player.add(
-                                    track=track.tracks[0], requester=ctx.author.id)
-                                count += 1
-
-                        if len(self.client.active_players) == 0:
-                            await ctx.respond(embed=confirmation(f"Added {count} spotify song(s) to the queue"), delete_after=30)
-
-                        else:
-                            await ctx.respond(embed=confirmation(f"Added {count} spotify song(s) to the queue"), delete_after=30)
-
-                        if not player.is_playing:
-                            await player.play()
-                    else:
-                        return await ctx.respond(f"{emotes.error} Couldn't find any music!", ephemeral=True)
-        else:
-            if not player.is_playing:
-                return await ctx.respond(f"{emotes.error} No music playing!", ephemeral=True)
-            embed = create_embed(
-                guild=ctx.guild, track=player.current, position=player.position)
-            mplayer = await ctx.respond(embed=embed, ephemeral=True)
-
 
 def setup(bot):
     bot.add_cog(Music(bot))
