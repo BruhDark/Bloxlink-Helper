@@ -291,6 +291,9 @@ class Whois(commands.Cog):
         if user.public_flags.discord_certified_moderator:
             flags.append(f"{badges.moderator} Discord Certified Moderator")
 
+        if user.public_flags.active_developer:
+            flags.append(f"{badges.active_developer} Active Developer")
+
         if user.public_flags.verified_bot_developer or user.public_flags.early_verified_bot_developer:
             flags.append(f"{badges.botdev} Verified Bot Developer")
 
@@ -359,7 +362,7 @@ class Whois(commands.Cog):
 
         Embed.set_footer(text=f"ID: {user.id}")
 
-        await ctx.send(embed=Embed)
+        await ctx.reply(embed=Embed, mention_author=False)
 
 
 def setup(bot):
