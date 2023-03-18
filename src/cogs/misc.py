@@ -96,7 +96,7 @@ class Misc(commands.Cog):
                 f"User: {blacklist['user']}. Reason: {blacklist['reason']}" for blacklist in blacklists]
             final_parse = "\n".join(parse_blacklists)
 
-            await ctx.send(content=final_parse)
+            await ctx.reply(content=final_parse, mention_author=False)
 
         else:
             await ctx.error(f"That option does not exist!")
