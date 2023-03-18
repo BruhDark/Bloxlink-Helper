@@ -76,7 +76,7 @@ class CloseThreadView(discord.ui.View):
         else:
             history = interaction.channel.history()
             async for message in history:
-                if staff_role in message.author:
+                if staff_role in message.author.roles:
                     staff = message.author
                     break
 
