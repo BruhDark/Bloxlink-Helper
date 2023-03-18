@@ -98,6 +98,9 @@ class CloseThreadView(discord.ui.View):
                 except:
                     await interaction.channel.send(content=f"{user.mention} I was unable to DM you.", embed=rateEmbed, view=RatingView(staff, thread))
 
+            else:
+                await thread.archive(locked=True)
+
         await log_message.delete()
 
     @discord.ui.button(style=ButtonStyle.green, emoji="<:notification:990034677836427295>", label="Ping Helpers", disabled=True, custom_id="PingHelpersButton")
