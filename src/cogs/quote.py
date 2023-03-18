@@ -75,7 +75,7 @@ class Quote(commands.Cog):
                         embed = discord.Embed(
                             title=f"Jump to message", url=f"https://discord.com/channels/{server_id}/{channel_id}/{msg_id}", description=msg.content, color=colors.info, timestamp=msg.created_at)
                         embed.set_author(
-                            name=f"{msg.author} in {msg.channel}", icon_url=msg.author.avatar.url)
+                            name=f"{msg.author} in {msg.channel}", icon_url=msg.author.display_avatar.url)
                         embed.set_footer(
                             text=f"Quoted by: {message.author}", icon_url=message.author.display_avatar.url)
 
