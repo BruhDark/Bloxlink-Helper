@@ -118,7 +118,7 @@ class CloseThreadView(discord.ui.View):
 class ThreadButton(discord.ui.Button):
     def __init__(self, topic: str, disabled: bool = False):
         super().__init__(style=ButtonStyle.green, label="Yes, it is correct",
-                         emoji=emotes.bloxlink, custom_id="PersistentThreadButton", disabled=disabled)
+                         emoji=emotes.bloxlink, disabled=disabled)
         self.topic = topic
 
     async def callback(self, interaction: discord.Interaction):
