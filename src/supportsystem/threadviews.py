@@ -74,9 +74,10 @@ class CloseThreadView(discord.ui.View):
                 await interaction.channel.send(content=f"{user.mention} I was unable to DM you.", embed=rateEmbed, view=RatingView(interaction.user, thread))
 
         else:
+            staff = None
             history = interaction.channel.history()
             async for message in history:
-                if staff_role in message.author.roles:
+                if staff_role in message.author.roles and not message.author.bot:
                     staff = message.author
                     break
 
@@ -90,11 +91,12 @@ class CloseThreadView(discord.ui.View):
             rateEmbed.set_footer(
                 text="Thank you for choosing Bloxlink! We hope you have a great day!", icon_url=links.other)
 
-            try:
-                await user.send(embed=rateEmbed, view=RatingView(staff))
-                await thread.archive(locked=True)
-            except:
-                await interaction.channel.send(content=f"{user.mention} I was unable to DM you.", embed=rateEmbed, view=RatingView(staff, thread))
+            if staff:
+                try:
+                    await user.send(embed=rateEmbed, view=RatingView(staff))
+                    await thread.archive(locked=True)
+                except:
+                    await interaction.channel.send(content=f"{user.mention} I was unable to DM you.", embed=rateEmbed, view=RatingView(staff, thread))
 
         await message.delete()
 
