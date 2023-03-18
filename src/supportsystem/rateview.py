@@ -67,7 +67,7 @@ class RatingView(discord.ui.View):
             await interaction.followup.send("Could you tell us why this option? Say 'Cancel' to cancel this prompt.")
             try:
                 message = await interaction.client.wait_for(
-                    "message", check=lambda message: interaction.user.id == message.author.id and message.guild is None, timeout=60.0)
+                    "message", check=lambda message: interaction.user.id == message.author.id and message.channel.id == interaction.channel.id, timeout=60.0)
             except asyncio.TimeoutError:
                 message = "None provided"
                 await interaction.followup.send("Your prompt timed out.")
