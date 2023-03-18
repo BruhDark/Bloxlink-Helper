@@ -13,11 +13,10 @@ class Emotes:
         self.success2: str = "<a:BHDone:976817167116947507>"
         self.warning = ":warning:"
         self.info = "<:info:881973831974154250>"
-        self.question = "<:Question:929051955962195999>"
+        self.question = "<:BloxlinkConfused:823633690910916619>"
         self.operational = "<:Operational:882404710148083724>"
         self.partialoutage = "<:PartialOutage:882404755949895730>"
         self.majoroutage = "<:MajorOutage:882404641286000681>"
-        self.maintenance = "<:UnderMaintenance:881969909247148052>"
         self.reply = "<:reply:1015305389249671178>"
 
         self.dnd = "<:DoNotDisturb:928716110822518834>"
@@ -32,6 +31,7 @@ class Emotes:
         self.add = "<:add:930273857363927110>"
         self.remove = "<:edit:930273882919821322>"
         self.edit = "<:remove:930273905569042472>"
+        self.box = "<:box:987447660510334976>"
 
 
 class Links:
@@ -72,6 +72,7 @@ class Badges:
         self.partner = "<:DiscordPartner:928768159215923230>"
         self.early = "<:EarlySupporter:928768119072231454>"
         self.botdev = "<:VerfiedBotDeveloper:928765568058785852>"
+        self.active_developer = "<:Active_Developer:1086422448804737085>"
 
 
 colors = Colors()
