@@ -44,11 +44,11 @@ class CloseThreadView(discord.ui.View):
         await interaction.response.edit_message(view=self)
         await interaction.followup.send(f"<:padlock:987837727741464666> This support thread has been marked as solved by {interaction.user.mention}")
 
-        Lchannel = discord.utils.get(
+        Lchannel: discord.TextChannel = discord.utils.get(
             interaction.guild.channels, name="support-threads")
 
-        message = interaction.client.get_message(object["log"])
-        message = await Lchannel.fetch_message(object["log"]) if message is None else message
+        log_message = interaction.client.get_message(object["log"])
+        log_message = await Lchannel.fetch_message(object["log"]) if log_message is None else log_message
 
         staff_role = discord.utils.get(
             interaction.guild.roles, name="Staff"
@@ -98,7 +98,7 @@ class CloseThreadView(discord.ui.View):
                 except:
                     await interaction.channel.send(content=f"{user.mention} I was unable to DM you.", embed=rateEmbed, view=RatingView(staff, thread))
 
-        await message.delete()
+        await log_message.delete()
 
     @discord.ui.button(style=ButtonStyle.green, emoji="<:notification:990034677836427295>", label="Ping Helpers", disabled=True, custom_id="PingHelpersButton")
     async def callback(self, button: Button, interaction: discord.Interaction):
