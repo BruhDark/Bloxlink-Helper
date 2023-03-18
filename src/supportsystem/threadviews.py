@@ -179,16 +179,14 @@ class CreateThreadView(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
 
-    @discord.ui.string_select(placeholder="Select a motive", custom_id="ThreadMotiveSelect", options=[SelectOption(label="Verification", value="verification", emoji="<:link:986648044525199390>",
-                                                                                                                   description="Link/Remove a Roblox account, nickname templates"),
-                                                                                                      SelectOption(label="Binds", value="binds", emoji="<:box:987447660510334976>",
-                                                                                                                   description="Add/Remove group/role/badge binds"),
-                                                                                                      SelectOption(label="Bloxlink API", value="api", emoji="<:api:987447659025547284>",
-                                                                                                                   description="How to use the API, how to get an API key"),
-                                                                                                      SelectOption(label="Premium/Pro", value="premium", emoji="<:thunderbolt:987447657104560229>",
-                                                                                                                   description="How to get Premium/Pro, what are the perks, how to activate a server"),
-                                                                                                      SelectOption(label="Other", value="other", emoji="<:confused:987447655384875018>",
-                                                                                                                   description="None of the above categories match your question?")])
+    @discord.ui.string_select(placeholder="Select a motive", custom_id="ThreadMotiveSelect", options=[SelectOption(label="Verification", value="verification", emoji="<:link:986648044525199390>"),
+                                                                                                      SelectOption(
+                                                                                                          label="Binds", value="binds", emoji="<:box:987447660510334976>"),
+                                                                                                      SelectOption(
+                                                                                                          label="Bloxlink API", value="api", emoji="<:api:987447659025547284>"),
+                                                                                                      SelectOption(
+                                                                                                          label="Premium/Pro", value="premium", emoji="<:thunderbolt:987447657104560229>"),
+                                                                                                      SelectOption(label="Other", value="other", emoji="<:confused:987447655384875018>")])
     async def select_callback(self,  select: discord.ui.Select, interaction: discord.Interaction):
         self.remove_item(select)
         self.add_item(ThreadButton(select.values[0].capitalize()))

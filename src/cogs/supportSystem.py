@@ -68,7 +68,7 @@ class SupportSystem(commands.Cog):
                         value="[Invite Bloxlink](https://blox.link/invite)\n[Dashboard](https://blox.link/dashboard)\n[Commands](https://blox.link/commands)\n[Pricing](https://blox.link/pricing)\n[Work with us](https://blox.link/jobs)\n[Developer Portal](https://blox.link/dashboard/developer)\n")
 
         embed.add_field(inline=False, name=f"{emotes.question} How do I see the Frequently Asked Questions?",
-                        value="Click the **Open FAQ** button to open the FAQs. Select the category you think your question fits in. Found your question? Click the respective button number!")
+                        value="Select the category from the dropdown you think your question fits in, a new message will pop up with questions related to the category selected. Found your question? Click the respective button number to get your answer.")
 
         await channel.send(embed=embed, view=FAQView())
         await ctx.respond("Done")
@@ -86,7 +86,7 @@ class SupportSystem(commands.Cog):
                         value="[Invite Bloxlink](https://blox.link/invite)\n[Dashboard](https://blox.link/dashboard)\n[Commands](https://blox.link/commands)\n[Pricing](https://blox.link/pricing)\n[Work with us](https://blox.link/jobs)\n[Developer Portal](https://blox.link/dashboard/developer)\n")
 
         embed.add_field(name=f"{emotes.question} How do I see the Frequently Asked Questions?",
-                        value="Click the **Open FAQ** button to open the FAQs. Select the category you think your question fits in. Found your question? Click the respective button number!")
+                        value="Select the category from the dropdown you think your question fits in, a new message will pop up with questions related to the category selected. Found your question? Click the respective button number to get your answer.")
 
         await message.edit(embed=embed, view=FAQView())
         await ctx.respond("Done")
