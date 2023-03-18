@@ -19,8 +19,9 @@ RATE_OPTIONS = [
 
 
 class RatingView(discord.ui.View):
-    def __init__(self, staff: discord.Member):
+    def __init__(self, staff: discord.Member, thread: discord.Thread = None):
         self.staff = staff
+        self.thread = thread
         super().__init__()
 
     async def on_timeout(self) -> None:
@@ -52,6 +53,8 @@ class RatingView(discord.ui.View):
             feedback = message.content
             await insert_one("rating", {"user": self.staff.id, "rating": 1, "date": date, "feedback": feedback})
 
+            if self.thread:
+                await self.thread.archive(locked=True)
             self.stop()
 
         elif select.values[0] == "2":
@@ -78,6 +81,8 @@ class RatingView(discord.ui.View):
             feedback = message.content
             await insert_one("rating", {"user": self.staff.id, "rating": 2, "date": date, "feedback": feedback})
 
+            if self.thread:
+                await self.thread.archive(locked=True)
             self.stop()
 
         elif select.values[0] == "3":
@@ -103,6 +108,8 @@ class RatingView(discord.ui.View):
             feedback = message.content
             await insert_one("rating", {"user": self.staff.id, "rating": 3, "date": date, "feedback": feedback})
 
+            if self.thread:
+                await self.thread.archive(locked=True)
             self.stop()
 
         elif select.values[0] == "4":
@@ -112,6 +119,9 @@ class RatingView(discord.ui.View):
 
             await interaction.response.edit_message(view=self)
             await interaction.followup.send("Thank you so much for your rating!")
+
+            if self.thread:
+                await self.thread.archive(locked=True)
             self.stop()
 
         elif select.values[0] == "5":
@@ -122,6 +132,9 @@ class RatingView(discord.ui.View):
 
             await interaction.response.edit_message(view=self)
             await interaction.followup.send("Thank you so much for your rating!")
+
+            if self.thread:
+                await self.thread.archive(locked=True)
             self.stop()
 
         else:
