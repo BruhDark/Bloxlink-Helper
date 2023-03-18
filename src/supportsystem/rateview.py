@@ -38,19 +38,20 @@ class RatingView(discord.ui.View):
 
             await interaction.followup.send("Could you tell us why this option? Say 'Cancel' to cancel this prompt.")
             try:
-                message = await interaction.client.wait_for(
-                    "message", check=lambda message: interaction.user.id == message.author.id and message.guild is None, timeout=60.0)
+                message_in = await interaction.client.wait_for(
+                    "message", check=lambda message: interaction.user.id == message.author.id and message.channel.id == interaction.channel.id, timeout=60.0)
+                message = message_in.content
             except asyncio.TimeoutError:
                 message = "None provided"
                 await interaction.followup.send("Your prompt timed out.")
 
-            if message.content.lower() == "cancel":
+            if message_in.content.lower() == "cancel":
                 message = "None provided"
                 await interaction.followup.send("You cancelled this prompt.")
 
             await interaction.followup.send("Thank you for your feedback! You help us improve.")
 
-            feedback = message.content
+            feedback = message
             await insert_one("rating", {"user": self.staff.id, "rating": 1, "date": date, "feedback": feedback})
 
             if self.thread:
@@ -66,19 +67,20 @@ class RatingView(discord.ui.View):
 
             await interaction.followup.send("Could you tell us why this option? Say 'Cancel' to cancel this prompt.")
             try:
-                message = await interaction.client.wait_for(
+                message_in = await interaction.client.wait_for(
                     "message", check=lambda message: interaction.user.id == message.author.id and message.channel.id == interaction.channel.id, timeout=60.0)
+                message = message_in.content
             except asyncio.TimeoutError:
                 message = "None provided"
                 await interaction.followup.send("Your prompt timed out.")
 
-            if message.content.lower() == "cancel":
+            if message_in.content.lower() == "cancel":
                 message = "None provided"
                 await interaction.followup.send("You cancelled this prompt.")
 
             await interaction.followup.send("Thank you for your feedback! You help us improve.")
 
-            feedback = message.content
+            feedback = message
             await insert_one("rating", {"user": self.staff.id, "rating": 2, "date": date, "feedback": feedback})
 
             if self.thread:
@@ -94,18 +96,19 @@ class RatingView(discord.ui.View):
             await interaction.followup.send("Could you tell us why this option? Say 'Cancel' to cancel this prompt.")
             try:
                 message = await interaction.client.wait_for(
-                    "message", check=lambda message: interaction.user.id == message.author.id and message.guild is None, timeout=60.0)
+                    "message", check=lambda message: interaction.user.id == message.author.id and message.channel.id == interaction.channel.id, timeout=60.0)
+                message = message_in.content
             except asyncio.TimeoutError:
                 message = "None provided"
                 await interaction.followup.send("Your prompt timed out.")
 
-            if message.content.lower() == "cancel":
+            if message_in.content.lower() == "cancel":
                 message = "None provided"
                 await interaction.followup.send("You cancelled this prompt.")
 
             await interaction.followup.send("Thank you for your feedback! You help us improve.")
 
-            feedback = message.content
+            feedback = message
             await insert_one("rating", {"user": self.staff.id, "rating": 3, "date": date, "feedback": feedback})
 
             if self.thread:
