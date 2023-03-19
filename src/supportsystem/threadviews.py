@@ -128,8 +128,6 @@ class ThreadButton(discord.ui.Button):
 
     async def callback(self, interaction: discord.Interaction):
 
-        await interaction.response.defer(ephemeral=True)
-
         supportBannedRole = discord.utils.get(
             interaction.guild.roles, name="support banned")
         if supportBannedRole in interaction.user.roles:
@@ -149,7 +147,7 @@ class ThreadButton(discord.ui.Button):
         except:
             thread = await interaction.channel.create_thread(name=f"{interaction.user.name} - {self.topic}", reason="Support Thread", type=discord.ChannelType.public_thread)
 
-        await interaction.followup.send(f"<:BloxlinkSilly:823634273604468787> You have created a support thread. Please head to {thread.mention} to join the thread.", ephemeral=True)
+        await interaction.response.edit_message(f"<:BloxlinkSilly:823634273604468787> You have created a support thread. Please head to {thread.mention} to join the thread.", view=None, ephemeral=True)
 
         embedT = discord.Embed(
             color=colors.info, timestamp=datetime.datetime.utcnow(), title="Support Thread")
@@ -167,7 +165,7 @@ class ThreadButton(discord.ui.Button):
         object = await insert_one("support-users", {"user": interaction.user.id, "thread": thread.id, "log": log.id})
 
         embed = discord.Embed(color=colors.info, timestamp=datetime.datetime.utcnow(), title="Support Thread",
-                              description=f":wave: Welcome to your support thread!\n\n<:BloxlinkSilly:823634273604468787> Our Helpers will assist you in a few minutes. While you wait, please provide as much detail as possible! Consider providing screenshots or/and anything that helps the team to solve your issue faster.\n\n<:time:987836664355373096> Our team is taking too long? If 10 minutes have passed, you can click the **Ping Helpers** button, this will notify our team you are here!")
+                              description=f":wave: Welcome to your support thread!\n\n<:BloxlinkSilly:823634273604468787> Our helpers will be with you shortly. In the meantime, please provide as much detail as possible, including screenshots or anything that can help our team solve your issue faster.\n\n<:time:987836664355373096> Our team is taking too long? If 10 minutes have passed, you can click the **Ping Helpers** button, this will notify our helpers you are here!")
         embed.set_author(name=f"{interaction.user.name}#{interaction.user.discriminator} | ID: {object.inserted_id}",
                          icon_url=interaction.user.display_avatar.url)
         embed.set_footer(
@@ -184,14 +182,14 @@ class CreateThreadView(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
 
-    @discord.ui.string_select(placeholder="Select a motive", custom_id="ThreadMotiveSelect", options=[SelectOption(label="Verification", value="verification", emoji="<:link:986648044525199390>"),
-                                                                                                      SelectOption(
-                                                                                                          label="Binds", value="binds", emoji="<:box:987447660510334976>"),
-                                                                                                      SelectOption(
-                                                                                                          label="Bloxlink API", value="api", emoji="<:api:987447659025547284>"),
-                                                                                                      SelectOption(
-                                                                                                          label="Premium/Pro", value="premium", emoji="<:thunderbolt:987447657104560229>"),
-                                                                                                      SelectOption(label="Other", value="other", emoji="<:confused:987447655384875018>")])
+    @discord.ui.string_select(placeholder="Select a thread reason", custom_id="ThreadReasonSelect", options=[SelectOption(label="Verification", value="verification", emoji="<:link:986648044525199390>"),
+                                                                                                             SelectOption(
+        label="Binds", value="binds", emoji="<:box:987447660510334976>"),
+        SelectOption(
+        label="Bloxlink API", value="api", emoji="<:api:987447659025547284>"),
+        SelectOption(
+        label="Premium/Pro", value="premium", emoji="<:thunderbolt:987447657104560229>"),
+        SelectOption(label="Other", value="other", emoji="<:confused:987447655384875018>")])
     async def select_callback(self,  select: discord.ui.Select, interaction: discord.Interaction):
         view = discord.ui.View()
         view.add_item(ThreadButton(select.values[0].capitalize()))
