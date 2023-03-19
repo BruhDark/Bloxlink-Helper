@@ -78,7 +78,7 @@ class SupportSystem(commands.Cog):
     async def send_get_support(self, ctx: discord.ApplicationContext, channel: discord.TextChannel):
         """Owner only command to send the get support message."""
         embed = discord.Embed(color=colors.info, title=f"{emotes.success} Thank you for supporting us!",
-                              description="Thank you for your support! You can now access our priority support system, which opens a private thread with our staff team. This way, you can get a faster and more knowledgeable response.")
+                              description="We appreciate your support towards us! You can now access our priority support system, which opens a private thread with our staff team. This way, you can get a faster and more knowledgeable response.")
 
         embed.add_field(name=f"{emotes.question} How do I open a thread?",
                         value="Select the reason for your thread from the select menu. This will help our staff team to answer your query faster. Once you have chosen the correct thread reason, confirm it, and your private thread will be opened.")
