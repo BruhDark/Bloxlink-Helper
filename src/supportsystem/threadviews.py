@@ -131,15 +131,15 @@ class ThreadButton(discord.ui.Button):
         supportBannedRole = discord.utils.get(
             interaction.guild.roles, name="support banned")
         if supportBannedRole in interaction.user.roles:
-            await interaction.response.send_message(
-                "<:BloxlinkDead:823633973967716363> You are support banned. Contact our staff team for more information.", ephemeral=True)
+            await interaction.response.edit_message(
+                "<:BloxlinkDead:823633973967716363> You are support banned. Contact our staff team for more information.", view=None, ephemeral=True)
             return
 
         userThread = await find_one("support-users", {"user": interaction.user.id})
 
         if userThread is not None:
             thread = interaction.channel.get_thread(userThread["thread"])
-            await interaction.followup.send(f"<:BloxlinkDead:823633973967716363> You are already in a support thread. Please head to {thread.mention} to join the thread.", ephemeral=True)
+            await interaction.response.edit_message(f"<:BloxlinkDead:823633973967716363> You are already in a support thread. Please head to {thread.mention} to join the thread.", view=None)
             return
 
         try:
@@ -147,7 +147,7 @@ class ThreadButton(discord.ui.Button):
         except:
             thread = await interaction.channel.create_thread(name=f"{interaction.user.name} - {self.topic}", reason="Support Thread", type=discord.ChannelType.public_thread)
 
-        await interaction.response.edit_message(f"<:BloxlinkSilly:823634273604468787> You have created a support thread. Please head to {thread.mention} to join the thread.", view=None, ephemeral=True)
+        await interaction.response.edit_message(f"<:BloxlinkSilly:823634273604468787> You have created a support thread. Please head to {thread.mention} to join the thread.", view=None)
 
         embedT = discord.Embed(
             color=colors.info, timestamp=datetime.datetime.utcnow(), title="Support Thread")
