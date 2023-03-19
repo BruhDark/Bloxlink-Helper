@@ -3,14 +3,15 @@ import discord
 from discord import ButtonStyle
 import time
 from resources.mongoFunctions import insert_one
+from config import emotes
 
 RATE_OPTIONS = [
     discord.SelectOption(label="⭐⭐⭐⭐⭐", value="5",
                          description="The support provided was the best."),
     discord.SelectOption(label="⭐⭐⭐⭐", value="4",
-                         description="The support provided was good."),
+                         description="The support provided was very good."),
     discord.SelectOption(label="⭐⭐⭐", value="3",
-                         description="The support provided was a bit good."),
+                         description="The support provided was good."),
     discord.SelectOption(label="⭐⭐", value="2",
                          description="The support provided was bad."),
     discord.SelectOption(label="⭐", value="1",
@@ -27,10 +28,16 @@ class RatingView(discord.ui.View):
     async def on_timeout(self) -> None:
         self.disable_all_items()
         await self.message.edit(view=self)
-        await self.message.reply("Your feedback prompt timed out!")
+        await self.message.reply(f"{emotes.bloxlink} Your feedback prompt timed out!")
+        if self.thread:
+            await self.thread.archive(locked=True)
 
     @discord.ui.string_select(placeholder="Select a rating", options=RATE_OPTIONS)
     async def select_callback(self, select: discord.ui.Select, interaction: discord.Interaction):
+
+        select.options = [discord.SelectOption(
+            label=f"{'⭐' * int(select.values[0])}", default=True)]
+
         if select.values[0] == "1":
             date = round(time.time())
             self.disable_all_items()
@@ -43,7 +50,7 @@ class RatingView(discord.ui.View):
                 message = message_in.content
             except asyncio.TimeoutError:
                 message = "None provided"
-                await interaction.followup.send("Your prompt timed out.")
+                await interaction.followup.send("Your response prompt timed out.")
 
             if message_in.content.lower() == "cancel":
                 message = "None provided"
@@ -72,7 +79,7 @@ class RatingView(discord.ui.View):
                 message = message_in.content
             except asyncio.TimeoutError:
                 message = "None provided"
-                await interaction.followup.send("Your prompt timed out.")
+                await interaction.followup.send("Your response prompt timed out.")
 
             if message_in.content.lower() == "cancel":
                 message = "None provided"
@@ -100,7 +107,7 @@ class RatingView(discord.ui.View):
                 message = message_in.content
             except asyncio.TimeoutError:
                 message = "None provided"
-                await interaction.followup.send("Your prompt timed out.")
+                await interaction.followup.send("Your response prompt timed out.")
 
             if message_in.content.lower() == "cancel":
                 message = "None provided"

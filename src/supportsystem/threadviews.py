@@ -42,7 +42,7 @@ class CloseThreadView(discord.ui.View):
 
         await delete_one("support-users", {"thread": thread.id})
         await interaction.response.edit_message(view=self)
-        await interaction.followup.send(f"<:padlock:987837727741464666> This support thread has been marked as solved by {interaction.user.mention}")
+        await interaction.followup.send(f"<:padlock:987837727741464666> This support thread has been marked as solved by {interaction.user.mention}", allowed_mentions=discord.AllowedMentions(users=False))
 
         Lchannel: discord.TextChannel = discord.utils.get(
             interaction.guild.channels, name="support-threads")
@@ -59,13 +59,13 @@ class CloseThreadView(discord.ui.View):
 
             user = await interaction.client.get_or_fetch_user(user)
 
-            rateEmbed = discord.Embed(title="<:BloxlinkHappy:823633735446167552> Thanks for contacting us!",
-                                      description="We appreciate you and want to know your satisfaction level of the support provided by our team.\nFeel free to rate us by clicking the :star: (star) and telling us your satisfaction level. Being the first one, 1 (I was not satisfied by the support given), and the last one 5 (I was very satified by the support given).", color=colors.info)
+            rateEmbed = discord.Embed(title=f"{emotes.success} Thank you for contacting us!",
+                                      description="Your feedback means a lot to us and we hope we were able to help you with your query. We would appreciate it if you could rate the support provided by our team using the select menu below. Your rating will help us improve our service and efficiency. You can choose from 1 to 5 stars, where 1 is the lowest and 5 is the highest rating. Thank you for your time and we hope you have a great day.", color=colors.info)
             rateEmbed.timestamp = datetime.datetime.utcnow()
             rateEmbed.set_author(
                 name=f"Hello, {user.name}!", icon_url=user.display_avatar.url)
             rateEmbed.set_footer(
-                text="Thank you for choosing Bloxlink! We hope you have a great day!", icon_url=links.other)
+                text="Your feedback prompt will timeout in 3 minutes.", icon_url=links.other)
 
             try:
                 await user.send(embed=rateEmbed, view=rateView)
@@ -83,13 +83,13 @@ class CloseThreadView(discord.ui.View):
 
             user = await interaction.client.get_or_fetch_user(user)
 
-            rateEmbed = discord.Embed(title="<:BloxlinkHappy:823633735446167552> Thank you for contacting us!",
-                                      description="We appreciate you and want to know your satisfaction level of the support provided by our team.\nFeel free to rate us by clicking the :star: (star) and telling us your satisfaction level. Being the first one, 1 (I was not satisfied by the support given), and the last one 5 (I was very satified by the support given).", color=colors.info)
+            rateEmbed = discord.Embed(title=f"{emotes.bloxlink} Thank you for contacting us!",
+                                      description="Your feedback means a lot to us and we hope we were able to help you with your query. We would appreciate it if you could rate the support provided by our team using the select menu below. Your rating will help us improve our service and efficiency. You can choose from 1 to 5 stars, where 1 is the lowest and 5 is the highest rating. Thank you for your time, we hope you have a great day.", color=colors.info)
             rateEmbed.timestamp = datetime.datetime.utcnow()
             rateEmbed.set_author(
                 name=f"Hello, {user.name}!", icon_url=user.display_avatar.url)
             rateEmbed.set_footer(
-                text="Thank you for choosing Bloxlink! We hope you have a great day!", icon_url=links.other)
+                text="This feedback prompt will timeout in 3 minutes.", icon_url=links.other)
 
             if staff:
                 try:

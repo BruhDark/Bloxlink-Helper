@@ -133,7 +133,7 @@ class FAQView(View):
 
         embed = discord.Embed(color=colors.info)
         embed.set_footer(
-            text="Did not find an answer? Use our support channels.", icon_url=links.other)
+            text="Did not find an answer? Use our support channel.", icon_url=links.other)
         view = None
 
         if select.values[0] == "verification":
