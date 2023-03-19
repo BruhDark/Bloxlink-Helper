@@ -127,20 +127,6 @@ class ThreadButton(discord.ui.Button):
         self.topic = topic
 
     async def callback(self, interaction: discord.Interaction):
-
-        supportBannedRole = discord.utils.get(
-            interaction.guild.roles, name="support banned")
-        if supportBannedRole in interaction.user.roles:
-            await interaction.response.edit_message(content="<:BloxlinkDead:823633973967716363> You are support banned. Contact our staff team for more information.", view=None, ephemeral=True)
-            return
-
-        userThread = await find_one("support-users", {"user": interaction.user.id})
-
-        if userThread is not None:
-            thread = interaction.channel.get_thread(userThread["thread"])
-            await interaction.response.edit_message(content=f"<:BloxlinkDead:823633973967716363> You are already in a support thread. Please head to {thread.mention} to join the thread.", view=None)
-            return
-
         try:
             thread = await interaction.channel.create_thread(name=f"{interaction.user.name} - {self.topic}", reason="Support Thread", type=discord.ChannelType.private_thread)
         except:
@@ -190,6 +176,20 @@ class CreateThreadView(discord.ui.View):
         label="Premium/Pro", value="premium", emoji="<:thunderbolt:987447657104560229>"),
         SelectOption(label="Other", value="other", emoji="<:confused:987447655384875018>")])
     async def select_callback(self,  select: discord.ui.Select, interaction: discord.Interaction):
+
+        supportBannedRole = discord.utils.get(
+            interaction.guild.roles, name="support banned")
+        if supportBannedRole in interaction.user.roles:
+            await interaction.response.send_message(content="<:BloxlinkDead:823633973967716363> You are support banned. Contact our staff team for more information.", view=None, ephemeral=True)
+            return
+
+        userThread = await find_one("support-users", {"user": interaction.user.id})
+
+        if userThread is not None:
+            thread = interaction.channel.get_thread(userThread["thread"])
+            await interaction.response.send_message(content=f"<:BloxlinkDead:823633973967716363> You already are in a support thread. Please head to {thread.mention} to join the thread.", view=None, ephemeral=True)
+            return
+
         view = discord.ui.View()
         view.add_item(ThreadButton(select.values[0].capitalize()))
         await interaction.response.send_message(content=f"`{select.values[0].capitalize()}` is your motive for this new thread. Is this correct? If not, please select the correct thread motive.", view=view, ephemeral=True)
