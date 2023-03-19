@@ -55,8 +55,6 @@ class CloseThreadView(discord.ui.View):
         )
 
         if staff_role in interaction.user.roles:
-            rateView = RatingView(interaction.user)
-
             user = await interaction.client.get_or_fetch_user(user)
 
             rateEmbed = discord.Embed(title=f"{emotes.success} Thank you for contacting us!",
@@ -68,10 +66,10 @@ class CloseThreadView(discord.ui.View):
                 text="Your feedback prompt will timeout in 3 minutes.", icon_url=links.other)
 
             try:
-                await user.send(embed=rateEmbed, view=rateView)
+                await user.send(embed=rateEmbed, view=RatingView(interaction.user, user))
                 await thread.archive(locked=True)
             except:
-                await interaction.channel.send(content=f"{user.mention} I was unable to DM you.", embed=rateEmbed, view=RatingView(interaction.user, thread))
+                await interaction.channel.send(content=f"{user.mention} I was unable to DM you.", embed=rateEmbed, view=RatingView(interaction.user, user, thread))
 
         else:
             staff = None
@@ -93,10 +91,10 @@ class CloseThreadView(discord.ui.View):
 
             if staff:
                 try:
-                    await user.send(embed=rateEmbed, view=RatingView(staff))
+                    await user.send(embed=rateEmbed, view=RatingView(staff, user))
                     await thread.archive(locked=True)
                 except:
-                    await interaction.channel.send(content=f"{user.mention} I was unable to DM you.", embed=rateEmbed, view=RatingView(staff, thread))
+                    await interaction.channel.send(content=f"{user.mention} I was unable to DM you.", embed=rateEmbed, view=RatingView(staff, user, thread))
 
             else:
                 await thread.archive(locked=True)

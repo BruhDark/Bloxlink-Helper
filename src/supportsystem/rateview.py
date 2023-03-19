@@ -20,8 +20,9 @@ RATE_OPTIONS = [
 
 
 class RatingView(discord.ui.View):
-    def __init__(self, staff: discord.Member, thread: discord.Thread = None):
+    def __init__(self, staff: discord.Member, user: discord.Member | discord.User, thread: discord.Thread = None):
         self.staff = staff
+        self.user = user
         self.thread = thread
         super().__init__()
 
@@ -31,6 +32,12 @@ class RatingView(discord.ui.View):
         await self.message.reply(f"{emotes.bloxlink} Your feedback prompt timed out!")
         if self.thread:
             await self.thread.archive(locked=True)
+
+    async def interaction_check(self, interaction: discord.Interaction) -> bool:
+        if not interaction.user.id == self.user.id:
+            await interaction.response.send_message(content=f"{emotes.error} You can not use this.")
+            return False
+        return True
 
     @discord.ui.string_select(placeholder="Select a rating", options=RATE_OPTIONS)
     async def select_callback(self, select: discord.ui.Select, interaction: discord.Interaction):
