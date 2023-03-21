@@ -24,7 +24,7 @@ class RatingView(discord.ui.View):
         self.staff = staff
         self.user = user
         self.thread = thread
-        super().__init__()
+        super().__init__(timeout=180)
 
     async def on_timeout(self) -> None:
         self.disable_all_items()
@@ -35,7 +35,7 @@ class RatingView(discord.ui.View):
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if not interaction.user.id == self.user.id:
-            await interaction.response.send_message(content=f"{emotes.error} You can not use this.")
+            await interaction.response.send_message(content=f"{emotes.error} You can not use this.", ephemeral=True)
             return False
         return True
 
