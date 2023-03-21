@@ -37,7 +37,7 @@ class Translator(commands.Cog):
         pronounciation = translation.pronunciation
 
         embed = discord.Embed(timestamp=datetime.datetime.utcnow(
-        ), color=colors.info, description=f"{emotes.error} Processing text from `{detectedSourceLanguage}` (detected) to `{target}`\n\n**Result:** \n`{translatedText}`")
+        ), color=colors.info, description=f"{emotes.bloxlink} Processing text from `{detectedSourceLanguage}` (detected) to `{target}`\n\n**Result:** \n`{translatedText}`")
 
         if pronounciation:
             embed.add_field(
