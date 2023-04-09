@@ -82,15 +82,17 @@ class CloseThreadView(discord.ui.View):
                     confirm_staff_embed = discord.Embed(color=colors.info)
                     confirm_staff_embed.description = description = f"I have found another staff member in this thread that replied first. Would you like to close the thread on {message.author.mention}'s behalf? This would save the rating the user provides on them."
                     confirm_staff_embed.title = "Uh, oh! Found another staff member"
+                    confirm_staff_embed.set_footer(
+                        text="The thread will close on your behalf if no action is taken in 3 minutes")
                     prompt = await interaction.followup.send(embed=confirm_staff_embed, view=confirm_staff, ephemeral=True)
 
                     await confirm_staff.wait()
                     if not confirm_staff.me:
-                        await prompt.edit(content=f"Closed on {message.author.mention}'s behalf! You can close this ephemeral message now.", embed=None, view=None)
+                        await prompt.edit(content=f"Closed on {message.author.mention}'s behalf! You can dismiss this ephemeral message now.", embed=None, view=None)
                         staff = message.author
 
                     else:
-                        await prompt.edit(content=f"Closed on your behalf! You can close this ephemeral message now.", embed=None, view=None)
+                        await prompt.edit(content=f"Closed on your behalf! You can dismiss this ephemeral message now.", embed=None, view=None)
 
                     break
 
