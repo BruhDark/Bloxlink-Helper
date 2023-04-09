@@ -75,7 +75,7 @@ class CloseThreadView(discord.ui.View):
             staff = interaction.user
 
             async for message in thread.history(oldest_first=True):
-                if staff_role in message.author.roles and message.author.id != interaction.user.id:
+                if staff_role in message.author.roles and message.author.id != interaction.user.id and not message.author.bot:
 
                     confirm_staff = Confirmstaffview()
 
