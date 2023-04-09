@@ -86,11 +86,11 @@ class CloseThreadView(discord.ui.View):
 
                     await confirm_staff.wait()
                     if not confirm_staff.me:
-                        await prompt.edit(content=f"Closed on {message.author.mention}'s behalf! You can close this ephemeral message now.", view=None)
+                        await prompt.edit(content=f"Closed on {message.author.mention}'s behalf! You can close this ephemeral message now.", embed=None, view=None)
                         staff = message.author
 
                     else:
-                        await prompt.edit(content=f"Closed on your behalf! You can close this ephemeral message now.", view=None)
+                        await prompt.edit(content=f"Closed on your behalf! You can close this ephemeral message now.", embed=None, view=None)
 
                     break
 
