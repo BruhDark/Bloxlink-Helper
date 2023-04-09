@@ -10,6 +10,22 @@ from resources.CheckFailure import is_staff
 from discord import SelectOption
 
 
+class Confirmstaffview(discord.ui.View):
+    def __init__(self):
+        self.me = None
+        super().__init__()
+
+    @discord.ui.button(label="Close on their behalf", style=discord.ButtonStyle.green)
+    async def confirm_they(self, button: discord.ui.Button, interaction: discord.Interaction):
+        self.me = False
+        self.stop()
+
+    @discord.ui.button(label="Close on my behalf", style=discord.ButtonStyle.red)
+    async def confirm_me(self, button: discord.ui.Button, interaction: discord.Interaction):
+        self.me = True
+        self.stop()
+
+
 class CloseThreadView(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
@@ -56,6 +72,27 @@ class CloseThreadView(discord.ui.View):
 
         if staff_role in interaction.user.roles:
             user = await interaction.client.get_or_fetch_user(user)
+            staff = interaction.user
+
+            async for message in thread.history(oldest_first=True):
+                if staff_role in message.author.roles and message.author.id != interaction.user.id:
+
+                    confirm_staff = Confirmstaffview()
+
+                    confirm_staff_embed = discord.Embed(color=colors.info)
+                    confirm_staff_embed.description = description = f"I have found another staff member in this thread that replied first. Would you like to close the thread on {message.author.mention}'s behalf? This would save the rating the user provides on them."
+                    confirm_staff_embed.title = "Uh, oh! Found another staff member"
+                    prompt = await interaction.followup.send(embed=confirm_staff_embed, view=confirm_staff, ephemeral=True)
+
+                    await confirm_staff.wait()
+                    if not confirm_staff.me:
+                        await prompt.edit(content=f"Closed on {message.author.mention}'s behalf! You can close this ephemeral message now.", view=None)
+                        staff = message.author
+
+                    else:
+                        await prompt.edit(content=f"Closed on your behalf! You can close this ephemeral message now.", view=None)
+
+                    break
 
             rateEmbed = discord.Embed(title=f"{emotes.success} Thank you for contacting us!",
                                       description="Your feedback means a lot to us and we hope we were able to help you with your query. We would appreciate it if you could rate the support provided by our team using the select menu below. Your rating will help us improve our service and efficiency. You can choose from 1 to 5 stars, where 1 is the lowest and 5 is the highest rating. Thank you for your time and we hope you have a great day.", color=colors.info)
@@ -66,14 +103,14 @@ class CloseThreadView(discord.ui.View):
                 text="Your feedback prompt will timeout in 3 minutes.", icon_url=links.other)
 
             try:
-                await user.send(embed=rateEmbed, view=RatingView(interaction.user, user))
+                await user.send(embed=rateEmbed, view=RatingView(staff, user))
                 await thread.archive(locked=True)
             except:
                 await interaction.channel.send(content=f"{user.mention} I was unable to DM you.", embed=rateEmbed, view=RatingView(interaction.user, user, thread))
 
         else:
             staff = None
-            history = interaction.channel.history()
+            history = interaction.channel.history(oldest_first=True)
             async for message in history:
                 if staff_role in message.author.roles and not message.author.bot:
                     staff = message.author
