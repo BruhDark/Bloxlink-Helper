@@ -10,19 +10,26 @@ from resources.CheckFailure import is_staff
 from discord import SelectOption
 
 
+class ConfirmStaffSelect(discord.ui.Select):
+    def __init__(self, options):
+        super().__init__(options=options, placeholder="Select a staff member", row=1)
+
+    async def callback(self, interaction):
+        id = self.options[0]
+        staff = interaction.client.get_or_fetch_user(int(id))
+        self.view.staff = staff
+        self.view.stop()
+
+
 class Confirmstaffview(discord.ui.View):
-    def __init__(self):
-        self.me = None
+    def __init__(self, options: list):
+        self.user = None
         super().__init__()
+        self.add_item(ConfirmStaffSelect(options))
 
-    @discord.ui.button(label="Close on their behalf", style=discord.ButtonStyle.green)
-    async def confirm_they(self, button: discord.ui.Button, interaction: discord.Interaction):
-        self.me = False
-        self.stop()
-
-    @discord.ui.button(label="Close on my behalf", style=discord.ButtonStyle.red)
+    @discord.ui.select(label="Close on my behalf", style=discord.ButtonStyle.red, row=2)
     async def confirm_me(self, button: discord.ui.Button, interaction: discord.Interaction):
-        self.me = True
+        self.user = interaction.user
         self.stop()
 
 
@@ -72,29 +79,35 @@ class CloseThreadView(discord.ui.View):
 
         if staff_role in interaction.user.roles:
             user = await interaction.client.get_or_fetch_user(user)
-            staff = interaction.user
+            staff = interaction.user.id
+
+            staff_confirm = []
 
             async for message in thread.history(oldest_first=True):
                 if staff_role in message.author.roles and message.author.id != interaction.user.id and not message.author.bot:
 
-                    confirm_staff = Confirmstaffview()
+                    staff_confirm.append(message.author)
 
-                    confirm_staff_embed = discord.Embed(color=colors.info)
-                    confirm_staff_embed.description = description = f"I have found another staff member in this thread that replied first. Would you like to close the thread on {message.author.mention}'s behalf? This would save the rating the user provides on them."
-                    confirm_staff_embed.title = "Uh, oh! Found another staff member"
-                    confirm_staff_embed.set_footer(
-                        text="The thread will close on your behalf if no action is taken in 3 minutes")
-                    prompt = await interaction.followup.send(embed=confirm_staff_embed, view=confirm_staff, ephemeral=True)
+            if len(staff_confirm) > 0:
+                options = [discord.SelectOption(emoji="👤", label=staff.display_name, value=staff.id, description=str(
+                    staff)) for staff in staff_confirm]
+                confirm_staff = Confirmstaffview(options)
 
-                    await confirm_staff.wait()
-                    if not confirm_staff.me:
-                        await prompt.edit(content=f"Closed on {message.author.mention}'s behalf! You can dismiss this ephemeral message now.", embed=None, view=None)
-                        staff = message.author
+                confirm_staff_embed = discord.Embed(color=colors.info)
+                confirm_staff_embed.description = description = f"I have found another staff member in this thread that replied first. Would you like to close the thread on {message.author.mention}'s behalf? This would save the rating the user provides on them."
+                confirm_staff_embed.title = "Oh, oh! Found another staff member(s)"
+                confirm_staff_embed.set_footer(
+                    text="The thread will close on your behalf if no action is taken in 3 minutes")
+                prompt = await interaction.followup.send(embed=confirm_staff_embed, view=confirm_staff, ephemeral=True)
 
-                    else:
-                        await prompt.edit(content=f"Closed on your behalf! You can dismiss this ephemeral message now.", embed=None, view=None)
+                await confirm_staff.wait()
 
-                    break
+                if confirm_staff.staff.id != interaction.user.id:
+                    await prompt.edit(content=f"Closed on {message.author.mention}'s behalf! You can dismiss this ephemeral message now.", embed=None, view=None)
+                    staff = confirm_staff.staff
+
+                else:
+                    await prompt.edit(content=f"Closed on your behalf! You can dismiss this ephemeral message now.", embed=None, view=None)
 
             rateEmbed = discord.Embed(title=f"{emotes.success} Thank you for contacting us!",
                                       description="Your feedback means a lot to us and we hope we were able to help you with your query. We would appreciate it if you could rate the support provided by our team using the select menu below. Your rating will help us improve our service and efficiency. You can choose from 1 to 5 stars, where 1 is the lowest and 5 is the highest rating. Thank you for your time and we hope you have a great day.", color=colors.info)
