@@ -12,6 +12,7 @@ from spotipy import SpotifyClientCredentials
 from discord import slash_command, Option
 from discord.ext import commands
 from resources.select import RemoveSongButton
+from resources.CheckFailure import is_blacklisted
 
 import dotenv
 from typing import Union
@@ -467,6 +468,7 @@ class Music(commands.Cog):
                 self.client.active_players = []
 
     @slash_command(description="Play some music")
+    @is_blacklisted()
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def music(self, ctx: discord.ApplicationContext, search: Option(str, description="Music query or URL", required=False, default=None)):
         try:
