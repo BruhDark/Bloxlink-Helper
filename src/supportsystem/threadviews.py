@@ -12,10 +12,11 @@ from discord import SelectOption
 
 class ConfirmStaffSelect(discord.ui.Select):
     def __init__(self, options):
-        super().__init__(options=options, placeholder="Select a staff member", row=1)
+        super().__init__(options=options, placeholder="Select a staff member",
+                         row=1, select_type=discord.ComponentType.string_select)
 
     async def callback(self, interaction):
-        id = self.options[0]
+        id = self.values[0]
         staff = interaction.client.get_or_fetch_user(int(id))
         self.view.staff = staff
         self.view.stop()
