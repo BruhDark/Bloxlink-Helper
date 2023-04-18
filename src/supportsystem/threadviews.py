@@ -27,7 +27,7 @@ class Confirmstaffview(discord.ui.View):
         super().__init__()
         self.add_item(ConfirmStaffSelect(options))
 
-    @discord.ui.select(label="Close on my behalf", style=discord.ButtonStyle.red, row=2)
+    @discord.ui.button(label="Close on my behalf", style=discord.ButtonStyle.red, row=2)
     async def confirm_me(self, button: discord.ui.Button, interaction: discord.Interaction):
         self.user = interaction.user
         self.stop()
