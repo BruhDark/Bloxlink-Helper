@@ -24,8 +24,8 @@ class Misc(commands.Cog):
 
         embed = discord.Embed(color=user.color if user.color !=
                               discord.Color.default else colors.main)
-        embed.set_thumbnail = user.display_avatar
-        embed.set_author(name=str(user), icon_url=user.display_avatar)
+        embed.set_thumbnail(url=user.display_avatar.url)
+        embed.set_author(name=str(user), icon_url=user.display_avatar.url)
         embed.timestamp = datetime.datetime.utcnow()
 
         await ctx.reply(embed=embed)
