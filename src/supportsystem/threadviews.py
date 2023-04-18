@@ -17,7 +17,7 @@ class ConfirmStaffSelect(discord.ui.Select):
 
     async def callback(self, interaction):
         id = self.values[0]
-        staff = interaction.client.get_or_fetch_user(int(id))
+        staff = await interaction.client.get_or_fetch_user(int(id))
         self.view.staff = staff
         self.view.stop()
 
@@ -105,7 +105,7 @@ class CloseThreadView(discord.ui.View):
                 await confirm_staff.wait()
 
                 if confirm_staff.staff.id != interaction.user.id:
-                    await prompt.edit(content=f"Closed on {message.author.mention}'s behalf! You can dismiss this ephemeral message now.", embed=None, view=None)
+                    await prompt.edit(content=f"Closed on {confirm_staff.staff.mention}'s behalf! You can dismiss this ephemeral message now.", embed=None, view=None)
                     staff = confirm_staff.staff
 
                 else:
