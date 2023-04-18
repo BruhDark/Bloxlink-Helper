@@ -89,8 +89,9 @@ class CloseThreadView(discord.ui.View):
                     staff_confirm.append(message.author)
 
             if len(staff_confirm) > 0:
-                options = [discord.SelectOption(emoji="👤", label=staff.display_name, value=staff.id, description=str(
+                options = [discord.SelectOption(emoji="👤", label=staff.display_name, value=str(staff.id), description=str(
                     staff)) for staff in staff_confirm]
+
                 confirm_staff = Confirmstaffview(options)
 
                 confirm_staff_embed = discord.Embed(color=colors.info)
