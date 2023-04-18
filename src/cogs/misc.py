@@ -38,7 +38,7 @@ class Misc(commands.Cog):
                 img = await resp.read()
                 with io.BytesIO(img) as file:
                     await self.bot.user.edit(avatar=file.getvalue())
-                    await ctx.success("Successfully changed mu avatar", True)
+                    await ctx.success("Successfully changed my avatar", True)
 
     @commands.command(description="See what's someone listening to", aliases=["sp"])
     async def spotify(self, ctx, user: discord.Member = None):
