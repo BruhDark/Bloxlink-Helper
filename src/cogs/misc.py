@@ -1,11 +1,14 @@
 import datetime
-from typing import Union
+import io
 
+import aiohttp
 import discord
 from discord.ext import commands
+
 from config import colors, emotes, links
 from resources.context import CommandsContext
-from resources.mongoFunctions import find_one, insert_one, delete_one, return_all
+from resources.mongoFunctions import (delete_one, find_one, insert_one,
+                                      return_all)
 
 s = emotes.success2
 x = emotes.error
@@ -14,6 +17,28 @@ x = emotes.error
 class Misc(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+
+    @commands.command(aliases=["av"])
+    async def avatar(self, ctx: CommandsContext, user: discord.Member = None):
+        user = user or ctx.author
+
+        embed = discord.Embed(color=user.color if user.color !=
+                              discord.Color.default else colors.main)
+        embed.set_thumbnail = user.display_avatar
+        embed.set_author(name=str(user), icon_url=user.display_avatar)
+        embed.timestamp = datetime.datetime.utcnow()
+
+        await ctx.reply(embed=embed)
+
+    @commands.command(aliases=["setpfp", "setav"])
+    @commands.is_owner()
+    async def setavatar(self, ctx: CommandsContext, link: str):
+        async with aiohttp.ClientSession() as session:
+            async with session.get(link) as resp:
+                img = await resp.read()
+                with io.BytesIO(img) as file:
+                    await self.bot.user.edit(avatar=file.getvalue())
+                    await ctx.success("Successfully changed mu avatar", True)
 
     @commands.command(description="See what's someone listening to", aliases=["sp"])
     async def spotify(self, ctx, user: discord.Member = None):
