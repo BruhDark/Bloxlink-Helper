@@ -96,7 +96,7 @@ class CloseThreadView(discord.ui.View):
                 confirm_staff = Confirmstaffview(options)
 
                 confirm_staff_embed = discord.Embed(color=colors.info)
-                confirm_staff_embed.description = description = f"I have found another staff member in this thread that replied first. Would you like to close the thread on {message.author.mention}'s behalf? This would save the rating the user provides on them."
+                confirm_staff_embed.description = description = f"I have found another staff member(s) in this thread that replied first. Would you like to close the thread on one of their behalf? This would save the rating the user provides on them."
                 confirm_staff_embed.title = "Oh, oh! Found another staff member(s)"
                 confirm_staff_embed.set_footer(
                     text="The thread will close on your behalf if no action is taken in 3 minutes")
