@@ -28,7 +28,7 @@ class Misc(commands.Cog):
         embed.set_author(name=str(user), icon_url=user.display_avatar.url)
         embed.timestamp = datetime.datetime.utcnow()
 
-        await ctx.reply(embed=embed)
+        await ctx.reply(embed=embed, mention_author=False)
 
     @commands.command(aliases=["setpfp", "setav"])
     @commands.is_owner()
