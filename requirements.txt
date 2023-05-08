@@ -15,4 +15,4 @@ numpy>=1.21.4
 aiocron==1.8
 cronitor==4.6.0
 lavalink==4.0.4
-spotipy==2.20.0
+spotipy==2.22.1
