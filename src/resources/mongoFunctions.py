@@ -4,10 +4,8 @@ from motor import motor_tornado
 import os
 import dotenv
 
-try:
-    dotenv.load_dotenv()
-except:
-    pass
+dotenv.load_dotenv()
+
 
 client = motor_tornado.MotorClient(os.getenv("MONGO_URI"))
 database = client["bloxlinkHelper"]
@@ -43,7 +41,7 @@ async def get_tags_and_alias(ctx: discord.ApplicationContext) -> list:
 
 
 async def get_aliases(ctx: discord.ApplicationContext) -> list:
-    "Get all aliases"
+    """Get all aliases"""
 
     aliases = []
 
