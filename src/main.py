@@ -97,7 +97,7 @@ class Bot(commands.Bot):
                                                            "status": f"{len(self.users)} users | blox.link"}, {"type": discord.ActivityType.playing,
                                                                                                                "status": f"/tag send | blox.link"}, {"type": discord.ActivityType.watching, "status": f"tutorials | blox.link/tutorials"}]
 
-        await self.change_presence(status=discord.Status.online, activity=discord.Activity(type=presences[self.presence_index]["type"], name=presences[self.presence_index]["status"]))
+        await self.change_presence(status=discord.Status.online if not self.bot.maintenance else discord.Status.dnd, activity=discord.Activity(type=presences[self.presence_index]["type"], name=presences[self.presence_index]["status"]))
         print("✅ Changed presence to: " +
               presences[self.presence_index]["status"])
         self.presence_index += 1
