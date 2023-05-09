@@ -28,6 +28,7 @@ class Bot(commands.Bot):
             help_command=None)
         self.database = database
         self.maintenance = False
+        self.ready = False
 
         for event in os.listdir("src/events"):
             if event.endswith(".py"):
