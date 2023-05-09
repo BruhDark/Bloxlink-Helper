@@ -1,3 +1,4 @@
+import asyncio
 import datetime
 import io
 
@@ -132,6 +133,9 @@ class Misc(commands.Cog):
         if not self.bot.maintenance:
             self.bot.maintenance = True
             self.bot.changing_presence.cancel()
+
+            await asyncio.sleep(5)
+
             await self.bot.change_presence(status=discord.Status.do_not_disturb, activity=discord.Game(reason))
             await ctx.success("Maintenance mode is now active.")
 
