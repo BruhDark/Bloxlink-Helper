@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands, tasks
 from config import emotes
 from resources.mongoFunctions import find_tag
+import random
 
 
 class Tasks(commands.Cog):
@@ -20,18 +21,15 @@ class Tasks(commands.Cog):
 
         presences = [{"type": discord.ActivityType.listening,
                       "status": "questions | blox.link"}, {"type": discord.ActivityType.watching,
-                                                           "status": f"{len(self.users)} users | blox.link"}, {"type": discord.ActivityType.playing,
-                                                                                                               "status": f"/tag send | blox.link"}, {"type": discord.ActivityType.watching, "status": f"tutorials | blox.link/tutorials"},
-                     {"type": discord.ActivityType.listening, "status": "Taylor Swift's songs"}]
+                                                           "status": f"{len(self.bot.users)} users | blox.link"}, {"type": discord.ActivityType.playing,
+                                                                                                                   "status": f"/tag send | blox.link"}, {"type": discord.ActivityType.watching, "status": f"tutorials | blox.link/tutorials"},
+                     {"type": discord.ActivityType.listening, "status": "Taylor Swift's songs"}, {"type": discord.ActivityType.watching, "status": "Miss Americana on Netflix"}]
 
-        await self.bot.change_presence(activity=discord.Activity(type=presences[self.presence_index]["type"], name=presences[self.presence_index]["status"]))
+        choice = random.choice(presences)
+        await self.bot.change_presence(activity=discord.Activity(type=choice["type"], name=choice["status"]))
+
         print("✅ Changed presence to: " +
-              presences[self.presence_index]["status"])
-
-        self.presence_index += 1
-
-        if self.presence_index >= len(presences):
-            self.presence_index = 0
+              choice["status"])
 
     @changing_presence.before_loop
     async def before_changing_presence(self):
