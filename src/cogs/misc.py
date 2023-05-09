@@ -126,6 +126,20 @@ class Misc(commands.Cog):
         else:
             await ctx.error(f"That option does not exist!")
 
+    @commands.command()
+    @commands.is_owner()
+    async def maintenance(self, ctx: CommandsContext):
+        if not self.bot.maintenance:
+            self.bot.maintenance = True
+            await self.bot.change_presence(status=discord.Status.dnd)
+
+            await ctx.success("Maintenance mode is now active.")
+        else:
+            self.bot.maintenance = False
+            await self.bot.change_presence(status=discord.Status.online)
+
+            await ctx.success("Maintenance mode is now inactive.")
+
 
 def setup(bot):
     bot.add_cog(Misc(bot))

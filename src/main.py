@@ -11,10 +11,7 @@ from resources.context import CommandsContext, ApplicationCommandsContext
 from config import AUTHORIZED, colors, emotes
 from resources.mongoFunctions import database, find_tag
 
-try:
-    dotenv.load_dotenv()
-except:
-    pass
+dotenv.load_dotenv()
 
 
 class Bot(commands.Bot):
@@ -35,6 +32,7 @@ class Bot(commands.Bot):
         self.changing_presence.start()
         self.post_faq.start()
         self.last_message_sent = None
+        self.maintenance = False
 
         for event in os.listdir("src/events"):
             if event.endswith(".py"):
@@ -53,6 +51,17 @@ class Bot(commands.Bot):
                     print(f"❌ Failed to load cog: {cog}: {e}")
                     raise e
 
+    async def on_interaction(self, interaction: discord.Interaction):
+        if self.bot.maintenance and interaction.user.id not in AUTHORIZED:
+            await interaction.response.send_message(f"{emotes.error} I am on maintenance mode! We don't want to cause any errors until I am fully operational. Try again later.")
+            return
+        return await super().on_interaction(interaction)
+
+    async def on_message(self, message: discord.Message):
+        if self.bot.maintenance and message.author.id not in AUTHORIZED:
+            return
+        return await super().on_message(message)
+
     async def get_context(self, message: discord.Message, *, cls=CommandsContext):
         return await super().get_context(message, cls=cls)
 
@@ -61,7 +70,7 @@ class Bot(commands.Bot):
 
     async def on_connect(self):
         await self.sync_commands()
-        print(f":ping_pong: Connected to Discord and registered slash commands.")
+        print(f"🏓 Connected to Discord and registered slash commands.")
 
     async def is_owner(self, user: discord.User):
         if user.id in AUTHORIZED:
