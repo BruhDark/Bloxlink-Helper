@@ -128,15 +128,17 @@ class Misc(commands.Cog):
 
     @commands.command()
     @commands.is_owner()
-    async def maintenance(self, ctx: CommandsContext):
+    async def maintenance(self, ctx: CommandsContext, reason: str = "Maintenance"):
         if not self.bot.maintenance:
             self.bot.maintenance = True
-            await self.bot.change_presence(status=discord.Status.dnd)
-
+            self.bot.changing_presence.stop()
+            await self.bot.change_presence(status=discord.Status.dnd, activity=discord.Game(reason))
             await ctx.success("Maintenance mode is now active.")
+
         else:
             self.bot.maintenance = False
             await self.bot.change_presence(status=discord.Status.online)
+            self.bot.changing_presence.start()
 
             await ctx.success("Maintenance mode is now inactive.")
 
