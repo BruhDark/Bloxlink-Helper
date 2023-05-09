@@ -138,7 +138,8 @@ class Misc(commands.Cog):
         else:
             self.bot.maintenance = False
             await self.bot.change_presence(status=discord.Status.online)
-            self.bot.changing_presence.start()
+            if not self.bot.changing_presence.is_running():
+                self.bot.changing_presence.start()
 
             await ctx.success("Maintenance mode is now inactive.")
 
