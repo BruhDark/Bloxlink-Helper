@@ -52,13 +52,13 @@ class Bot(commands.Bot):
                     raise e
 
     async def on_interaction(self, interaction: discord.Interaction):
-        if self.bot.maintenance and interaction.user.id not in AUTHORIZED:
+        if self.maintenance and interaction.user.id not in AUTHORIZED:
             await interaction.response.send_message(f"{emotes.error} I am on maintenance mode! We don't want to cause any errors until I am fully operational. Try again later.")
             return
         return await super().on_interaction(interaction)
 
     async def on_message(self, message: discord.Message):
-        if self.bot.maintenance and message.author.id not in AUTHORIZED:
+        if self.maintenance and message.author.id not in AUTHORIZED:
             return
         return await super().on_message(message)
 
