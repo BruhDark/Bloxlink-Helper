@@ -26,6 +26,10 @@ class Misc(commands.Cog):
     @is_staff()
     @is_blacklisted()
     async def say(self, ctx: discord.ApplicationContext, *, text: str):
+        try:
+            await ctx.message.delete()
+        except Exception:
+            return
 
         message = ctx.message.reference.message_id if ctx.message.reference is not None else None
         message = get(self.bot.cached_messages,
@@ -37,12 +41,7 @@ class Misc(commands.Cog):
         async with ctx.channel.typing():
             await asyncio.sleep(wait_time)
 
-        try:
-            await ctx.message.delete()
-            await message.reply(text) if message is not None else await ctx.send(text)
-
-        except Exception as exception:
-            await ctx.author.send(f"{emotes.error} I could not send your message.\n```py\n{exception}```")
+        await message.reply(text) if message is not None else await ctx.send(text)
 
     @commands.command(aliases=["av"])
     async def avatar(self, ctx: CommandsContext, user: discord.Member = None):
