@@ -8,6 +8,8 @@ from discord.ext import commands
 
 from config import colors, emotes, links
 from resources.context import CommandsContext
+from resources.CheckFailure import is_staff, is_blacklisted
+from discord.utils import get
 from resources.mongoFunctions import (delete_one, find_one, insert_one,
                                       return_all)
 
@@ -18,6 +20,29 @@ x = emotes.error
 class Misc(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+
+    @commands.command()
+    @commands.guild_only()
+    @is_staff()
+    @is_blacklisted()
+    async def say(self, ctx: discord.ApplicationContext, *, text: str):
+
+        message = ctx.message.reference.message_id if ctx.message.reference is not None else None
+        message = get(self.bot.cached_messages,
+                      id=message) if message is not None else None
+
+        text_len = len(text.split(" "))
+        wait_time = text_len * 0.95
+
+        async with ctx.channel.typing():
+            await asyncio.sleep(wait_time)
+
+        try:
+            await ctx.message.delete()
+            await message.reply(text) if message is not None else await ctx.send(text)
+
+        except Exception as exception:
+            await ctx.author.send(f"{emotes.error} I could not send your message.\n```py\n{exception}```")
 
     @commands.command(aliases=["av"])
     async def avatar(self, ctx: CommandsContext, user: discord.Member = None):
