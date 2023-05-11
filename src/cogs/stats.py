@@ -30,11 +30,11 @@ class Stats(commands.Cog):
         days, hours, minutes, seconds = None, None, None, None
 
         if d:
-            days = f"{d} Days"
+            days = f"{d} Day(s), "
         if h:
-            hours = f"{h} Hours"
+            hours = f"{h} Hour(s), "
         if m:
-            minutes = f"{m} Minutes"
+            minutes = f"{m} Minute(s), "
         if s:
             seconds = f"{s} Seconds"
 
@@ -52,12 +52,10 @@ class Stats(commands.Cog):
                         value="<:CatPride:1014631162334945410>", inline=True)
         embed.add_field(name=":clock1: Uptime", value=uptime, inline=True)
         latency = str(round(self.bot.latency * 1000))
-        embed.add_field(name=":ping_pong: Bot Latency", value=f"{latency}ms")
+        embed.add_field(name=":satellite: Websocket Latency", value=f"{latency}ms")
 
         embed.add_field(name=":snake: PyCord Version",
                         value=f"{pycordV}", inline=True)
-
-        embed.set_footer(text="Made with ❤️ by the Bloxlink Team")
 
         await ctx.respond(embed=embed)
 
