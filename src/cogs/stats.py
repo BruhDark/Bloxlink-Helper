@@ -75,7 +75,7 @@ class Stats(commands.Cog):
         time3 = (time2 - time1)
         alatency = str(round(time3.microseconds / 1000))
         embed = discord.Embed(
-            description=f"📡 Websocket latency: `{wlatency}ms`\n📦 API Latency: `{alatency}`", color=colors.info)
+            description=f"📡 Websocket latency: `{wlatency}ms`\n📦 API Latency: `{alatency}ms`", color=colors.info)
         embed.set_author(name="🏓 Pong!")
         await ctx.interaction.edit_original_message(embed=embed)
         
@@ -87,7 +87,7 @@ class Stats(commands.Cog):
         embed = discord.Embed(description=f"{emotes.bloxlink} Pinging...", color=colors.info)
                       
         time1 = datetime.datetime.utcnow()
-        message = await ctx.send(embed=embed)
+        message = await ctx.reply(embed=embed, mention_author=False)
         time2 = datetime.datetime.utcnow()
 
         time3 = (time2 - time1)
