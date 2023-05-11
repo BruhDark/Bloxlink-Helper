@@ -75,7 +75,7 @@ class Stats(commands.Cog):
         embed = discord.Embed(
             description=f"📡 Websocket latency: `{wlatency}ms`\n📦 API Latency: `{alatency}ms`", color=colors.info)
         embed.set_author(name="🏓 Pong!")
-        await ctx.interaction.edit_original_message(embed=embed)
+        await ctx.interaction.edit_original_response(embed=embed)
         
     @commands.command(name="ping")
     async def p_ping(self, ctx: commands.Context):
