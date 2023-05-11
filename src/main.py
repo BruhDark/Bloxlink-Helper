@@ -87,4 +87,6 @@ class Bot(commands.Bot):
 
 
 bot = Bot()
+bot.activity, bot.status = discord.Game("Starting..."), discord.Status.idle
+
 bot.run(os.getenv("TOKEN"))
