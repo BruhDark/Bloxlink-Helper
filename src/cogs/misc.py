@@ -35,12 +35,6 @@ class Misc(commands.Cog):
         message = get(self.bot.cached_messages,
                       id=message) if message is not None else None
 
-        text_len = len(text.split(" "))
-        wait_time = text_len * 0.95
-
-        async with ctx.channel.typing():
-            await asyncio.sleep(wait_time)
-
         await message.reply(text) if message is not None else await ctx.send(text)
 
     @commands.command(aliases=["av"])
