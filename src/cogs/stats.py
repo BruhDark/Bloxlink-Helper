@@ -79,8 +79,8 @@ class Stats(commands.Cog):
         embed.set_author(name="🏓 Pong!")
         await ctx.interaction.edit_original_message(embed=embed)
         
-    @commands.command()
-    async def ping(self, ctx: commands.Context):
+    @commands.command(name="ping")
+    async def p_ping(self, ctx: commands.Context):
         """Measure the websocket and API latency"""
 
         wlatency = str(round(self.bot.latency * 1000))
