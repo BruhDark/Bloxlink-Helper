@@ -66,14 +66,14 @@ class Stats(commands.Cog):
         """Measure the websocket and API latency"""
 
         wlatency = str(round(self.bot.latency * 1000))
-        embed = discord.Embed(description="⚪ Pinging...", color=colors.info)
+        embed = discord.Embed(description=f"{emotes.bloxlink} Pinging...", color=colors.info)
                       
         time1 = datetime.datetime.utcnow()
         await ctx.respond(embed=embed)
         time2 = datetime.datetime.utcnow()
 
         time3 = (time2 - time1)
-        alatency = str(round(time3.seconds * 1000))
+        alatency = str(round(time3.microseconds / 1000))
         embed = discord.Embed(
             description=f"📡 Websocket latency: `{wlatency}ms`\n📦 API Latency: `{alatency}`", color=colors.info)
         embed.set_author(name="🏓 Pong!")
@@ -84,7 +84,7 @@ class Stats(commands.Cog):
         """Measure the websocket and API latency"""
 
         wlatency = str(round(self.bot.latency * 1000))
-        embed = discord.Embed(description="⚪ Pinging...", color=colors.info)
+        embed = discord.Embed(description=f"{emotes.bloxlink} Pinging...", color=colors.info)
                       
         time1 = datetime.datetime.utcnow()
         message = await ctx.send(embed=embed)
