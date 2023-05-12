@@ -80,16 +80,16 @@ class Whois(commands.Cog):
                 if user.activity.type == discord.ActivityType.custom and user.activity.name is not None:
                     activity_type = ""
 
-                elif user.activities[0].type == discord.ActivityType.listening or user.activities[1].type == discord.ActivityType.listening:
+                elif user.activities[0].type == discord.ActivityType.listening or (user.activities[1].type == discord.ActivityType.listening if len(user.activities) > 1 else False):
                     activity_type = "Listening to "
 
-                elif user.activities[0].type == discord.ActivityType.playing or user.activities[1].type == discord.ActivityType.playing:
+                elif user.activities[0].type == discord.ActivityType.playing or (user.activities[1].type == discord.ActivityType.playing if len(user.activities) > 1 else False):
                     activity_type = "Playing "
 
-                elif user.activities[0].type == discord.ActivityType.watching or user.activities[1].type == discord.ActivityType.watching:
+                elif user.activities[0].type == discord.ActivityType.watching or (user.activities[1].type == discord.ActivityType.watching if len(user.activities) > 1 else False):
                     activity_type = "Watching "
 
-                elif user.activities[0].type == discord.ActivityType.streaming or user.activities[1].type == discord.ActivityType.streaming:
+                elif user.activities[0].type == discord.ActivityType.streaming or (user.activities[1].type == discord.ActivityType.streaming if len(user.activities) > 1 else False):
                     activity_type = "Streaming "
 
                 else:
