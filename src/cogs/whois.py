@@ -76,6 +76,9 @@ class Whois(commands.Cog):
                     for activity in user.activities:
                         if activity.name is not None:
                             activity_name = activity.name
+                            break
+                    else:
+                        activity_name = ""
 
                 if user.activity.type == discord.ActivityType.custom and user.activity.name is not None:
                     activity_type = ""
