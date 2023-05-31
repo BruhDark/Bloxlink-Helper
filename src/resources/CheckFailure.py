@@ -13,16 +13,16 @@ def is_staff():
         if await ctx.bot.is_owner(ctx.author):
             return True
 
-        role = discord.utils.get(ctx.guild.roles, name="Helpers")
+        staff = ctx.guild.get_role(889927613580189716)
+        developer = ctx.guild.get_role(539665515430543360)
+
         permission = ctx.author.guild_permissions.manage_messages
 
         role = role in ctx.author.roles
 
-        if not (role or permission):
+        if any([role in ctx.author.roles for role in (staff, developer)]) or permission:
             raise NotStaff("You are not allowed to use this command")
-
         return True
-
     return commands.check(predicate)
 
 
@@ -40,7 +40,5 @@ def is_blacklisted():
             reason = find["reason"]
             raise Blacklisted(
                 f"You are blacklisted from using this bot: `{reason}`")
-
         return True
-
     return commands.check(predicate)

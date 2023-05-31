@@ -29,7 +29,8 @@ class OnCmdError(commands.Cog):
             await ctx.error("Couldn't find this member.")
 
         elif isinstance(error, commands.MissingRequiredArgument):
-            pass
+            error: commands.MissingRequiredArgument = error
+            await ctx.error(f"You are missing a required argument: `{error.param.name}`")
 
         elif isinstance(error, commands.CommandNotFound):
             pass
