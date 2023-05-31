@@ -21,7 +21,6 @@ def is_staff():
         if any([role in ctx.author.roles for role in (staff, developer)]) or permission:
             return True
         raise NotStaff("You are not allowed to use this command")
-    return commands.check(predicate)
 
 
 class Blacklisted(commands.CheckFailure):
