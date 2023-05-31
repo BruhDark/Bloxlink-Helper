@@ -19,8 +19,8 @@ def is_staff():
         permission = ctx.author.guild_permissions.manage_messages
 
         if any([role in ctx.author.roles for role in (staff, developer)]) or permission:
-            raise NotStaff("You are not allowed to use this command")
-        return True
+            return True
+        raise NotStaff("You are not allowed to use this command")
     return commands.check(predicate)
 
 
