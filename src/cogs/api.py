@@ -22,7 +22,7 @@ class ApiCommand(commands.Cog):
 
         embed.timestamp = datetime.utcnow()
         embed.set_footer(
-            text="V3 subcommand will be removed when the endpoint does", icon_url=links.other)
+            text="V3 subcommand will be removed when the endpoint does")
         await ctx.reply(embed=embed, mention_author=False)
 
     @api.command(name="v3")
@@ -30,12 +30,12 @@ class ApiCommand(commands.Cog):
     @commands.guild_only()
     @is_blacklisted()
     @is_staff()
-    async def apiv3(self, ctx: commands.Context, robloxID: str):
+    async def apiv3(self, ctx: commands.Context, discordID: str):
         headers = {
             "api-key": os.getenv("API_KEY")
         }
 
-        url = f"https://v3.blox.link/developer/discord/{robloxID}"
+        url = f"https://v3.blox.link/developer/discord/{discordID}"
         async with aiohttp.ClientSession() as session:
             async with session.get(url, headers=headers) as response:
                 data = await response.json()
@@ -51,7 +51,7 @@ class ApiCommand(commands.Cog):
                                  name="Successfully sent request")
                 embed.set_footer(text=f"{quota} requests remaining")
 
-                await ctx.reply(embed=embed, mention_author=False)
+        await ctx.reply(embed=embed, mention_author=False)
 
     @api.command(name="v4")
     @commands.cooldown(1, 10, commands.BucketType.user)
@@ -78,7 +78,7 @@ class ApiCommand(commands.Cog):
                                  name="Successfully sent request")
                 embed.set_footer(text=f"{quota} requests remaining")
 
-                await ctx.reply(embed=embed, mention_author=False)
+        await ctx.reply(embed=embed, mention_author=False)
 
     @commands.user_command(name="Send API request")
     @commands.cooldown(1, 10, commands.BucketType.user)
