@@ -12,6 +12,7 @@ class ApiCommand(commands.Cog):
         self.bot = bot
 
     @commands.group(invoke_without_command=True)
+    @is_staff()
     async def api(self, ctx: commands.Context):
         """API Commands"""
         embed = discord.Embed(color=colors.info)
@@ -57,6 +58,7 @@ class ApiCommand(commands.Cog):
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.guild_only()
     @is_blacklisted()
+    @is_staff()
     async def apiv4(self, ctx: commands.Context, discordID: str):
         headers = {
             "Authorization": os.getenv("APIV4_KEY")
