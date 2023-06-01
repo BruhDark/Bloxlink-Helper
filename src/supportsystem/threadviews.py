@@ -80,7 +80,7 @@ class CloseThreadView(discord.ui.View):
 
         if staff_role in interaction.user.roles:
             user = await interaction.client.get_or_fetch_user(user)
-            staff = interaction.user.id
+            staff = interaction.user
 
             staff_confirm = []
 
