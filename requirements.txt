@@ -1,4 +1,4 @@
-py-cord @ git+https://github.com/Pycord-Development/pycord/tree/master
+py-cord @ git+https://github.com/Pycord-Development/pycord@36fea34594a3b88ddc46b76e226b030ab555f542
 datetime>=4.3
 motor>=3.0.0
 tornado>=6.1
