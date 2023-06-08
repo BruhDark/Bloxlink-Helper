@@ -17,7 +17,7 @@ class Emotes:
         self.operational = "<:Operational:882404710148083724>"
         self.partialoutage = "<:PartialOutage:882404755949895730>"
         self.majoroutage = "<:MajorOutage:882404641286000681>"
-        self.reply = "<:reply:1015305389249671178>"
+        self.owner = "<:owner:881973891017355344>"
 
         self.dnd = "<:DoNotDisturb:928716110822518834>"
         self.idle = "<:Idle:929049988573581352>"
@@ -73,6 +73,7 @@ class Badges:
         self.early = "<:EarlySupporter:928768119072231454>"
         self.botdev = "<:VerfiedBotDeveloper:928765568058785852>"
         self.active_developer = "<:Active_Developer:1086422448804737085>"
+        self.old_username = "<:OldUsername:1116488244549398568>"
 
 
 colors = Colors()
