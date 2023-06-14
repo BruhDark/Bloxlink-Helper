@@ -204,7 +204,7 @@ class SupportView(View):
     def __init__(self):
         super().__init__(timeout=None)
         self.add_item(Button(style=ButtonStyle.url, emoji="<:book:986647611740147712>",
-                      label="Tutorials", url="https://blox.link/tutorials"))
+                      label="Tutorial", url="https://www.youtube.com/watch?v=SbDltmom1R8&list=PLz7SOP-guESEI9EnEV-1ftn6SzcqQumRc&index=4"))
         self.add_item(Button(style=ButtonStyle.url, emoji="<:link:986648044525199390>",
                       label="Verify with Bloxlink", url="https://blox.link/verify"))
 
