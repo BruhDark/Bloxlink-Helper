@@ -205,11 +205,9 @@ class Whois(commands.Cog):
             else:
                 embed.set_thumbnail(url=user.display_avatar.url)
 
-            # Add status field (1)
-            embed.add_field(name="Status", value=await self.get_status(user), inline=True)
-
             # Add activity field if it activity exists
             if not noMember and user.activity:
+                embed.add_field(name="Status", value=await self.get_status(user), inline=True)
                 embed.add_field(name="Activity",
                                 value=await self.get_activity(user), inline=True)
 
@@ -227,10 +225,10 @@ class Whois(commands.Cog):
                 roles.reverse()
                 roles = None if len(roles) == 0 else roles
                 if roles is not None:
-                    embed.add_field(
-                        name=f"Roles [{len(roles)}]", value=", ".join(roles), inline=False)
                     embed.add_field(name="Highest Role",
                                     value=user.top_role.mention, inline=True)
+                    embed.add_field(
+                        name=f"Roles [{len(roles)}]", value=", ".join(roles), inline=False)
 
             badges = await self.get_badges(user)
 
