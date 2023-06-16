@@ -6,7 +6,7 @@ import pandas as pd
 from discord import Option, slash_command
 from discord.ext import commands
 
-from config import colors
+from config import colors, emotes
 from resources.CheckFailure import is_blacklisted, is_staff
 from resources.context import ApplicationCommandsContext
 from resources.mongoFunctions import find_one, return_all
@@ -21,6 +21,7 @@ class ExportStats(discord.ui.View):
     @discord.ui.button(label="Export as CSV file", emoji="<:box:987447660510334976>", style=discord.ButtonStyle.blurple)
     async def export_callback(self, button: discord.Button, interaction: discord.Interaction):
 
+        staff = [rate['staff'] for rate in self.rating]
         users = [rate['user'] for rate in self.rating]
         dates = [rate['date'] for rate in self.rating]
         number = [rate['rating'] for rate in self.rating]
@@ -31,7 +32,7 @@ class ExportStats(discord.ui.View):
             except KeyError:
                 feedback.append("None")
 
-        data = {"user": users, "date": dates,
+        data = {"staff": staff,"user": users, "date": dates,
                 "rating": number, "feedback": feedback}
 
         df = pd.DataFrame(data)
@@ -67,7 +68,7 @@ class Rating(commands.Cog):
         for rate in rating:
             average += int(rate)
 
-        return round(average / len(rating), 2)
+        return round(average / len(rating), 1)
 
     async def check_today(self, rating: list, user: discord.Member = None):
         parsed_rating = []
@@ -77,7 +78,7 @@ class Rating(commands.Cog):
                 timestamp = datetime.datetime.fromtimestamp(rate["date"])
                 today = datetime.datetime.utcnow()
 
-                if (timestamp.day, timestamp.month, timestamp.year) == (today.day, today.month, today.year) and rate["user"] == user.id:
+                if (timestamp.day, timestamp.month, timestamp.year) == (today.day, today.month, today.year) and rate["staff"] == user.id:
                     parsed_rating.append(rate)
 
             return parsed_rating
@@ -100,7 +101,7 @@ class Rating(commands.Cog):
                 timestamp = datetime.datetime.fromtimestamp(rate["date"])
                 today = datetime.datetime.utcnow()
 
-                if (timestamp.month, timestamp.year) == (today.month, today.year) and rate["user"] == user.id:
+                if (timestamp.month, timestamp.year) == (today.month, today.year) and rate["staff"] == user.id:
                     parsed_rating.append(rate)
 
             return parsed_rating
@@ -126,10 +127,10 @@ class Rating(commands.Cog):
                 try:
                     print(rate)
                     parsed_messages.append(
-                        f"<t:{rate['date']}:D> {await self.return_stars(int(rate['rating']))} -> <@{rate['user']}>\n<:reply:1015305389249671178> **Feedback:** {rate['feedback']}")
+                        f"<t:{rate['date']}:D> {await self.return_stars(int(rate['rating']))} -> <@{rate['staff']}>\n\t{emotes.help} **Feedback:** {rate['feedback']}.\nBy <@{rate['user']}> (`{rate['user']}`)\n")
                 except:
                     parsed_messages.append(
-                        f"<t:{rate['date']}:D> {await self.return_stars(int(rate['rating']))} -> <@{rate['user']}>")
+                        f"<t:{rate['date']}:D> {await self.return_stars(int(rate['rating']))} -> <@{rate['staff']}>, by <@{rate['user']}> (`{rate['user']}`)")
 
         else:
             for rate in rating:
@@ -148,10 +149,10 @@ class Rating(commands.Cog):
         users = {}
         for rate in rating:
             try:
-                users[str(rate["user"])] += int(rate["rating"])
+                users[str(rate["staff"])] += int(rate["rating"])
 
             except KeyError:
-                users[str(rate["user"])] = int(rate["rating"])
+                users[str(rate["staff"])] = int(rate["rating"])
 
         print(users)
 
@@ -220,7 +221,7 @@ class Rating(commands.Cog):
             if date == "all time":
                 if user:
                     rating = [
-                        rate for rate in rating if rate["user"] == user.id]
+                        rate for rate in rating if rate["staff"] == user.id]
 
                     if len(rating) == 0:
                         await ctx.error("This user hasn't received any rating yet!")
@@ -334,7 +335,7 @@ class Rating(commands.Cog):
             if date == "all time":
                 if user:
                     nrating = [
-                        rate for rate in rating if rate["user"] == user.id]
+                        rate for rate in rating if rate["staff"] == user.id]
 
                     if len(nrating) == 0:
                         await ctx.error("This user has not received any rating yet!")

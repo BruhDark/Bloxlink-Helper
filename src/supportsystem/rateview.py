@@ -45,114 +45,112 @@ class RatingView(discord.ui.View):
         select.options = [discord.SelectOption(
             label=f"{'⭐' * int(select.values[0])}", default=True)]
 
-        if select.values[0] == "1":
-            date = round(time.time())
-            self.disable_all_items()
-            await interaction.response.edit_message(view=self)
+        match select.values[0]:
+            case "1":
+                date = round(time.time())
+                self.disable_all_items()
+                await interaction.response.edit_message(view=self)
 
-            await interaction.followup.send("Could you tell us why this option? Say 'Cancel' to cancel this prompt.")
-            try:
-                message_in = await interaction.client.wait_for(
-                    "message", check=lambda message: interaction.user.id == message.author.id and message.channel.id == interaction.channel.id, timeout=60.0)
-                message = message_in.content
-            except asyncio.TimeoutError:
-                message = "None provided"
-                await interaction.followup.send("Your response prompt timed out.")
+                await interaction.followup.send("Could you tell us why this option? Say 'Cancel' to cancel this prompt.")
+                try:
+                    message_in = await interaction.client.wait_for(
+                        "message", check=lambda message: interaction.user.id == message.author.id and message.channel.id == interaction.channel.id, timeout=60.0)
+                    message = message_in.content
+                except asyncio.TimeoutError:
+                    message = "None provided"
+                    await interaction.followup.send("Your response prompt timed out.")
 
-            if message_in.content.lower() == "cancel":
-                message = "None provided"
-                await interaction.followup.send("You cancelled this prompt.")
+                if message_in.content.lower() == "cancel":
+                    message = "None provided"
+                    await interaction.followup.send("You cancelled this prompt.")
 
-            await interaction.followup.send("Thank you for your feedback! You help us improve.")
+                await interaction.followup.send("Thank you for your feedback! You help us improve.")
 
-            feedback = message
-            await insert_one("rating", {"user": self.staff.id, "rating": 1, "date": date, "feedback": feedback})
+                feedback = message
+                await insert_one("rating", {"staff": self.staff.id, "user": self.user.id, "rating": 1, "date": date, "feedback": feedback})
 
-            if self.thread:
-                await self.thread.archive(locked=True)
-            self.stop()
+                if self.thread:
+                    await self.thread.archive(locked=True)
+                self.stop()
 
-        elif select.values[0] == "2":
-            date = round(time.time())
+            case "2":
+                date = round(time.time())
 
-            self.disable_all_items()
+                self.disable_all_items()
 
-            await interaction.response.edit_message(view=self)
+                await interaction.response.edit_message(view=self)
 
-            await interaction.followup.send("Could you tell us why this option? Say 'Cancel' to cancel this prompt.")
-            try:
-                message_in = await interaction.client.wait_for(
-                    "message", check=lambda message: interaction.user.id == message.author.id and message.channel.id == interaction.channel.id, timeout=60.0)
-                message = message_in.content
-            except asyncio.TimeoutError:
-                message = "None provided"
-                await interaction.followup.send("Your response prompt timed out.")
+                await interaction.followup.send("Could you tell us why this option? Say 'Cancel' to cancel this prompt.")
+                try:
+                    message_in = await interaction.client.wait_for(
+                        "message", check=lambda message: interaction.user.id == message.author.id and message.channel.id == interaction.channel.id, timeout=60.0)
+                    message = message_in.content
+                except asyncio.TimeoutError:
+                    message = "None provided"
+                    await interaction.followup.send("Your response prompt timed out.")
 
-            if message_in.content.lower() == "cancel":
-                message = "None provided"
-                await interaction.followup.send("You cancelled this prompt.")
+                if message_in.content.lower() == "cancel":
+                    message = "None provided"
+                    await interaction.followup.send("You cancelled this prompt.")
 
-            await interaction.followup.send("Thank you for your feedback! You help us improve.")
+                await interaction.followup.send("Thank you for your feedback! You help us improve.")
 
-            feedback = message
-            await insert_one("rating", {"user": self.staff.id, "rating": 2, "date": date, "feedback": feedback})
+                feedback = message
+                await insert_one("rating", {"staff": self.staff.id, "user": self.user.id, "rating": 2, "date": date, "feedback": feedback})
 
-            if self.thread:
-                await self.thread.archive(locked=True)
-            self.stop()
+                if self.thread:
+                    await self.thread.archive(locked=True)
+                self.stop()
 
-        elif select.values[0] == "3":
-            date = round(time.time())
-            self.disable_all_items()
+            case "3":
+                date = round(time.time())
+                self.disable_all_items()
 
-            await interaction.response.edit_message(view=self)
+                await interaction.response.edit_message(view=self)
 
-            await interaction.followup.send("Could you tell us why this option? Say 'Cancel' to cancel this prompt.")
-            try:
-                message_in = await interaction.client.wait_for(
-                    "message", check=lambda message: interaction.user.id == message.author.id and message.channel.id == interaction.channel.id, timeout=60.0)
-                message = message_in.content
-            except asyncio.TimeoutError:
-                message = "None provided"
-                await interaction.followup.send("Your response prompt timed out.")
+                await interaction.followup.send("Could you tell us why this option? Say 'Cancel' to cancel this prompt.")
+                try:
+                    message_in = await interaction.client.wait_for(
+                        "message", check=lambda message: interaction.user.id == message.author.id and message.channel.id == interaction.channel.id, timeout=60.0)
+                    message = message_in.content
+                except asyncio.TimeoutError:
+                    message = "None provided"
+                    await interaction.followup.send("Your response prompt timed out.")
 
-            if message_in.content.lower() == "cancel":
-                message = "None provided"
-                await interaction.followup.send("You cancelled this prompt.")
+                if message_in.content.lower() == "cancel":
+                    message = "None provided"
+                    await interaction.followup.send("You cancelled this prompt.")
 
-            await interaction.followup.send("Thank you for your feedback! You help us improve.")
+                await interaction.followup.send("Thank you for your feedback! You help us improve.")
 
-            feedback = message
-            await insert_one("rating", {"user": self.staff.id, "rating": 3, "date": date, "feedback": feedback})
+                feedback = message
+                await insert_one("rating", {"staff": self.staff.id, "user": self.user.id, "rating": 3, "date": date, "feedback": feedback})
 
-            if self.thread:
-                await self.thread.archive(locked=True)
-            self.stop()
+                if self.thread:
+                    await self.thread.archive(locked=True)
+                self.stop()
 
-        elif select.values[0] == "4":
-            date = round(time.time())
-            await insert_one("rating", {"user": self.staff.id, "rating": 4, "date": date})
-            self.disable_all_items()
+            case "4":
+                date = round(time.time())
+                await insert_one("rating", {"staff": self.staff.id, "user": self.user.id, "rating": 4, "date": date})
+                self.disable_all_items()
 
-            await interaction.response.edit_message(view=self)
-            await interaction.followup.send("Thank you so much for your rating!")
+                await interaction.response.edit_message(view=self)
+                await interaction.followup.send("Thank you so much for your rating!")
 
-            if self.thread:
-                await self.thread.archive(locked=True)
-            self.stop()
+                if self.thread:
+                    await self.thread.archive(locked=True)
+                self.stop()
 
-        elif select.values[0] == "5":
-            date = round(time.time())
-            await insert_one("rating", {"user": self.staff.id, "rating": 5, "date": date})
+            case "5":
+                date = round(time.time())
+                await insert_one("rating", {"staff": self.staff.id, "user": self.user.id, "rating": 5, "date": date})
 
-            self.disable_all_items()
+                self.disable_all_items()
 
-            await interaction.response.edit_message(view=self)
-            await interaction.followup.send("Thank you so much for your rating!")
+                await interaction.response.edit_message(view=self)
+                await interaction.followup.send("Thank you so much for your rating!")
 
-            if self.thread:
-                await self.thread.archive(locked=True)
-            self.stop()
-
-        else:
-            interaction.response.send_message(content="Something went wrong.")
+                if self.thread:
+                    await self.thread.archive(locked=True)
+                self.stop()
