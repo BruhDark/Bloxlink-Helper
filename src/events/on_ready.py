@@ -1,6 +1,4 @@
 from discord.ext import commands
-from supportsystem.faqview import FAQView
-from supportsystem.threadviews import CloseThreadView, CreateThreadView
 
 
 class OnReady(commands.Cog):

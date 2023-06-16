@@ -1,9 +1,9 @@
 from discord.ext import commands
 
-from jishaku.features.python import PythonFeature, codeblock_converter, get_var_dict_from_ctx, ReplResponseReactor, AsyncCodeExecutor, AsyncSender, Flags
+from jishaku.features.python import codeblock_converter, get_var_dict_from_ctx, ReplResponseReactor, AsyncCodeExecutor, AsyncSender, Flags
 from jishaku.features.baseclass import Feature
 
-from jishaku.cog import RootCommand, STANDARD_FEATURES, OPTIONAL_FEATURES
+from jishaku.cog import STANDARD_FEATURES, OPTIONAL_FEATURES
 
 
 class CustomDebugCog(*STANDARD_FEATURES, *OPTIONAL_FEATURES):

@@ -1,13 +1,14 @@
-from resources.CheckFailure import is_staff
+import discord
 from discord.commands import Option
+from discord.ext import commands
+
+from config import colors, emotes
 from resources.context import ApplicationCommandsContext
 from resources.mongoFunctions import delete_one, return_all
-from supportsystem.modal import FAQCreateModal, FAQEditModal
+from resources.CheckFailure import is_staff
 from supportsystem.faqview import FAQView
+from supportsystem.modal import FAQCreateModal, FAQEditModal
 from supportsystem.threadviews import CloseThreadView, CreateThreadView
-from config import colors, emotes, badges
-from discord.ext import commands
-import discord
 
 
 class SupportSystem(commands.Cog):

@@ -19,56 +19,69 @@ class ThreadButtonFAQ(discord.ui.Button):
 
         await interaction.response.defer(ephemeral=True)
 
-        supportBannedRole = discord.utils.get(
+        support_banned_role = discord.utils.get(
             interaction.guild.roles, name="support banned")
-        if supportBannedRole in interaction.user.roles:
+        if support_banned_role in interaction.user.roles:
             await interaction.response.send_message(
                 "<:BloxlinkDead:823633973967716363> You are support banned.", ephemeral=True)
             return
 
-        userThread = await find_one("support-users", {"user": interaction.user.id})
+        user_thread = await find_one("support-users", {"user": interaction.user.id})
 
-        if userThread is not None:
-            thread = interaction.channel.get_thread(userThread["thread"])
-            await interaction.followup.send(f"<:BloxlinkDead:823633973967716363> You are already in a support thread. Please head to {thread.mention} to join the thread.", ephemeral=True)
+        if user_thread is not None:
+            thread = interaction.channel.get_thread(user_thread["thread"])
+            await interaction.followup.send(f"<:BloxlinkDead:823633973967716363> You are already in a support thread. "
+                                            f"Please head to {thread.mention} to join the thread.", ephemeral=True)
             return
 
         channel = interaction.guild.get_channel(1017439501452324864)
 
         try:
-            thread = await channel.create_thread(name=f"{interaction.user.name} - {self.topic}", reason="Support Thread", type=discord.ChannelType.private_thread)
-        except:
-            thread = await channel.create_thread(name=f"{interaction.user.name} - {self.topic}", reason="Support Thread", type=discord.ChannelType.public_thread)
+            thread = await channel.create_thread(name=f"{interaction.user.name} - {self.topic}",
+                                                 reason="Support Thread", type=discord.ChannelType.private_thread)
+        except discord.Forbidden:
+            thread = await channel.create_thread(name=f"{interaction.user.name} - {self.topic}",
+                                                 reason="Support Thread", type=discord.ChannelType.public_thread)
 
-        await interaction.followup.send(f"<:BloxlinkSilly:823634273604468787> You have created a support thread. Please head to {thread.mention} to join the thread.", ephemeral=True)
+        await interaction.followup.send(
+            f"<:BloxlinkSilly:823634273604468787> You have created a support thread. Please head to {thread.mention} to join the thread.",
+            ephemeral=True)
 
-        embedT = discord.Embed(
+        embed_t = discord.Embed(
             color=colors.info, timestamp=datetime.utcnow(), title="Support Thread")
-        embedT.add_field(
+        embed_t.add_field(
             name="<:user:988229844301131776> Created By", value=interaction.user.mention)
-        embedT.add_field(
+        embed_t.add_field(
             name="<:help:988166431109681214> Topic", value=self.topic)
-        embedT.add_field(
+        embed_t.add_field(
             name="<:thread:988229846188564500> Thread", value=thread.mention)
 
-        Lchannel = discord.utils.get(
+        lchannel = discord.utils.get(
             interaction.guild.channels, name="support-threads")
-        log = await Lchannel.send(embed=embedT)
+        log = await lchannel.send(embed=embed_t)
 
-        object = await insert_one("support-users", {"user": interaction.user.id, "thread": thread.id, "log": log.id})
+        thread_data = await insert_one("support-users",
+                                       {"user": interaction.user.id, "thread": thread.id, "log": log.id})
 
         embed = discord.Embed(color=colors.info, timestamp=datetime.utcnow(), title="Support Thread",
-                              description=f":wave: Welcome to your support thread!\n\n<:BloxlinkSilly:823634273604468787> Our Helpers will assist you in a few minutes. While you wait, please provide as much detail as possible! Consider providing screenshots or/and anything that helps the team to solve your issue faster.\n\n<:time:987836664355373096> Our team is taking too long? If 10 minutes have passed, you can click the **Ping Helpers** button, this will notify our team you are here!")
-        embed.set_author(name=f"{interaction.user.name}#{interaction.user.discriminator} | ID: {object.inserted_id}",
-                         icon_url=interaction.user.display_avatar.url)
+                              description=f":wave: Welcome to your support "
+                                          f"thread!\n\n<:BloxlinkSilly:823634273604468787> Our Helpers will assist "
+                                          f"you in a few minutes. While you wait, please provide as much detail as "
+                                          f"possible! Consider providing screenshots or/and anything that helps the "
+                                          f"team to solve your issue faster.\n\n<:time:987836664355373096> Our team "
+                                          f"is taking too long? If 10 minutes have passed, you can click the **Ping "
+                                          f"Helpers** button, this will notify our team you are here!")
+        embed.set_author(
+            name=f"{interaction.user.name}#{interaction.user.discriminator} | ID: {thread_data.inserted_id}",
+            icon_url=interaction.user.display_avatar.url)
         embed.set_footer(
             text=f"To close this thread, press the padlock below.")
 
-        ThreadView = CloseThreadView()
-        message = await thread.send(content=interaction.user.mention, embed=embed, view=ThreadView)
-        ThreadView.message = message
+        thread_view = CloseThreadView()
+        message = await thread.send(content=interaction.user.mention, embed=embed, view=thread_view)
+        thread_view.message = message
         await message.pin(reason="Support Thread Message")
-        await ThreadView.enableButton()
+        await thread_view.enableButton()
 
 
 class NumberButton(discord.ui.Button):
@@ -93,14 +106,14 @@ async def format_buttons(questions: list):
         try:
             image = question["image"]
             if image is None:
-                raise Exception("No image")
+                raise TypeError("No image")
             embed.set_image(url=image)
-        except Exception:
+        except TypeError:
             pass
 
-        Button = NumberButton(str(index + 1), embed)
+        number_button = NumberButton(str(index + 1), embed)
 
-        view.add_item(Button)
+        view.add_item(number_button)
 
     return view
 
@@ -109,9 +122,9 @@ class FAQView(View):
     def __init__(self):
         super().__init__(timeout=None)
         self.add_item(Button(style=ButtonStyle.url, emoji="<:book:986647611740147712>",
-                      label="Tutorials", url="https://blox.link/tutorials"))
+                             label="Tutorials", url="https://blox.link/tutorials"))
         self.add_item(Button(style=ButtonStyle.url, emoji="<:link:986648044525199390>",
-                      label="Verify with Bloxlink", url="https://blox.link/verify"))
+                             label="Verify with Bloxlink", url="https://blox.link/verify"))
 
     options = [
         SelectOption(label="Verification", value="verification", emoji="<:link:986648044525199390>",
@@ -126,7 +139,8 @@ class FAQView(View):
                      description="None of the above categories match your question?"),
     ]
 
-    @discord.ui.select(placeholder="Select a category", min_values=1, max_values=1, options=options, custom_id="FAQSelect")
+    @discord.ui.select(placeholder="Select a category", min_values=1, max_values=1, options=options,
+                       custom_id="FAQSelect")
     async def select_callback(self, select: discord.ui.Select, interaction: discord.Interaction):
 
         await interaction.response.defer()
@@ -136,65 +150,67 @@ class FAQView(View):
             text="Did not find an answer? Use our support channel.", icon_url=links.other)
         view = None
 
-        if select.values[0] == "verification":
-            questions = await return_all("faq-verification")
+        match select.values[0]:
 
-            qs = [f"**Q{str(qsn + 1)}** - {question['q']}" for qsn,
-                  question in enumerate(questions)]
+            case "verification":
+                questions = await return_all("faq-verification")
 
-            embed.title = "Verification Related Questions"
-            embed.description = "\n".join(qs)
+                qs = [f"**Q{str(qsn + 1)}** - {question['q']}" for qsn,
+                      question in enumerate(questions)]
 
-            view = await format_buttons(questions)
+                embed.title = "Verification Related Questions"
+                embed.description = "\n".join(qs)
 
-        elif select.values[0] == "binds":
-            questions = await return_all("faq-binds")
+                view = await format_buttons(questions)
 
-            qs = [f"**Q{str(qsn + 1)}** - {question['q']}" for qsn,
-                  question in enumerate(questions)]
+            case "binds":
+                questions = await return_all("faq-binds")
 
-            embed.title = "Binds Related Questions"
-            embed.description = "\n".join(qs)
+                qs = [f"**Q{str(qsn + 1)}** - {question['q']}" for qsn,
+                      question in enumerate(questions)]
 
-            view = await format_buttons(questions)
+                embed.title = "Binds Related Questions"
+                embed.description = "\n".join(qs)
 
-        elif select.values[0] == "api":
-            questions = await return_all("faq-api")
+                view = await format_buttons(questions)
 
-            qs = [f"**Q{str(qsn + 1)}** - {question['q']}" for qsn,
-                  question in enumerate(questions)]
+            case "api":
+                questions = await return_all("faq-api")
 
-            embed.title = "API Related Questions"
-            embed.description = "\n".join(qs)
+                qs = [f"**Q{str(qsn + 1)}** - {question['q']}" for qsn,
+                      question in enumerate(questions)]
 
-            view = await format_buttons(questions)
+                embed.title = "API Related Questions"
+                embed.description = "\n".join(qs)
 
-        elif select.values[0] == "premium":
-            questions = await return_all("faq-premium")
+                view = await format_buttons(questions)
 
-            qs = [f"**Q{str(qsn + 1)}** - {question['q']}" for qsn,
-                  question in enumerate(questions)]
+            case "premium":
+                questions = await return_all("faq-premium")
 
-            embed.title = "Premium Related Questions"
-            embed.description = "\n".join(qs)
+                qs = [f"**Q{str(qsn + 1)}** - {question['q']}" for qsn,
+                      question in enumerate(questions)]
 
-            view = await format_buttons(questions)
+                embed.title = "Premium Related Questions"
+                embed.description = "\n".join(qs)
 
-        elif select.values[0] == "other":
-            questions = await return_all("faq-other")
+                view = await format_buttons(questions)
 
-            qs = [f"**Q{str(qsn + 1)}** - {question['q']}" for qsn,
-                  question in enumerate(questions)]
+            case "other":
+                questions = await return_all("faq-other")
 
-            embed.title = "Other Non-Categorised Questions"
-            embed.description = "\n".join(qs)
+                qs = [f"**Q{str(qsn + 1)}** - {question['q']}" for qsn,
+                      question in enumerate(questions)]
 
-            view = await format_buttons(questions)
+                embed.title = "Other Non-Categorised Questions"
+                embed.description = "\n".join(qs)
 
-        premiumRole = discord.utils.get(
+                view = await format_buttons(questions)
+
+        premium_role = discord.utils.get(
             interaction.guild.roles, id=372175493040177152)
 
-        if premiumRole in interaction.user.roles:
+        if premium_role in interaction.user.roles:
             view.add_item(ThreadButtonFAQ(select.values[0].capitalize()))
 
         await interaction.followup.send(embed=embed, view=view, ephemeral=True)
@@ -204,14 +220,21 @@ class SupportView(View):
     def __init__(self):
         super().__init__(timeout=None)
         self.add_item(Button(style=ButtonStyle.url, emoji="<:book:986647611740147712>",
-                      label="Tutorial", url="https://www.youtube.com/watch?v=SbDltmom1R8&list=PLz7SOP-guESEI9EnEV-1ftn6SzcqQumRc&index=4"))
+                             label="Tutorial",
+                             url="https://www.youtube.com/watch?v=SbDltmom1R8&list=PLz7SOP-guESEI9EnEV-1ftn6SzcqQumRc&index=4"))
         self.add_item(Button(style=ButtonStyle.url, emoji="<:link:986648044525199390>",
-                      label="Verify with Bloxlink", url="https://blox.link/verify"))
+                             label="Verify with Bloxlink", url="https://blox.link/verify"))
 
-    @button(custom_id="getHelpButton", style=ButtonStyle.blurple, emoji="<:help:988166431109681214>", label="Open FAQ")
-    async def callback(self, button: button, interaction: discord.Interaction):
-
+    @discord.ui.button(custom_id="getHelpButton", style=ButtonStyle.blurple, emoji="<:help:988166431109681214>", label="Open FAQ")
+    async def callback(self, button: discord.ui.Button, interaction: discord.Interaction):
         embed = discord.Embed(title=":wave: Welcome to Bloxlink's FAQ!",
-                              description="\n<:BloxlinkConfused:823633690910916619> **How does this work?**\nSelect the category, from the dropdown, that you think your question matches. You will get prompted with some questions, they all have a number. Click the respective number on the buttons below them and get an answer!\n\n<:BloxlinkNervous:823633774939865120> **Did not find an answer?**\nState your issue with as much detail as possible in our support channels, our team will be glad to assit you!", color=colors.info)
+                              description="\n<:BloxlinkConfused:823633690910916619> **How does this work?**\nSelect "
+                                          "the category, from the dropdown, that you think your question matches. You "
+                                          "will get prompted with some questions, they all have a number. Click the "
+                                          "respective number on the buttons below them and get an "
+                                          "answer!\n\n<:BloxlinkNervous:823633774939865120> **Did not find an "
+                                          "answer?**\nState your issue with as much detail as possible in our support "
+                                          "channels, our team will be glad to assit you!",
+                              color=colors.info)
 
         await interaction.response.send_message(embed=embed, view=FAQView(), ephemeral=True)

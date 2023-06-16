@@ -1,10 +1,12 @@
-import discord
-import aiohttp
-from datetime import datetime
-from config import colors, emotes, links
-from discord.ext import commands
 import os
+from datetime import datetime
+
+import aiohttp
+import discord
+from discord.ext import commands
+
 from resources.CheckFailure import is_blacklisted, is_staff
+from config import colors, emotes, links
 
 
 class ApiCommand(commands.Cog):
@@ -18,8 +20,9 @@ class ApiCommand(commands.Cog):
         embed = discord.Embed(color=colors.info)
         embed.title = f"{emotes.bloxlink} This command was updated!"
 
-        embed.description = "You must either specify `v3` or `v4` as the first command argument and then the ID. \
-            If you want to make a request to the V4 global API, specify `v4`. If you want to make a request to the V3 API, specify `v3`"
+        embed.description = "You must either specify `v3` or `v4` as the first command argument and then the ID. If " \
+                            "you want to make a request to the V4 global API, specify `v4`. If you want to make a " \
+                            "request to the V3 API, specify `v3`"
 
         embed.timestamp = datetime.utcnow()
         embed.set_footer(
@@ -31,19 +34,19 @@ class ApiCommand(commands.Cog):
     @commands.guild_only()
     @is_blacklisted()
     @is_staff()
-    async def apiv3(self, ctx: commands.Context, discordID: str):
+    async def apiv3(self, ctx: commands.Context, discord_id: str):
         headers = {
             "api-key": os.getenv("API_KEY")
         }
 
-        url = f"https://v3.blox.link/developer/discord/{discordID}"
+        url = f"https://v3.blox.link/developer/discord/{discord_id}"
         async with aiohttp.ClientSession() as session:
             async with session.get(url, headers=headers) as response:
                 data = await response.json()
                 headers = response.headers
                 try:
                     quota = headers["quota-remaining"]
-                except:
+                except KeyError:
                     quota = "?"
 
                 embed = discord.Embed(timestamp=datetime.utcnow(
@@ -59,19 +62,19 @@ class ApiCommand(commands.Cog):
     @commands.guild_only()
     @is_blacklisted()
     @is_staff()
-    async def apiv4(self, ctx: commands.Context, discordID: str):
+    async def apiv4(self, ctx: commands.Context, discord_id: str):
         headers = {
             "Authorization": os.getenv("APIV4_KEY")
         }
 
-        url = f"https://api.blox.link/v4/public/discord-to-roblox/{discordID}"
+        url = f"https://api.blox.link/v4/public/discord-to-roblox/{discord_id}"
         async with aiohttp.ClientSession() as session:
             async with session.get(url, headers=headers) as response:
                 data = await response.json()
                 headers = response.headers
                 try:
                     quota = headers["quota-remaining"]
-                except:
+                except KeyError:
                     quota = "?"
 
                 embed = discord.Embed(timestamp=datetime.utcnow(
@@ -97,7 +100,7 @@ class ApiCommand(commands.Cog):
                 headers = resp.headers
                 try:
                     quota = headers["quota-remaining"]
-                except:
+                except KeyError:
                     quota = "?"
 
                 embed = discord.Embed(timestamp=datetime.utcnow(

@@ -1,14 +1,16 @@
 import datetime
-import discord
-from discord import ApplicationContext, Option, slash_command
-from discord.ext import commands
-from resources.context import ApplicationCommandsContext
-from resources.mongoFunctions import return_all, find_one
-from config import colors, links
-from resources.CheckFailure import is_blacklisted, is_staff
-from resources.paginator import CustomPaginator
-import pandas as pd
 import os
+
+import discord
+import pandas as pd
+from discord import Option, slash_command
+from discord.ext import commands
+
+from config import colors
+from resources.CheckFailure import is_blacklisted, is_staff
+from resources.context import ApplicationCommandsContext
+from resources.mongoFunctions import find_one, return_all
+from resources.paginator import CustomPaginator
 
 
 class ExportStats(discord.ui.View):
@@ -26,13 +28,13 @@ class ExportStats(discord.ui.View):
         for rate in self.rating:
             try:
                 feedback.append(rate["feedback"])
-            except:
+            except KeyError:
                 feedback.append("None")
 
-        dict = {"user": users, "date": dates,
+        data = {"user": users, "date": dates,
                 "rating": number, "feedback": feedback}
 
-        df = pd.DataFrame(dict)
+        df = pd.DataFrame(data)
         df.to_csv("stats.csv")
 
         await interaction.response.send_message(file=discord.File("stats.csv", "stats.csv"), ephemeral=True)
@@ -147,11 +149,9 @@ class Rating(commands.Cog):
         for rate in rating:
             try:
                 users[str(rate["user"])] += int(rate["rating"])
-                print("A")
 
-            except:
+            except KeyError:
                 users[str(rate["user"])] = int(rate["rating"])
-                print("B")
 
         print(users)
 
@@ -160,11 +160,11 @@ class Rating(commands.Cog):
                 first_rating = value
                 first_user = int(key)
 
-            if int(value) > int(second_rating) and int(value) < int(first_rating):
+            if int(second_rating) < int(value) < int(first_rating):
                 second_rating = value
                 second_user = int(key)
 
-            if int(value) > int(third_rating) and int(value) < int(second_rating):
+            if int(third_rating) < int(value) < int(second_rating):
                 third_rating = value
                 third_user = int(key)
 

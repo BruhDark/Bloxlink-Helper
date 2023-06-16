@@ -18,10 +18,7 @@ import dotenv
 from typing import Union
 from config import colors, emotes
 
-try:
-    dotenv.load_dotenv()
-except:
-    pass
+dotenv.load_dotenv()
 
 RURL = re.compile(r'https?://(?:www\.)?.+')
 sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id=os.getenv(
@@ -36,7 +33,8 @@ class SongSelectView(discord.ui.View):
 
     async def on_timeout(self):
         if not self.select.success:
-            await self.message.edit(content=f"{emotes.error} You took too long to select a song!", view=None, delete_after=20)
+            await self.message.edit(content=f"{emotes.error} You took too long to select a song!", view=None,
+                                    delete_after=20)
 
 
 def create_embed(guild: discord.Guild, track: lavalink.AudioTrack, position: int):
@@ -48,7 +46,8 @@ def create_embed(guild: discord.Guild, track: lavalink.AudioTrack, position: int
 
     requester: discord.Member = guild.get_member(track.requester)
     embed = discord.Embed(
-        title=f"<a:music:1005254786486124625> Now Playing", description=f"**{track.title}** by {track.author}", color=colors.main)
+        title=f"<a:music:1005254786486124625> Now Playing", description=f"**{track.title}** by {track.author}",
+        color=colors.main)
     embed.add_field(name="Ends", value=f"<t:{endsat}:R>", inline=True)
     embed.add_field(name="Video URL",
                     value=f"[Click here]({track.uri})", inline=False)
@@ -111,7 +110,8 @@ class SongSelect(discord.ui.Select):
         options = []
         for track in self.tracks:
             options.append(discord.SelectOption(
-                label=f"{track.title}", description=f"By {track.author}", emoji="<:playlist:1005265606821548163>", value=track.identifier))
+                label=f"{track.title}", description=f"By {track.author}", emoji="<:playlist:1005265606821548163>",
+                value=track.identifier))
             self.keys[f'{track.identifier}'] = track
         super().__init__(placeholder="Select a song",
                          min_values=1, max_values=5, options=options, select_type=discord.ComponentType.string_select)
@@ -152,7 +152,9 @@ class SongSelect(discord.ui.Select):
         else:
             await interaction.response.edit_message(embed=confirmation(f"Added **{titlesn}** to the queue!"), view=None)
 
-            await interaction.channel.send(content=f"{emotes.bloxlink} **{titlesn}** was added to the queue by {interaction.user.mention}", delete_after=60, allowed_mentions=discord.AllowedMentions(users=False))
+            await interaction.channel.send(content=f"{emotes.bloxlink} **{titlesn}** was added to the queue by "
+                                                   f"{interaction.user.mention}", delete_after=60,
+                                           allowed_mentions=discord.AllowedMentions(users=False))
             self.success = True
 
 
@@ -252,7 +254,8 @@ class Buttons(discord.ui.View):
             self.children[1].disabled = False
             button.disabled = True
             await interaction.response.edit_message(embed=embed, view=self)
-            await interaction.followup.send(f"{emotes.bloxlink} {interaction.user.mention} resumed the player!", delete_after=10.0, allowed_mentions=discord.AllowedMentions(users=False))
+            await interaction.followup.send(f"{emotes.bloxlink} {interaction.user.mention} resumed the player!",
+                                            delete_after=10.0, allowed_mentions=discord.AllowedMentions(users=False))
 
     @discord.ui.button(emoji="<:pause:1005256663000961205>", label="Pause", style=discord.ButtonStyle.gray, row=1)
     async def button_pause(self, button: discord.ui.Button, interaction: discord.Interaction):
@@ -264,23 +267,27 @@ class Buttons(discord.ui.View):
             self.children[0].disabled = False
             button.disabled = True
             await interaction.response.edit_message(embed=embed, view=self)
-            await interaction.followup.send(f"{emotes.bloxlink} {interaction.user.mention} paused the player!", delete_after=10.0, allowed_mentions=discord.AllowedMentions(users=False))
+            await interaction.followup.send(f"{emotes.bloxlink} {interaction.user.mention} paused the player!",
+                                            delete_after=10.0, allowed_mentions=discord.AllowedMentions(users=False))
 
     @discord.ui.button(emoji="<:skip:1005260620989481021>", label="Skip", style=discord.ButtonStyle.gray, row=1)
     async def button_forward(self, button: discord.ui.Button, interaction: discord.Interaction):
         player = self.controller(interaction)
         await interaction.response.edit_message()
-        await interaction.followup.send(f"{emotes.bloxlink} {interaction.user.mention} skipped the song!", delete_after=10.0, allowed_mentions=discord.AllowedMentions(users=False))
+        await interaction.followup.send(f"{emotes.bloxlink} {interaction.user.mention} skipped the song!",
+                                        delete_after=10.0, allowed_mentions=discord.AllowedMentions(users=False))
         await player.skip()
 
     @discord.ui.button(emoji="<:stop:1005261869113675800>", label="Stop", style=discord.ButtonStyle.gray, row=1)
     async def button_stop(self, button: discord.ui.Button, interaction: discord.Interaction):
         if not interaction.user.guild_permissions.manage_messages:
-            await interaction.response.send_message(f"{emotes.error} You are not allowed to stop the player.", ephemeral=True)
+            await interaction.response.send_message(f"{emotes.error} You are not allowed to stop the player.",
+                                                    ephemeral=True)
             return
 
         player = self.controller(interaction)
-        await interaction.response.send_message(f"{emotes.bloxlink} {interaction.user.mention} stopped the player!", allowed_mentions=discord.AllowedMentions(users=False))
+        await interaction.response.send_message(f"{emotes.bloxlink} {interaction.user.mention} stopped the player!",
+                                                allowed_mentions=discord.AllowedMentions(users=False))
 
         await cleanup(player)
 
@@ -349,11 +356,12 @@ class Buttons(discord.ui.View):
                 try:
 
                     embed = discord.Embed(
-                        title=f"{player.current.title} | By {resp['author']}", description=resp["lyrics"], color=colors.info, url=resp["links"]["genius"])
+                        title=f"{player.current.title} | By {resp['author']}", description=resp["lyrics"],
+                        color=colors.info, url=resp["links"]["genius"])
 
                     await interaction.followup.send(embed=embed, ephemeral=True)
 
-                except:
+                except KeyError:
                     await interaction.followup.send(f"{emotes.error}  Couldn't find matching lyrics!", ephemeral=True)
 
 
@@ -380,14 +388,15 @@ class Music(commands.Cog):
             message: discord.Message = self.client.get_message(player)
             embed = message.embeds[0]
             embed.title = "<a:music:1005254786486124625>  Queue ended"
-            embed.description = "There is nothing left to play! Please use `/music` to start a new queue.\nI will automatically leave in 2 minutes if nothing is playing."
+            embed.description = "There is nothing left to play! Please use `/music` to start a new queue.\nI will " \
+                                "automatically leave in 2 minutes if nothing is playing."
             embed.fields[0].name = "Queue Ended"
             embed.fields[0].value = f"<t:{round(time.time())}:R>"
 
             embed.fields[1].name = "Last Song Played"
             await message.edit(embed=embed)
 
-        await asyncio.sleep(60*2)
+        await asyncio.sleep(60 * 2)
         player: lavalink.DefaultPlayer = event.player
         if not player.is_playing:
             guild: discord.Guild = self.client.get_guild(
@@ -407,8 +416,11 @@ class Music(commands.Cog):
         players = self.client.active_players
         for player in players:
             message: discord.Message = self.client.get_message(player)
-            await message.edit(embed=create_embed(guild=message.guild, track=event.track, position=event.track.position))
-            await message.channel.send(content=f"{emotes.bloxlink} Now playing: **{event.track.title}** by {event.track.author}", delete_after=60)
+            await message.edit(
+                embed=create_embed(guild=message.guild, track=event.track, position=event.track.position))
+            await message.channel.send(
+                content=f"{emotes.bloxlink} Now playing: **{event.track.title}** by {event.track.author}",
+                delete_after=60)
 
     @lavalink.listener(lavalink.events.TrackStuckEvent)
     async def track_stuck(self, event: lavalink.TrackStuckEvent):
@@ -470,7 +482,8 @@ class Music(commands.Cog):
     @slash_command(description="Play some music")
     @is_blacklisted()
     @commands.cooldown(1, 5, commands.BucketType.user)
-    async def music(self, ctx: discord.ApplicationContext, search: Option(str, description="Music query or URL", required=False, default=None)):
+    async def music(self, ctx: discord.ApplicationContext,
+                    search: Option(str, description="Music query or URL", required=False, default=None)):
         try:
             channel = ctx.author.voice.channel
         except AttributeError:
@@ -482,7 +495,8 @@ class Music(commands.Cog):
             await ctx.guild.voice_client.move_to(channel)
         if search:
             if len(search) > 256:
-                return await ctx.respond(f"{emotes.error} Search query has a maximum of 256 characters!", ephemeral=True)
+                return await ctx.respond(f"{emotes.error} Search query has a maximum of 256 characters!",
+                                         ephemeral=True)
             elif player.is_playing:
                 if len(player.queue) >= 250:
                     return await ctx.respond(f"{emotes.error} The queue is full!", ephemeral=True)
@@ -570,7 +584,8 @@ class Music(commands.Cog):
                                 mplayer.id)
 
                         else:
-                            await ctx.respond(embed=confirmation(f"Added {count} spotify song(s) to the queue"), delete_after=30)
+                            await ctx.respond(embed=confirmation(f"Added {count} spotify song(s) to the queue"),
+                                              delete_after=30)
 
                         if not player.is_playing:
                             await player.play()
@@ -584,6 +599,7 @@ class Music(commands.Cog):
                 guild=ctx.guild, track=player.current, position=player.position)
             mplayer = await ctx.respond(embed=embed, view=bview, ephemeral=True)
             bview.message = await mplayer.original_message()
+
 
 def setup(bot):
     bot.add_cog(Music(bot))

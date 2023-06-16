@@ -6,7 +6,7 @@ import math
 import time
 import datetime
 
-from config import emotes, colors, releasescolors, DESCRIPTION
+from config import emotes, colors, releasescolors
 from resources.CheckFailure import is_blacklisted
 
 
@@ -42,7 +42,8 @@ class Stats(commands.Cog):
 
         pycordV = discord.__version__
 
-        embed = discord.Embed(description="Bloxlink Staff's right hand. Managing tags with useful information and many other automations.", timestamp=datetime.datetime.utcnow(
+        embed = discord.Embed(description="Bloxlink Staff's right hand. Managing tags with useful information and "
+                                          "many other automations.", timestamp=datetime.datetime.utcnow(
         ), color=releasescolors.main)
 
         embed.set_author(
@@ -65,7 +66,7 @@ class Stats(commands.Cog):
 
         wlatency = str(round(self.bot.latency * 1000))
         embed = discord.Embed(description=f"{emotes.bloxlink} Pinging...", color=colors.info)
-                      
+
         time1 = datetime.datetime.utcnow()
         await ctx.respond(embed=embed)
         time2 = datetime.datetime.utcnow()
@@ -76,14 +77,14 @@ class Stats(commands.Cog):
             description=f"📡 Websocket latency: `{wlatency}ms`\n📦 API Latency: `{alatency}ms`", color=colors.info)
         embed.set_author(name="🏓 Pong!")
         await ctx.interaction.edit_original_response(embed=embed)
-        
+
     @commands.command(name="ping")
     async def p_ping(self, ctx: commands.Context):
         """Measure the websocket and API latency"""
 
         wlatency = str(round(self.bot.latency * 1000))
         embed = discord.Embed(description=f"{emotes.bloxlink} Pinging...", color=colors.info)
-                      
+
         time1 = datetime.datetime.utcnow()
         message = await ctx.reply(embed=embed, mention_author=False)
         time2 = datetime.datetime.utcnow()
@@ -94,7 +95,6 @@ class Stats(commands.Cog):
             description=f"📡 Websocket latency: `{wlatency}ms`\n📦 API Latency: `{alatency}ms`", color=colors.info)
         embed.set_author(name="🏓 Pong!")
         await message.edit(embed=embed)
-
 
 
 def setup(bot):

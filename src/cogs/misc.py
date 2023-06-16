@@ -6,7 +6,7 @@ import aiohttp
 import discord
 from discord.ext import commands
 
-from config import colors, emotes, links
+from config import colors, emotes
 from resources.context import CommandsContext
 from resources.CheckFailure import is_staff, is_blacklisted
 from discord.utils import get
@@ -28,7 +28,7 @@ class Misc(commands.Cog):
     async def say(self, ctx: discord.ApplicationContext, *, text: str):
         try:
             await ctx.message.delete()
-        except Exception:
+        except discord.HTTPException:
             return
 
         message = ctx.message.reference.message_id if ctx.message.reference is not None else None
@@ -57,13 +57,12 @@ class Misc(commands.Cog):
                 img = await resp.read()
                 with io.BytesIO(img) as file:
                     await self.bot.user.edit(avatar=file.getvalue())
-                    await ctx.success("Successfully changed my avatar", True)
+                    await ctx.success("Successfully changed my avatar", mention_author=True)
 
     @commands.command(description="See what's someone listening to", aliases=["sp"])
     async def spotify(self, ctx, user: discord.Member = None):
 
         user: discord.Member = user or ctx.author
-        activity = None
         activity = user.activity if isinstance(
             user.activity, discord.Spotify) else None
 
@@ -81,32 +80,33 @@ class Misc(commands.Cog):
         else:
             emoji = emotes.spotify
 
-            Embed = discord.Embed(
-                description=f"{user.mention} | {emotes.spotify}", timestamp=datetime.datetime.utcnow(), color=user.color)
-            Embed.set_author(
+            embed = discord.Embed(
+                description=f"{user.mention} | {emotes.spotify}", timestamp=datetime.datetime.utcnow(),
+                color=user.color)
+            embed.set_author(
                 name=f"{user.name}#{user.discriminator}", icon_url=user.display_avatar.url)
 
-            Embed.set_thumbnail(url=activity.album_cover_url)
+            embed.set_thumbnail(url=activity.album_cover_url)
 
             artists = activity.artists
             duration = activity.duration
             durationd = str(duration).split(".")[0]
 
-            Embed.add_field(
+            embed.add_field(
                 name="Song", value=activity.title, inline=False)
-            Embed.add_field(name="Duration",
+            embed.add_field(name="Duration",
                             value=durationd, inline=True)
-            Embed.add_field(name="Artist(s)", value=", ".join(
+            embed.add_field(name="Artist(s)", value=", ".join(
                 artists), inline=False)
-            Embed.add_field(
+            embed.add_field(
                 name="Album", value=activity.album, inline=True)
 
-            Embed.set_footer(text=f"ID: {user.id}")
+            embed.set_footer(text=f"ID: {user.id}")
 
-            View = discord.ui.View()
-            View.add_item(discord.ui.Button(emoji=emoji, label='Listen on Spotify',
+            view = discord.ui.View()
+            view.add_item(discord.ui.Button(emoji=emoji, label='Listen on Spotify',
                                             url=activity.track_url, style=discord.ButtonStyle.url))
-            return await ctx.send(embed=Embed, view=View)
+            return await ctx.send(embed=embed, view=view)
 
     @commands.command(description="Raise an intentional error")
     async def error(self, ctx):

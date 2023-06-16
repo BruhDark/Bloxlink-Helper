@@ -7,7 +7,6 @@ from discord.ext import commands
 
 x = emotes.error
 
-
 class ButtonDelete(discord.ui.View):
     def __init__(self, message: discord.Message):
         super().__init__(timeout=15.0)
@@ -39,7 +38,8 @@ class Quote(commands.Cog):
         if message.author != self.bot.user:
 
             pattern = re.compile(
-                "https://(?:ptb.|canary.)?discord.com/channels/(?P<server_id>[0-9]{17,20})/(?P<channel_id>[0-9]{17,20})/(?P<message_id>[0-9]{17,20})")
+                "https://(?:ptb.|canary.)?discord.com/channels/(?P<server_id>[0-9]{17,20})/(?P<channel_id>[0-9]{17,"
+                "20})/(?P<message_id>[0-9]{17,20})")
 
             found = re.search(pattern, message.content)
 
@@ -73,7 +73,8 @@ class Quote(commands.Cog):
                         await message.remove_reaction("📦", message.author)
 
                         embed = discord.Embed(
-                            title=f"Jump to message", url=f"https://discord.com/channels/{server_id}/{channel_id}/{msg_id}", description=msg.content, color=colors.info, timestamp=msg.created_at)
+                            title=f"Jump to message", url=f"https://discord.com/channels/{server_id}/{channel_id}/{msg_id}",
+                            description=msg.content, color=colors.info, timestamp=msg.created_at)
                         embed.set_author(
                             name=f"{msg.author} in {msg.channel}", icon_url=msg.author.display_avatar.url)
                         embed.set_footer(

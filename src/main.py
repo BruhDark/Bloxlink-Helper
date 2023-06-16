@@ -1,20 +1,21 @@
 import os
 import sys
 import traceback
+from abc import ABC
 from datetime import datetime
 import aiohttp
 import discord
 import dotenv
-from discord.ext import commands, tasks
+from discord.ext import commands
 from resources.context import CommandsContext, ApplicationCommandsContext
 
 from config import AUTHORIZED, colors, emotes
-from resources.mongoFunctions import database, find_tag
+from resources.mongoFunctions import database
 
 dotenv.load_dotenv()
 
 
-class Bot(commands.Bot):
+class Bot(commands.Bot, ABC):
     def __init__(self):
         super().__init__(command_prefix=commands.when_mentioned_or("."),
                          intents=discord.Intents.all(),
@@ -49,7 +50,9 @@ class Bot(commands.Bot):
 
     async def on_interaction(self, interaction: discord.Interaction):
         if self.maintenance and interaction.user.id not in AUTHORIZED:
-            await interaction.response.send_message(f"{emotes.error} I am on maintenance mode! We don't want to cause any errors until I am fully operational. Try again later.", ephemeral=True)
+            await interaction.response.send_message(f"{emotes.error} I am on maintenance mode! We don't want to cause "
+                                                    f"any errors until I am fully operational. Try again later.",
+                                                    ephemeral=True)
             return
         return await super().on_interaction(interaction)
 
@@ -81,7 +84,8 @@ class Bot(commands.Bot):
             tb = tb + "\n" + str(sys.exc_info()[1])
 
             embed = discord.Embed(
-                title=f"{emotes.error} Something Went Wrong | Event: {event}", color=colors.error, timestamp=datetime.utcnow())
+                title=f"{emotes.error} Something Went Wrong | Event: {event}", color=colors.error,
+                timestamp=datetime.utcnow())
             embed.description = f"```py\n{tb}```"
             await webhook.send(embed=embed)
 
