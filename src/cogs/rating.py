@@ -264,8 +264,7 @@ class Rating(commands.Cog):
                         await ctx.error("This user hasn't received any rating today!")
                         return
 
-                    nrating = [
-                        f"<t:{rate['date']}:D> {await self.return_stars(int(rate['rating']))}" for rate in rating]
+                    nrating = self.parse_rating_message(rating)
 
                     embed.description = "\n".join(nrating)
                     embed.set_author(
