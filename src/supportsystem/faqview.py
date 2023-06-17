@@ -106,9 +106,9 @@ async def format_buttons(questions: list):
         try:
             image = question["image"]
             if image is None:
-                raise TypeError("No image")
+                raise KeyError()
             embed.set_image(url=image)
-        except TypeError:
+        except KeyError:
             pass
 
         number_button = NumberButton(str(index + 1), embed)
