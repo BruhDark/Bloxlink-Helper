@@ -158,7 +158,7 @@ class Whois(commands.Cog):
         async with ctx.typing():
             if member is not None:
                 try:
-                    user = self.converter.convert(ctx, member)
+                    user = await self.converter.convert(ctx, member)
 
                 except commands.MemberNotFound:
                     try:
