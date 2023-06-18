@@ -101,14 +101,14 @@ class Whois(commands.Cog):
     async def get_acks(self, user: discord.Member | discord.User):
 
         acks = []
-        bloxlinkGuild = self.bot.get_guild(372036754078826496)
-        helperRole = bloxlinkGuild.get_role(412791520316358656)
-        modRole = bloxlinkGuild.get_role(372174398918098944)
-        cmRole = bloxlinkGuild.get_role(595733840849534982)
-        devRole = bloxlinkGuild.get_role(539665515430543360)
+        bloxlink_guild = self.bot.get_guild(372036754078826496)
+        helperRole = bloxlink_guild.get_role(412791520316358656)
+        modRole = bloxlink_guild.get_role(372174398918098944)
+        cmRole = bloxlink_guild.get_role(595733840849534982)
+        devRole = bloxlink_guild.get_role(539665515430543360)
 
-        bloxlinkUser = bloxlinkGuild.get_member(user.id)
-        staffRole = bloxlinkGuild.get_role(889927613580189716)
+        bloxlinkUser = bloxlink_guild.get_member(user.id)
+        staffRole = bloxlink_guild.get_role(889927613580189716)
 
         if bloxlinkUser is not None and staffRole in bloxlinkUser.roles:
             acks.append("Staff")
@@ -152,28 +152,11 @@ class Whois(commands.Cog):
     @commands.guild_only()
     @is_blacklisted()
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def whois(self, ctx: commands.Context, *, member: str = None):
+    async def whois(self, ctx: commands.Context, *, member: commands.MemberConverter = None):
         """Get information about an user."""
         async with ctx.typing():
-
-            # Attempt to get member
-            if member is None:
-                user: discord.Member = ctx.author
-                noMember = False
-            else:
-                try:
-                    converter = commands.MemberConverter()
-                    user = await converter.convert(ctx, member)
-                    noMember = False
-
-                except Exception as e:
-                    try:
-                        id = int(member)
-                    except:
-                        raise commands.MemberNotFound
-
-                    user: discord.User = await self.bot.fetch_user(id)
-                    noMember = True
+            user = member or ctx.author
+            noMember = True if isinstance(user, discord.User) else False
 
             # Process and get all possible fields of information
 
@@ -194,9 +177,9 @@ class Whois(commands.Cog):
                 name=f"{user.name}#{user.discriminator}" if user.discriminator != "0" else user.name, icon_url=user.display_avatar.url)
 
             # See if they are staff, if so, apply a custom thumbnail otherwise their avatar
-            bloxlinkGuild = self.bot.get_guild(372036754078826496)
-            bloxlinkUser = bloxlinkGuild.get_member(user.id)
-            staffRole = bloxlinkGuild.get_role(889927613580189716)
+            bloxlink_guild = self.bot.get_guild(372036754078826496)
+            bloxlinkUser = bloxlink_guild.get_member(user.id)
+            staffRole = bloxlink_guild.get_role(889927613580189716)
 
             if bloxlinkUser is not None and staffRole in bloxlinkUser.roles:
                 embed.set_thumbnail(
