@@ -13,7 +13,7 @@ class Whois(commands.Cog):
         self.bot: commands.Bot = bot
         self.description = "Get information about an user"
         self.category = "Miscellaneous"
-        self.converter = commands.MemberConverter()w
+        self.converter = commands.MemberConverter()
 
     async def get_badges(self, user: discord.Member | discord.User) -> list:
         flags = []
@@ -159,11 +159,11 @@ class Whois(commands.Cog):
             if member is not None:
                 try:
                     user = self.converter.convert(ctx, member)
-                
+
                 except commands.MemberNotFound:
                     try:
                         user = await self.bot.fetch_user(int(member))
-                    
+
                     except ValueError:
                         raise commands.MemberNotFound(str(member))
 
