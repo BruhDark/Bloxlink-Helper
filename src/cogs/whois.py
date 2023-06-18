@@ -13,6 +13,7 @@ class Whois(commands.Cog):
         self.bot: commands.Bot = bot
         self.description = "Get information about an user"
         self.category = "Miscellaneous"
+        self.converter = commands.MemberConverter()w
 
     async def get_badges(self, user: discord.Member | discord.User) -> list:
         flags = []
@@ -152,10 +153,23 @@ class Whois(commands.Cog):
     @commands.guild_only()
     @is_blacklisted()
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def whois(self, ctx: commands.Context, *, member: commands.MemberConverter = None):
+    async def whois(self, ctx: commands.Context, *, member: str = None):
         """Get information about an user."""
         async with ctx.typing():
-            user = member or ctx.author
+            if member is not None:
+                try:
+                    user = self.converter.convert(ctx, member)
+                
+                except commands.MemberNotFound:
+                    try:
+                        user = await self.bot.fetch_user(int(member))
+                    
+                    except ValueError:
+                        raise commands.MemberNotFound(str(member))
+
+            else:
+                user = ctx.author
+
             noMember = True if isinstance(user, discord.User) else False
 
             # Process and get all possible fields of information
