@@ -15,6 +15,7 @@ langs = ["af", "am", "ar", "az", "be", "bg", "bn", "bs", "ca", "ceb", "co", "cs"
 class Translator(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.translator = googletrans.Translator()
 
     async def get_langs(self, ctx: discord.AutocompleteContext):
         return [lang for lang in langs if lang.startswith(ctx.value.lower())]
@@ -29,15 +30,13 @@ class Translator(commands.Cog):
             await ctx.reply(embed=discord.Embed(description=f"{emotes.error} Target language not found. Make sure it is one of these languages: ```{languages}```", color=colors.error))
             return
 
-        translator = googletrans.Translator()
-
-        translation = translator.translate(query, dest=target)
-        translatedText = translation.text
-        detectedSourceLanguage = translation.src
+        translation = self.translator.translate(query, dest=target)
+        translated_text = translation.text
+        detected_source_lang = translation.src
         pronounciation = translation.pronunciation
 
         embed = discord.Embed(timestamp=datetime.datetime.utcnow(
-        ), color=colors.info, description=f"{emotes.bloxlink} Processing text from `{detectedSourceLanguage}` (detected) to `{target}`\n\n**Result:** \n`{translatedText}`")
+        ), color=colors.info, description=f"{emotes.bloxlink} Processing text from `{detected_source_lang}` (detected) to `{target}`\n\n**Result:** \n`{translated_text}`")
 
         if pronounciation:
             embed.add_field(
@@ -47,6 +46,26 @@ class Translator(commands.Cog):
             text=f"{ctx.author}", icon_url=ctx.author.display_avatar.url)
 
         await ctx.reply(embed=embed, mention_author=False)
+
+    @commands.message_command(name="Translate to English")
+    async def translate_message(self, ctx: discord.ApplicationContext, message: discord.Message):
+
+        translation = self.translator.translate(message.content)
+        translated_text = translation.text
+        detected_source_lang = translation.src
+        pronounciation = translation.pronunciation
+
+        embed = discord.Embed(timestamp=datetime.datetime.utcnow(
+        ), color=colors.info, description=f"{emotes.bloxlink} Processing text from `{detected_source_lang}` (detected) to `en`\n\n**Result:** \n`{translated_text}`")
+
+        if pronounciation:
+            embed.add_field(
+                name="<:help:988166431109681214> Pronunciation", value=pronounciation)
+
+        embed.set_footer(
+            text=f"{ctx.author}", icon_url=ctx.author.display_avatar.url)
+
+        await ctx.respond(embed=embed, ephemeral=True)
 
 
 def setup(bot):
