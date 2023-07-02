@@ -1,8 +1,11 @@
+import random
+
 import discord
 from discord.ext import commands, tasks
+
 from config import emotes
+from resources import webhook_manager
 from resources.mongoFunctions import find_tag
-import random
 
 
 class Tasks(commands.Cog):
@@ -23,7 +26,7 @@ class Tasks(commands.Cog):
                       "status": "questions | blox.link"}, {"type": discord.ActivityType.watching,
                                                            "status": f"{len(self.bot.users)} users | blox.link"}, {"type": discord.ActivityType.playing,
                                                                                                                    "status": f"/tag send | blox.link"}, {"type": discord.ActivityType.watching, "status": f"tutorials | blox.link/tutorials"},
-                     {"type": discord.ActivityType.listening, "status": "Taylor Swift's songs"}, {"type": discord.ActivityType.watching, "status": "Miss Americana on Netflix"}]
+                     {"type": discord.ActivityType.listening, "status": "Delicate by Taylor Swift"}, {"type": discord.ActivityType.watching, "status": "Miss Americana on Netflix"}]
 
         choice = random.choice(presences)
         await self.bot.change_presence(activity=discord.Activity(type=choice["type"], name=choice["status"]))
@@ -60,12 +63,12 @@ class Tasks(commands.Cog):
             except:
                 pass
             message = await channel.send(content=tag["content"], view=view)
+            print("✅ Posted  FAQ")
 
             self.last_message_sent = message
 
-        except Exception as e:
-            print("Failed to post:")
-            print(e)
+        except Exception as error:
+            await webhook_manager.send_error(error)
 
     @post_faq.before_loop
     async def before_post_faq(self):
