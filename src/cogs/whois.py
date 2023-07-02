@@ -188,7 +188,7 @@ class Whois(commands.Cog):
             ), description=f"{user.mention}\n{nickname}")
 
             embed.set_author(
-                name=f"{user.name}#{user.discriminator}" if user.discriminator != "0" else user.name, icon_url=user.display_avatar.url)
+                name=f"{user}", icon_url=user.display_avatar.url)
 
             # See if they are staff, if so, apply a custom thumbnail otherwise their avatar
             bloxlink_guild = self.bot.get_guild(372036754078826496)
@@ -236,7 +236,7 @@ class Whois(commands.Cog):
             acks = await self.get_acks(user)
             if acks is not None:
                 embed.add_field(name="Bloxlink Team",
-                                value=", ".join(acks), inline=False)
+                                value=", ".join(acks.reverse()), inline=False)
 
             embed.set_footer(text=f"ID: {user.id}")
 
