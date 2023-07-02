@@ -17,4 +17,4 @@ class OnReady(commands.Cog):
 
 
 def setup(bot):
-    pass
+    bot.add_cog(OnReady(bot))
