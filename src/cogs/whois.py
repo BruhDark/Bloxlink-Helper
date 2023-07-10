@@ -235,8 +235,9 @@ class Whois(commands.Cog):
 
             acks = await self.get_acks(user)
             if acks is not None:
+                acks.reverse()
                 embed.add_field(name="Bloxlink Team",
-                                value=", ".join(acks.reverse()), inline=False)
+                                value=", ".join(acks), inline=False)
 
             embed.set_footer(text=f"ID: {user.id}")
 
