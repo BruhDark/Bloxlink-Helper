@@ -68,7 +68,8 @@ class Tasks(commands.Cog):
             self.last_message_sent = message
 
         except Exception as error:
-            await webhook_manager.send_error(error)
+            if not isinstance(error, discord.errors.NotFound):
+                await webhook_manager.send_error(error)
 
     @post_faq.before_loop
     async def before_post_faq(self):
