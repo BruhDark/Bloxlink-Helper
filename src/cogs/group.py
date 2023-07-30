@@ -87,12 +87,7 @@ class GroupApiCommand(commands.Cog):
             )
             embed.description = "\n".join(desc_builder)
         else:
-            embed.set_author(
-                icon_url=links.error,
-                name="No request was made",
-            )
-            embed.color = colors.error
-            embed.description = "The given input did not represent a valid group ID."
+            return await ctx.error("Invalid group ID.")
 
         await ctx.reply(embed=embed, mention_author=False)
 
