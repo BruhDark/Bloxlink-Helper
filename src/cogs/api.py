@@ -35,6 +35,9 @@ class ApiCommand(commands.Cog):
     @is_blacklisted()
     @is_staff()
     async def apiv3(self, ctx: commands.Context, discord_id: str):
+        if not discord_id.isdigit():
+            return await ctx.error("The ID you provided is invalid.")
+
         headers = {
             "api-key": os.getenv("API_KEY")
         }
@@ -63,6 +66,9 @@ class ApiCommand(commands.Cog):
     @is_blacklisted()
     @is_staff()
     async def apiv4(self, ctx: commands.Context, discord_id: str):
+        if not discord_id.isdigit():
+            return await ctx.error("The ID you provided is invalid.")
+
         headers = {
             "Authorization": os.getenv("APIV4_KEY")
         }
