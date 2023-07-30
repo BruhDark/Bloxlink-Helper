@@ -163,7 +163,7 @@ class Tags(commands.Cog):
 
                     success = emotes.success
                     embed = discord.Embed(
-                        description=f"{success} **Added** alias: {alias}", color=colors.success, timestamp=datetime.datetime.utcnow())
+                        description=f"{success} **Added** alias: {alias}", color=colors.success)
                     await ctx.respond(embed=embed)
 
                 else:
