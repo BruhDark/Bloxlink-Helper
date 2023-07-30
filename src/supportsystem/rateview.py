@@ -11,7 +11,7 @@ RATE_OPTIONS = [
     discord.SelectOption(label="⭐⭐⭐⭐", value="4",
                          description="The support provided was very good."),
     discord.SelectOption(label="⭐⭐⭐", value="3",
-                         description="The support provided was good."),
+                         description="The support provided was neutral."),
     discord.SelectOption(label="⭐⭐", value="2",
                          description="The support provided was bad."),
     discord.SelectOption(label="⭐", value="1",
