@@ -112,12 +112,13 @@ class CloseThreadView(discord.ui.View):
                     await prompt.edit(content=f"Closed on your behalf! You can dismiss this ephemeral message now.", embed=None, view=None)
 
             rateEmbed = discord.Embed(title=f"{emotes.success} Thank you for contacting us!",
-                                      description="Your feedback means a lot to us and we hope we were able to help you with your query. We would appreciate it if you could rate the support provided by our team using the select menu below. Your rating will help us improve our service and efficiency. You can choose from 1 to 5 stars, where 1 is the lowest and 5 is the highest rating. Thank you for your time and we hope you have a great day.", color=colors.info)
+                                      description=f"Your feedback means a lot to us and we hope we were able to help you with your query. We would appreciate it if you could rate the support provided by **{staff.mention} ({staff.name})** using the select menu below. Your rating will help us improve our service and efficiency.\n\nYou can choose from 1 to 5 stars, where 1 is the lowest and 5 is the highest rating. Thank you for your time and we hope you have a great day. {emotes.success}", color=colors.info)
             rateEmbed.timestamp = datetime.datetime.utcnow()
             rateEmbed.set_author(
                 name=f"Hello, {user.name}!", icon_url=user.display_avatar.url)
+
             rateEmbed.set_footer(
-                text="Your feedback prompt will timeout in 3 minutes.", icon_url=links.other)
+                text="Your feedback prompt will timeout in 3 minutes", icon_url=links.other)
 
             try:
                 await user.send(embed=rateEmbed, view=RatingView(staff, user))
