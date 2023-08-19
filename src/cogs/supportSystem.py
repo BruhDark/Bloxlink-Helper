@@ -16,7 +16,7 @@ class SupportSystem(commands.Cog):
         self.bot: commands.Bot = bot
         self.persistent_added = False
 
-    faq = discord.SlashCommandGroup("faq", "FAQs related commands.")
+    faq = discord.SlashCommandGroup("faq", "FAQs related commands.", guild_only=True)
 
     @commands.Cog.listener()
     async def on_ready(self):

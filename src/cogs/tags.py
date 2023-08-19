@@ -15,7 +15,7 @@ class Tags(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    tags = discord.SlashCommandGroup("tag", "Tag related commands.")
+    tags = discord.SlashCommandGroup("tag", "Tag related commands.", guild_only=True)
 
     @tags.command(description="Create a new tag")
     @commands.guild_only()
