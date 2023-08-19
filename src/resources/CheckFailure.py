@@ -13,12 +13,12 @@ def is_staff():
         if await ctx.bot.is_owner(ctx.author):
             return True
 
-        staff = ctx.guild.get_role(889927613580189716)
+        helpers = ctx.guild.get_role(412791520316358656)
+        mods = ctx.guild.get_role(372174398918098944)
         developer = ctx.guild.get_role(539665515430543360)
-
         permission = ctx.author.guild_permissions.manage_messages
 
-        if any([role in ctx.author.roles for role in (staff, developer)]) or permission:
+        if any([role in ctx.author.roles for role in (helpers, mods, developer)]) or permission:
             return True
         raise NotStaff("You are not allowed to use this command")
     return commands.check(predicate)
