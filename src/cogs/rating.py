@@ -32,7 +32,7 @@ class ExportStats(discord.ui.View):
             except KeyError:
                 feedback.append("None")
 
-        data = {"staff": staff,"user": users, "date": dates,
+        data = {"staff": staff, "user": users, "date": dates,
                 "rating": number, "feedback": feedback}
 
         df = pd.DataFrame(data)
